@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:bigbrother/home_screen.dart';
+
 class BigBrotherApp extends StatelessWidget {
   const BigBrotherApp({super.key});
 
@@ -12,14 +14,10 @@ class BigBrotherApp extends StatelessWidget {
     	theme: ThemeData(
     		textTheme: GoogleFonts.notoSansTextTheme(),
     	),
-      home: Scaffold(
-        body: Center(
-          child: Text('Big brother is watching.'),
-        ),
-      ),
+      home: HomeScreen(),
     );
   }
 }
 
-void main() =>  runApp(const BigBrotherApp());
+void main() => runApp(const BigBrotherApp());
 

@@ -1,0 +1,3 @@
+const GAME_WIDTH = 2000.0;
+const GAME_HEIGHT = 1500.0;
+
