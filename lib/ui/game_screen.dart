@@ -6,6 +6,7 @@ import '../game/game_cubit.dart';
 import '../game/game_state.dart';
 import 'intro_screen.dart';
 import 'citizen_panel.dart';
+import 'intelligence_report_overlay.dart';
 
 /// The main screen where the game is rendered.
 class GameScreen extends StatelessWidget {
@@ -39,6 +40,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(),
       body: Stack(
         children: [
           // The Flame game widget
@@ -66,11 +68,33 @@ class _GameScreenContentState extends State<_GameScreenContent> {
             ),
           ),
 
-          // Top right HUD for game state
+          // Top right HUD — also listens for a pending intelligence report
+          // and shows it as a proper full-screen overlay (dialog).
           Positioned(
             top: 20,
             right: 20,
-            child: BlocBuilder<GameCubit, GameState>(
+            child: BlocConsumer<GameCubit, GameState>(
+              listenWhen: (previous, current) =>
+                  !previous.isReportPending && current.isReportPending,
+              listener: (context, state) {
+                if (state.currentReport == null) return;
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  barrierColor: Colors.transparent,
+                  builder: (dialogContext) => BlocProvider.value(
+                    value: context.read<GameCubit>(),
+                    child: BlocListener<GameCubit, GameState>(
+                      listenWhen: (previous, current) =>
+                          previous.isReportPending && !current.isReportPending,
+                      listener: (_, _) => Navigator.of(dialogContext).pop(),
+                      child: IntelligenceReportOverlay(
+                        report: state.currentReport!,
+                      ),
+                    ),
+                  ),
+                );
+              },
               buildWhen: (previous, current) =>
                   previous.currentDay != current.currentDay ||
                   previous.remainingTimeInDayInt !=
@@ -98,7 +122,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'TIME: ${12 - (state.remainingTimeInDayInt / 30).toInt()} / 12',
+                        'TIME: ${30 - (state.remainingTimeInDayInt).toInt()} / 30',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'intelligence_report.dart';
 
 /// Represents a citizen in the game world.
 class Citizen extends Equatable {
@@ -61,4 +62,21 @@ class Citizen extends Equatable {
     isInvestigated,
     isDetained,
   ];
+
+  /// Returns the risk score with the daily intelligence modifier applied.
+  /// The base [riskScore] is never mutated — this is a read-only calculation.
+  double effectiveRiskScore(IntelligenceReport? report) {
+    if (report == null) return riskScore;
+    final citizenValue = switch (report.focusCategory) {
+      'ageGroup' => ageGroup,
+      'occupation' => occupation,
+      'religion' => religion,
+      'ethnicity' => ethnicity,
+      _ => null,
+    };
+    if (citizenValue?.toLowerCase() == report.focusValue.toLowerCase()) {
+      return (riskScore + 15.0).clamp(0.0, 100.0);
+    }
+    return riskScore;
+  }
 }

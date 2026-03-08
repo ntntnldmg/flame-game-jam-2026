@@ -1,7 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'game_state.dart';
 import '../models/citizen.dart';
 import '../systems/citizen_generator.dart';
+import '../systems/report_generator.dart';
+import '../consts.dart';
 
 class GameCubit extends Cubit<GameState> {
   // Accumulate dt and only emit state when enough time has elapsed.
@@ -9,13 +12,6 @@ class GameCubit extends Cubit<GameState> {
   // reducing unnecessary BlocBuilder predicate evaluations.
   double _pendingDt = 0.0;
   static const double _emitThreshold = 0.1;
-
-  // 6 minutes per day.
-  static const double _dayDuration = 360.0;
-
-  // Threat starts at 15% and must reach 100% in exactly 2 days of passive play.
-  // That is 85% over 2 × 360s = 720s → 85 / 720 ≈ 0.1181 % per second.
-  static const double _threatRatePerSecond = 85.0 / 720.0;
 
   // Citizens are generated once when the game session starts and persist
   // across day rollovers. Only detaining removes citizens from this pool.
@@ -27,19 +23,29 @@ class GameCubit extends Cubit<GameState> {
       );
 
   void _startNewDay({required int newDay, required double currentThreat}) {
-    // todayCitizens is intentionally omitted so the existing citizen list
-    // carries over unchanged into the next day.
+    // Generate a fresh intelligence report for the incoming day and pause
+    // gameplay until the player acknowledges the briefing.
+    final report = ReportGenerator.generate(newDay);
     emit(
       state.copyWith(
-        remainingTimeInDay: _dayDuration,
+        remainingTimeInDay: Consts.dayDuration,
         currentDay: newDay,
         terroristThreat: currentThreat,
+        currentReport: report,
+        isReportPending: true,
       ),
     );
   }
 
+  /// Resumes gameplay after the player dismisses the intelligence briefing.
+  void acknowledgeReport() {
+    emit(state.copyWith(isReportPending: false));
+  }
+
   /// Updates the time and threat based on delta time (dt).
   void tick(double dt) {
+    // Pause the game loop while the intelligence report overlay is visible.
+    if (state.isReportPending) return;
     if (state.terroristThreat >= 100.0) return;
 
     _pendingDt += dt;
@@ -50,10 +56,8 @@ class GameCubit extends Cubit<GameState> {
 
     double newTime = state.remainingTimeInDay - effectiveDt;
     double newThreat =
-        (state.terroristThreat + _threatRatePerSecond * effectiveDt).clamp(
-          0.0,
-          100.0,
-        );
+        (state.terroristThreat + Consts.threatRatePerSecond * effectiveDt)
+            .clamp(0.0, 100.0);
 
     if (newThreat >= 100.0) {
       // TODO: Handle game over condition
@@ -71,6 +75,8 @@ class GameCubit extends Cubit<GameState> {
 
   /// Action: Detain a citizen.
   /// The citizen remains in the database but is marked as detained.
+  /// Threat impact is evaluated using [effectiveRiskScore], which includes
+  /// the day's intelligence report modifier if the citizen matches.
   void detainCitizen(Citizen citizen) {
     if (citizen.isDetained) return;
 
@@ -83,10 +89,12 @@ class GameCubit extends Cubit<GameState> {
 
     double newThreat = state.terroristThreat;
 
-    // Apply threat rules on detaining
-    if (citizen.riskScore > 60) {
+    // Use effectiveRiskScore so the daily intelligence modifier participates
+    // in the threat calculation without altering the stored base riskScore.
+    final effective = citizen.effectiveRiskScore(state.currentReport);
+    if (effective > 60) {
       newThreat = (newThreat - 10.0).clamp(0.0, 100.0);
-    } else if (citizen.riskScore < 40) {
+    } else if (effective < 40) {
       newThreat = (newThreat + 10.0).clamp(0.0, 100.0);
     }
 
