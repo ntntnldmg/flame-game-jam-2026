@@ -1,10 +1,12 @@
 import 'package:flame/game.dart';
-import 'game_state.dart';
+import 'game_cubit.dart';
 
 /// The main game class extending FlameGame.
 /// Handles the game loop and component management.
 class BigBrotherGame extends FlameGame {
-  final GameState gameState = GameState();
+  final GameCubit gameCubit;
+
+  BigBrotherGame(this.gameCubit);
 
   @override
   Future<void> onLoad() async {
@@ -19,6 +21,6 @@ class BigBrotherGame extends FlameGame {
     super.update(dt);
 
     // Update game state
-    gameState.updateTime(dt);
+    gameCubit.tick(dt);
   }
 }

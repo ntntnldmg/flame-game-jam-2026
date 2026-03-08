@@ -1,73 +1,63 @@
-import 'package:flutter/foundation.dart';
+import 'package:equatable/equatable.dart';
 import '../models/citizen.dart';
-import '../systems/citizen_generator.dart';
 
-/// Represents the global state of the game.
-class GameState extends ChangeNotifier {
-  int currentDay = 1;
-  double terroristThreat = 0.0; // 0.0 to 100.0
-  int detaineeCount = 0;
-  int investigationCount = 0;
-  double _remainingTimeInDay = 60.0; // 60 seconds per day, placeholder
+class GameState extends Equatable {
+  final int currentDay;
+  final double terroristThreat; // 0.0 to 100.0
+  final int detaineeCount;
+  final int investigationCount;
+  final double remainingTimeInDay;
+  final List<Citizen> todayCitizens;
 
-  List<Citizen> todayCitizens = [];
+  const GameState({
+    required this.currentDay,
+    required this.terroristThreat,
+    required this.detaineeCount,
+    required this.investigationCount,
+    required this.remainingTimeInDay,
+    required this.todayCitizens,
+  });
 
-  GameState() {
-    _startNewDay();
+  /// Factory for the initial game state.
+  factory GameState.initial() {
+    return const GameState(
+      currentDay: 1,
+      terroristThreat: 0.0,
+      detaineeCount: 0,
+      investigationCount: 0,
+      remainingTimeInDay: 60.0,
+      todayCitizens: [],
+    );
   }
 
-  int get remainingTimeInDay => _remainingTimeInDay.ceil();
-
-  void _startNewDay() {
-    _remainingTimeInDay = 60.0;
-    todayCitizens = CitizenGenerator.generateDailyCitizens(30);
-    notifyListeners();
+  /// Helper to copy the state with updated fields.
+  GameState copyWith({
+    int? currentDay,
+    double? terroristThreat,
+    int? detaineeCount,
+    int? investigationCount,
+    double? remainingTimeInDay,
+    List<Citizen>? todayCitizens,
+  }) {
+    return GameState(
+      currentDay: currentDay ?? this.currentDay,
+      terroristThreat: terroristThreat ?? this.terroristThreat,
+      detaineeCount: detaineeCount ?? this.detaineeCount,
+      investigationCount: investigationCount ?? this.investigationCount,
+      remainingTimeInDay: remainingTimeInDay ?? this.remainingTimeInDay,
+      todayCitizens: todayCitizens ?? this.todayCitizens,
+    );
   }
 
-  /// Updates the time and threat based on delta time (dt).
-  void updateTime(double dt) {
-    if (terroristThreat >= 100.0 || _remainingTimeInDay <= 0) return;
+  int get remainingTimeInDayInt => remainingTimeInDay.ceil();
 
-    _remainingTimeInDay -= dt;
-    terroristThreat += 1.0 * dt; // Threat increases 1% every second placeholder
-
-    if (terroristThreat >= 100.0) {
-      terroristThreat = 100.0;
-      // TODO: Handle game over condition
-    }
-
-    if (_remainingTimeInDay <= 0) {
-      _remainingTimeInDay = 0;
-      // End of day condition
-      currentDay++;
-      _startNewDay();
-    }
-
-    notifyListeners();
-  }
-
-  /// Action: Detain a citizen.
-  void detainCitizen(Citizen citizen) {
-    detaineeCount++;
-    todayCitizens.remove(citizen);
-
-    // Apply threat rules on detaining
-    if (citizen.riskScore > 60) {
-      terroristThreat = (terroristThreat - 10.0).clamp(0.0, 100.0);
-    } else if (citizen.riskScore < 40) {
-      terroristThreat = (terroristThreat + 10.0).clamp(0.0, 100.0);
-    }
-
-    notifyListeners();
-  }
-
-  /// Action: Investigate a citizen.
-  void investigateCitizen(Citizen citizen) {
-    if (!citizen.isInvestigated) {
-      citizen.isInvestigated = true;
-    }
-
-    investigationCount++;
-    notifyListeners();
-  }
+  @override
+  List<Object?> get props => [
+    currentDay,
+    terroristThreat,
+    detaineeCount,
+    investigationCount,
+    remainingTimeInDay,
+    todayCitizens,
+  ];
 }

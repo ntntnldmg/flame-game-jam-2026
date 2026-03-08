@@ -13,10 +13,24 @@ class IntroScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Big Brother',
-              style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+              'BIG BROTHER',
+              style: TextStyle(
+                fontSize: 64,
+                fontWeight: FontWeight.bold,
+                color: Colors.greenAccent,
+                letterSpacing: 8.0,
+                shadows: [Shadow(color: Colors.green, blurRadius: 10)],
+              ),
             ),
-            const SizedBox(height: 40),
+            const Text(
+              'SYSTEM INITIALIZATION PROGRAM',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.greenAccent,
+                letterSpacing: 4.0,
+              ),
+            ),
+            const SizedBox(height: 60),
             ElevatedButton(
               onPressed: () {
                 // Navigate to the main game screen
@@ -24,7 +38,13 @@ class IntroScreen extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const GameScreen()),
                 );
               },
-              child: const Text('Start Game', style: TextStyle(fontSize: 24)),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+                child: Text(
+                  'ESTABLISH CONNECTION',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
             ),
           ],
         ),

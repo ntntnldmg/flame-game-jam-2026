@@ -1,5 +1,7 @@
+import 'package:equatable/equatable.dart';
+
 /// Represents a citizen in the game world.
-class Citizen {
+class Citizen extends Equatable {
   final String idNumber;
   final String ageGroup;
   final String occupation;
@@ -10,9 +12,9 @@ class Citizen {
   final double riskScore;
 
   /// Track if the player has investigated this citizen
-  bool isInvestigated;
+  final bool isInvestigated;
 
-  Citizen({
+  const Citizen({
     required this.idNumber,
     required this.ageGroup,
     required this.occupation,
@@ -21,4 +23,35 @@ class Citizen {
     required this.riskScore,
     this.isInvestigated = false,
   });
+
+  Citizen copyWith({
+    String? idNumber,
+    String? ageGroup,
+    String? occupation,
+    String? religion,
+    String? ethnicity,
+    double? riskScore,
+    bool? isInvestigated,
+  }) {
+    return Citizen(
+      idNumber: idNumber ?? this.idNumber,
+      ageGroup: ageGroup ?? this.ageGroup,
+      occupation: occupation ?? this.occupation,
+      religion: religion ?? this.religion,
+      ethnicity: ethnicity ?? this.ethnicity,
+      riskScore: riskScore ?? this.riskScore,
+      isInvestigated: isInvestigated ?? this.isInvestigated,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+    idNumber,
+    ageGroup,
+    occupation,
+    religion,
+    ethnicity,
+    riskScore,
+    isInvestigated,
+  ];
 }
