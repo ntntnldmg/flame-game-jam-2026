@@ -1,3 +1,4 @@
+import 'package:bigbrother/consts.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +8,7 @@ import '../game/game_state.dart';
 import 'intro_screen.dart';
 import 'citizen_panel.dart';
 import 'intelligence_report_overlay.dart';
+import 'news_report_overlay.dart';
 
 /// The main screen where the game is rendered.
 class GameScreen extends StatelessWidget {
@@ -75,25 +77,51 @@ class _GameScreenContentState extends State<_GameScreenContent> {
             right: 20,
             child: BlocConsumer<GameCubit, GameState>(
               listenWhen: (previous, current) =>
-                  !previous.isReportPending && current.isReportPending,
+                  (!previous.isNewsReportPending &&
+                      current.isNewsReportPending) ||
+                  (!previous.isReportPending && current.isReportPending),
               listener: (context, state) {
-                if (state.currentReport == null) return;
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  barrierColor: Colors.transparent,
-                  builder: (dialogContext) => BlocProvider.value(
-                    value: context.read<GameCubit>(),
-                    child: BlocListener<GameCubit, GameState>(
-                      listenWhen: (previous, current) =>
-                          previous.isReportPending && !current.isReportPending,
-                      listener: (_, _) => Navigator.of(dialogContext).pop(),
-                      child: IntelligenceReportOverlay(
-                        report: state.currentReport!,
+                if (state.isNewsReportPending &&
+                    state.currentNewsReport != null) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    barrierColor: Colors.transparent,
+                    builder: (dialogContext) => BlocProvider.value(
+                      value: context.read<GameCubit>(),
+                      child: BlocListener<GameCubit, GameState>(
+                        listenWhen: (previous, current) =>
+                            previous.isNewsReportPending &&
+                            !current.isNewsReportPending,
+                        listener: (_, _) => Navigator.of(dialogContext).pop(),
+                        child: NewsReportOverlay(
+                          report: state.currentNewsReport!,
+                        ),
                       ),
                     ),
-                  ),
-                );
+                  );
+                  return;
+                }
+
+                if (state.isReportPending && state.currentReport != null) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    barrierColor: Colors.transparent,
+                    builder: (dialogContext) => BlocProvider.value(
+                      value: context.read<GameCubit>(),
+                      child: BlocListener<GameCubit, GameState>(
+                        listenWhen: (previous, current) =>
+                            previous.isReportPending &&
+                            !current.isReportPending,
+                        listener: (_, _) => Navigator.of(dialogContext).pop(),
+                        child: IntelligenceReportOverlay(
+                          report: state.currentReport!,
+                        ),
+                      ),
+                    ),
+                  );
+                }
               },
               buildWhen: (previous, current) =>
                   previous.currentDay != current.currentDay ||
@@ -122,7 +150,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'TIME: ${30 - (state.remainingTimeInDayInt).toInt()} / 30',
+                        'TIME: ${(Consts.dayDuration - state.remainingTimeInDayInt).toInt()} / ${Consts.dayDuration.toInt()}',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,

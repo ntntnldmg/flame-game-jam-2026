@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'game_state.dart';
 import '../models/citizen.dart';
 import '../systems/citizen_generator.dart';
+import '../systems/news_report_generator.dart';
 import '../systems/report_generator.dart';
 import '../consts.dart';
 
@@ -23,29 +24,43 @@ class GameCubit extends Cubit<GameState> {
       );
 
   void _startNewDay({required int newDay, required double currentThreat}) {
-    // Generate a fresh intelligence report for the incoming day and pause
-    // gameplay until the player acknowledges the briefing.
+    // Generate both daily reports. Flow is:
+    // 1) show news bulletin
+    // 2) show intelligence briefing
+    // 3) resume gameplay
+    final newsReport = NewsReportGenerator.generate(newDay);
     final report = ReportGenerator.generate(newDay);
     emit(
       state.copyWith(
         remainingTimeInDay: Consts.dayDuration,
         currentDay: newDay,
         terroristThreat: currentThreat,
+        currentNewsReport: newsReport,
+        isNewsReportPending: true,
         currentReport: report,
-        isReportPending: true,
+        isReportPending: false,
       ),
     );
   }
 
+  /// Advances from the news bulletin to the intelligence briefing.
+  void acknowledgeNewsReport() {
+    // Emit in two steps so the news dialog closes before the intelligence
+    // dialog is requested by UI listeners.
+    emit(state.copyWith(isNewsReportPending: false, isReportPending: false));
+    emit(state.copyWith(isNewsReportPending: false, isReportPending: true));
+  }
+
   /// Resumes gameplay after the player dismisses the intelligence briefing.
   void acknowledgeReport() {
+    emit(state.copyWith(isNewsReportPending: false, isReportPending: false));
     emit(state.copyWith(isReportPending: false));
   }
 
   /// Updates the time and threat based on delta time (dt).
   void tick(double dt) {
-    // Pause the game loop while the intelligence report overlay is visible.
-    if (state.isReportPending) return;
+    // Pause the game loop while any report overlay is visible.
+    if (state.isNewsReportPending || state.isReportPending) return;
     if (state.terroristThreat >= 100.0) return;
 
     _pendingDt += dt;
