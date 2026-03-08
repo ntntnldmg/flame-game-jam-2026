@@ -17,5 +17,8 @@ class BigBrotherGame extends FlameGame {
   void update(double dt) {
     // Main game loop update
     super.update(dt);
+
+    // Update game state
+    gameState.updateTime(dt);
   }
 }
