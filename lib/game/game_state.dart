@@ -47,13 +47,26 @@ class GameState extends ChangeNotifier {
   }
 
   /// Action: Detain a citizen.
-  void detainCitizen() {
+  void detainCitizen(Citizen citizen) {
     detaineeCount++;
+    todayCitizens.remove(citizen);
+
+    // Apply threat rules on detaining
+    if (citizen.riskScore > 60) {
+      terroristThreat = (terroristThreat - 10.0).clamp(0.0, 100.0);
+    } else if (citizen.riskScore < 40) {
+      terroristThreat = (terroristThreat + 10.0).clamp(0.0, 100.0);
+    }
+
     notifyListeners();
   }
 
   /// Action: Investigate a citizen.
-  void investigateCitizen() {
+  void investigateCitizen(Citizen citizen) {
+    if (!citizen.isInvestigated) {
+      citizen.isInvestigated = true;
+    }
+
     investigationCount++;
     notifyListeners();
   }

@@ -9,6 +9,9 @@ class Citizen {
   /// Hidden from player
   final double riskScore;
 
+  /// Track if the player has investigated this citizen
+  bool isInvestigated;
+
   Citizen({
     required this.idNumber,
     required this.ageGroup,
@@ -16,5 +19,6 @@ class Citizen {
     required this.religion,
     required this.ethnicity,
     required this.riskScore,
+    this.isInvestigated = false,
   });
 }

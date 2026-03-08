@@ -58,58 +58,75 @@ class CitizenPanel extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Citizen Details: ${citizen.idNumber}'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Age Group: ${citizen.ageGroup}'),
-              Text('Occupation: ${citizen.occupation}'),
-              Text('Religion: ${citizen.religion}'),
-              Text('Ethnicity: ${citizen.ethnicity}'),
-              const SizedBox(height: 20),
-              // Risk score deliberately omitted from player view
-              const Text(
-                'Actions:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        return AnimatedBuilder(
+          animation: gameState,
+          builder: (context, child) {
+            return AlertDialog(
+              title: Text('Citizen Details: ${citizen.idNumber}'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      gameState.investigateCitizen();
-                      Navigator.of(context).pop();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
+                  Text('Age Group: ${citizen.ageGroup}'),
+                  Text('Occupation: ${citizen.occupation}'),
+                  Text('Religion: ${citizen.religion}'),
+                  Text('Ethnicity: ${citizen.ethnicity}'),
+                  const SizedBox(height: 10),
+                  if (citizen.isInvestigated)
+                    Text(
+                      'Estimated Risk: ${citizen.riskScore.toStringAsFixed(1)}%',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: citizen.riskScore > 60
+                            ? Colors.red
+                            : Colors.green,
+                      ),
                     ),
-                    child: const Text('Investigate'),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Actions:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      gameState.detainCitizen();
-                      Navigator.of(context).pop();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                    ),
-                    child: const Text('Detain'),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: citizen.isInvestigated
+                            ? null
+                            : () {
+                                gameState.investigateCitizen(citizen);
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                        ),
+                        child: const Text('Investigate'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          gameState.detainCitizen(citizen);
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        child: const Text('Detain'),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
-            ),
-          ],
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Close'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
