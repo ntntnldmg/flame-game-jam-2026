@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+
+import '../consts.dart';
 import 'intelligence_report.dart';
 
 /// Represents a citizen in the game world.
@@ -75,8 +77,27 @@ class Citizen extends Equatable {
       _ => null,
     };
     if (citizenValue?.toLowerCase() == report.focusValue.toLowerCase()) {
-      return (riskScore + 15.0).clamp(0.0, 100.0);
+      return (riskScore + Consts.intelligenceRiskModifier).clamp(
+        Consts.minThreatLevel,
+        Consts.maxThreatLevel,
+      );
     }
     return riskScore;
+  }
+
+  @override
+  String toString() {
+    return '''
+{
+  idNumber: $idNumber,
+  ageGroup: $ageGroup,
+  occupation: $occupation,
+  religion: $religion,
+  ethnicity: $ethnicity,
+  riskScore: $riskScore,
+  isInvestigated: $isInvestigated,
+  isDetained: $isDetained
+}
+''';
   }
 }

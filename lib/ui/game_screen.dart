@@ -160,7 +160,8 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                       Text(
                         'THREAT LEVEL: ${state.terroristThreat.toStringAsFixed(1)}%',
                         style: TextStyle(
-                          color: state.terroristThreat > 80
+                          color:
+                              state.terroristThreat > Consts.threatWarningLevel
                               ? Colors.redAccent
                               : Colors.greenAccent,
                           fontSize: 18,

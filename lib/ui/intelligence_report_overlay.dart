@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../consts.dart';
 import '../game/game_cubit.dart';
 import '../models/intelligence_report.dart';
 
@@ -142,8 +144,8 @@ class IntelligenceReportOverlay extends StatelessWidget {
                     size: 16,
                   ),
                   const SizedBox(width: 8),
-                  const Text(
-                    '+15 RISK MODIFIER applied to matching citizens this cycle.',
+                  Text(
+                    '+${Consts.intelligenceRiskModifier.toInt()} RISK MODIFIER applied to matching citizens this cycle.',
                     style: TextStyle(
                       color: Colors.orange,
                       fontSize: 13,

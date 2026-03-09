@@ -1,4 +1,6 @@
 import 'dart:math';
+
+import '../consts.dart';
 import '../models/citizen.dart';
 
 class CitizenGenerator {
@@ -44,15 +46,18 @@ class CitizenGenerator {
   static List<Citizen> generateDailyCitizens(int count) {
     List<Citizen> citizens = [];
     for (int i = 0; i < count; i++) {
-      String idNumber = 'ID-${_random.nextInt(90000) + 10000}';
+      String idNumber =
+          'ID-${_random.nextInt(Consts.citizenIdRange) + Consts.citizenIdBase}';
 
       // Risk score: most are low risk (0-30), some high risk (70-100)
       double riskScore;
-      if (_random.nextDouble() < 0.15) {
+      if (_random.nextDouble() < Consts.generatedHighRiskChance) {
         // 15% chance of high risk
-        riskScore = 70.0 + _random.nextDouble() * 30.0;
+        riskScore =
+            Consts.generatedHighRiskMin +
+            _random.nextDouble() * Consts.generatedHighRiskRange;
       } else {
-        riskScore = _random.nextDouble() * 30.0;
+        riskScore = _random.nextDouble() * Consts.generatedLowRiskMax;
       }
 
       citizens.add(

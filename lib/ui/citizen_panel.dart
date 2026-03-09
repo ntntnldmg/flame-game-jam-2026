@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../consts.dart';
 import '../models/citizen.dart';
 import '../game/game_state.dart';
 import '../game/game_cubit.dart';
@@ -165,7 +166,7 @@ class _CitizenDetailDialogState extends State<_CitizenDetailDialog> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: widget.citizen.riskScore > 60
+                color: widget.citizen.riskScore > Consts.detainGoodThreshold
                     ? Colors.red
                     : Colors.greenAccent,
               ),
