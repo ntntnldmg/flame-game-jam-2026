@@ -1,6 +1,6 @@
 class Consts {
   // --- Core progression ---
-  static const double dayDuration = 300.0;
+  static const double dayDuration = 5.0;
   static const double minThreatLevel = 0.0;
   static const double maxThreatLevel = 100.0;
 

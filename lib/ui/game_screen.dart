@@ -3,6 +3,7 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../audio/audio_settings.dart';
 import '../game/big_brother_game.dart';
 import '../game/game_cubit.dart';
 import '../game/game_state.dart';
@@ -49,6 +50,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
 
   Future<void> _startGameplayMusic() async {
     if (_isGameplayMusicActive) return;
+    if (!AudioSettings.isEnabled) return;
     final requestId = ++_gameplayMusicRequestId;
 
     Future<bool> tryPlayOnce() async {
@@ -87,7 +89,8 @@ class _GameScreenContentState extends State<_GameScreenContent> {
   }
 
   void _syncGameplayMusic(GameState state) {
-    final shouldPlay = state.hasStartedGame && !state.isGameOver;
+    final shouldPlay =
+        AudioSettings.isEnabled && state.hasStartedGame && !state.isGameOver;
     if (shouldPlay) {
       _startGameplayMusic();
     } else {

@@ -2,6 +2,7 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../audio/audio_settings.dart';
 import '../game/game_cubit.dart';
 import '../game/game_state.dart';
 import 'game_screen.dart';
@@ -17,7 +18,6 @@ class IntroScreen extends StatefulWidget {
 enum _IntroPhase { soundPrompt, emptyLeadIn, credits, titleOnly, menu }
 
 class _IntroScreenState extends State<IntroScreen> {
-  static bool? _globalSoundEnabled;
   static int _openingMusicRequestId = 0;
 
   _IntroPhase _phase = _IntroPhase.soundPrompt;
@@ -39,8 +39,8 @@ class _IntroScreenState extends State<IntroScreen> {
   void initState() {
     super.initState();
     // First app startup asks for interaction to unlock browser audio.
-    if (_globalSoundEnabled != null) {
-      _soundEnabled = _globalSoundEnabled!;
+    if (AudioSettings.hasPreference) {
+      _soundEnabled = AudioSettings.isEnabled;
       _phase = _IntroPhase.menu;
       if (_soundEnabled) {
         _startOpeningMusic();
@@ -73,13 +73,14 @@ class _IntroScreenState extends State<IntroScreen> {
       }
       // Unsupported codec or other failure; continue without music.
       _soundEnabled = false;
+      AudioSettings.setEnabled(false);
       debugPrint('Opening music unavailable: $error');
     }
   }
 
   Future<void> _beginOpeningSequence({required bool enableSound}) async {
     _soundEnabled = enableSound;
-    _globalSoundEnabled = enableSound;
+    AudioSettings.setEnabled(enableSound);
 
     _setPhase(_IntroPhase.emptyLeadIn);
     await Future.delayed(const Duration(milliseconds: 580));
@@ -127,6 +128,58 @@ class _IntroScreenState extends State<IntroScreen> {
   void _setPhase(_IntroPhase value) {
     if (!mounted) return;
     setState(() => _phase = value);
+  }
+
+  Future<void> _openSettings() async {
+    bool tempSoundEnabled = _soundEnabled;
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('SETTINGS'),
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Audio'),
+                  Switch(
+                    value: tempSoundEnabled,
+                    onChanged: (value) {
+                      setDialogState(() => tempSoundEnabled = value);
+                    },
+                    activeThumbColor: Colors.greenAccent,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                  child: const Text('CANCEL'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(true),
+                  child: const Text('APPLY'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (result != true || !mounted) return;
+
+    setState(() {
+      _soundEnabled = tempSoundEnabled;
+    });
+    AudioSettings.setEnabled(tempSoundEnabled);
+
+    if (_soundEnabled) {
+      await _startOpeningMusic();
+    } else {
+      await FlameAudio.bgm.stop();
+    }
   }
 
   @override
@@ -230,6 +283,8 @@ class _IntroScreenState extends State<IntroScreen> {
                       );
                     },
                   ),
+                  const SizedBox(height: 20),
+                  _MenuButton(label: 'Settings', onPressed: _openSettings),
                 ],
               ],
             ),
