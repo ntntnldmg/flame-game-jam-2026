@@ -6,7 +6,7 @@ import '../game/big_brother_game.dart';
 import '../game/game_cubit.dart';
 import '../game/game_state.dart';
 import 'intro_screen.dart';
-import 'citizen_panel.dart';
+import 'resident_panel.dart';
 import 'cctv_overlay.dart';
 import 'intelligence_report_overlay.dart';
 import 'news_report_overlay.dart';
@@ -18,7 +18,7 @@ class GameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // GameCubit is provided at the app root (main.dart) so that state —
-    // including citizens — persists even when navigating back to IntroScreen.
+    // including residents — persists even when navigating back to IntroScreen.
     return const _GameScreenContent();
   }
 }
@@ -49,13 +49,13 @@ class _GameScreenContentState extends State<_GameScreenContent> {
           // The Flame game widget
           Positioned.fill(child: GameWidget(game: _game)),
 
-          // Left side citizen panel
-          const Positioned(top: 0, bottom: 0, left: 0, child: CitizenPanel()),
+          // Left side resident panel
+          const Positioned(top: 0, bottom: 0, left: 0, child: ResidentPanel()),
 
           // Top left controls
           Positioned(
             top: 20,
-            left: 320, // Moved to the right of the citizen panel
+            left: 320, // Moved to the right of the resident panel
             child: IconButton(
               icon: const Icon(
                 Icons.power_settings_new,
@@ -178,7 +178,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'THREAT LEVEL: ${state.terroristThreat.toStringAsFixed(1)}%',
+                        'TERRORIST THREAT: ${state.terroristThreat.toStringAsFixed(1)}%',
                         style: TextStyle(
                           color:
                               state.terroristThreat > Consts.threatWarningLevel

@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../consts.dart';
-import '../models/citizen.dart';
-import '../game/game_state.dart';
-import '../game/game_cubit.dart';
 
-class CitizenPanel extends StatelessWidget {
-  const CitizenPanel({super.key});
+import '../consts.dart';
+import '../game/game_cubit.dart';
+import '../game/game_state.dart';
+import '../models/resident.dart';
+
+class ResidentPanel extends StatelessWidget {
+  const ResidentPanel({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GameCubit, GameState>(
       buildWhen: (previous, current) =>
-          previous.todayCitizens != current.todayCitizens,
+          previous.todayResidents != current.todayResidents,
       builder: (context, state) {
         return Container(
           width: 300,
@@ -34,7 +35,7 @@ class CitizenPanel extends StatelessWidget {
                 ),
                 width: double.infinity,
                 child: const Text(
-                  'CITIZEN DATABASE //',
+                  'RESIDENT DATABASE //',
                   style: TextStyle(
                     color: Colors.greenAccent,
                     fontSize: 18,
@@ -46,16 +47,16 @@ class CitizenPanel extends StatelessWidget {
               Expanded(
                 child: Builder(
                   builder: (context) {
-                    // Free citizens first, detained at the bottom.
+                    // Free residents first, detained at the bottom.
                     final sorted = [
-                      ...state.todayCitizens.where((c) => !c.isDetained),
-                      ...state.todayCitizens.where((c) => c.isDetained),
+                      ...state.todayResidents.where((r) => !r.isDetained),
+                      ...state.todayResidents.where((r) => r.isDetained),
                     ];
                     return ListView.builder(
                       itemCount: sorted.length,
                       itemBuilder: (context, index) {
-                        final citizen = sorted[index];
-                        final dimmed = citizen.isDetained;
+                        final resident = sorted[index];
+                        final dimmed = resident.isDetained;
                         return ListTile(
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16.0,
@@ -65,7 +66,7 @@ class CitizenPanel extends StatelessWidget {
                             bottom: BorderSide(color: Colors.white10),
                           ),
                           title: Text(
-                            'ID: ${citizen.idNumber}',
+                            '${resident.id}  ${resident.name.toUpperCase()}',
                             style: TextStyle(
                               color: dimmed
                                   ? Colors.white30
@@ -75,13 +76,13 @@ class CitizenPanel extends StatelessWidget {
                           ),
                           subtitle: Text(
                             dimmed
-                                ? '[DETAINED] ${citizen.occupation.toUpperCase()}'
-                                : '${citizen.occupation.toUpperCase()} // AGE: ${citizen.ageGroup}',
+                                ? '[DETAINED] ${resident.occupation.toUpperCase()}'
+                                : '${resident.occupation.toUpperCase()} // ${resident.district.toUpperCase()}',
                             style: TextStyle(
                               color: dimmed ? Colors.white24 : Colors.white70,
                             ),
                           ),
-                          onTap: () => _showCitizenDetails(context, citizen),
+                          onTap: () => _showResidentDetails(context, resident),
                         );
                       },
                     );
@@ -95,79 +96,65 @@ class CitizenPanel extends StatelessWidget {
     );
   }
 
-  void _showCitizenDetails(BuildContext context, Citizen citizen) {
+  void _showResidentDetails(BuildContext context, Resident resident) {
     if (context.read<GameCubit>().state.isCctvEventPending) return;
     final cubit = context.read<GameCubit>();
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return _CitizenDetailDialog(citizen: citizen, cubit: cubit);
+        return _ResidentDetailDialog(resident: resident, cubit: cubit);
       },
     );
   }
 }
 
-/// A fully self-contained dialog that does NOT subscribe to the BLoC stream.
-/// Local state is managed via [setState], keeping it isolated from the
-/// 60fps Flame game loop which would otherwise cause Flutter Web to crash.
-class _CitizenDetailDialog extends StatefulWidget {
-  final Citizen citizen;
+class _ResidentDetailDialog extends StatefulWidget {
+  final Resident resident;
   final GameCubit cubit;
 
-  const _CitizenDetailDialog({required this.citizen, required this.cubit});
+  const _ResidentDetailDialog({required this.resident, required this.cubit});
 
   @override
-  State<_CitizenDetailDialog> createState() => _CitizenDetailDialogState();
+  State<_ResidentDetailDialog> createState() => _ResidentDetailDialogState();
 }
 
-class _CitizenDetailDialogState extends State<_CitizenDetailDialog> {
+class _ResidentDetailDialogState extends State<_ResidentDetailDialog> {
   late bool _isInvestigated;
   late bool _isDetained;
 
   @override
   void initState() {
     super.initState();
-    _isInvestigated = widget.citizen.isInvestigated;
-    _isDetained = widget.citizen.isDetained;
+    _isInvestigated = widget.resident.isInvestigated;
+    _isDetained = widget.resident.isDetained;
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Citizen Details: ${widget.citizen.idNumber}'),
+      title: Text('Resident Details: ${widget.resident.id}'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Text(
-                'STATUS: ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                _isDetained ? 'DETAINED' : 'FREE',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: _isDetained ? Colors.redAccent : Colors.greenAccent,
-                  letterSpacing: 2,
-                ),
-              ),
-            ],
+          Text('ID: ${widget.resident.id}'),
+          Text('Name: ${widget.resident.name}'),
+          Text('Sex: ${widget.resident.sex}'),
+          Text('Age: ${widget.resident.age}'),
+          Text(
+            'Address: ${widget.resident.street}, ${widget.resident.district}',
           ),
-          const SizedBox(height: 10),
-          Text('Age Group: ${widget.citizen.ageGroup}'),
-          Text('Occupation: ${widget.citizen.occupation}'),
-          Text('Religion: ${widget.citizen.religion}'),
-          Text('Ethnicity: ${widget.citizen.ethnicity}'),
+          Text('Phone: ${widget.resident.phoneNumber}'),
+          Text('Occupation: ${widget.resident.occupation}'),
+          Text('Status: ${_isDetained ? 'DETAINED' : 'FREE'}'),
           const SizedBox(height: 10),
           if (_isInvestigated)
             Text(
-              'Estimated Risk: ${widget.citizen.riskScore.toStringAsFixed(1)}%',
+              'Estimated Risk: ${widget.resident.riskScore.toStringAsFixed(1)}%',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: widget.citizen.riskScore > Consts.detainGoodThreshold
+                color: widget.resident.riskScore > Consts.detainGoodThreshold
                     ? Colors.red
                     : Colors.greenAccent,
               ),
@@ -179,11 +166,10 @@ class _CitizenDetailDialogState extends State<_CitizenDetailDialog> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
-                // Disabled if already investigated or detained
                 onPressed: (_isInvestigated || _isDetained)
                     ? null
                     : () {
-                        widget.cubit.investigateCitizen(widget.citizen);
+                        widget.cubit.investigateResident(widget.resident);
                         setState(() => _isInvestigated = true);
                       },
                 style: ElevatedButton.styleFrom(
@@ -196,7 +182,7 @@ class _CitizenDetailDialogState extends State<_CitizenDetailDialog> {
                 onPressed: _isDetained
                     ? null
                     : () {
-                        widget.cubit.detainCitizen(widget.citizen);
+                        widget.cubit.detainResident(widget.resident);
                         setState(() => _isDetained = true);
                       },
                 style: ElevatedButton.styleFrom(

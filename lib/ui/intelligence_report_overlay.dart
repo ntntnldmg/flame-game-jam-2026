@@ -15,10 +15,10 @@ class IntelligenceReportOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categoryLabel = switch (report.focusCategory) {
-      'ageGroup' => 'AGE GROUP',
+      'age' => 'AGE',
       'occupation' => 'OCCUPATION',
-      'religion' => 'RELIGION',
-      'ethnicity' => 'ETHNICITY',
+      'sex' => 'SEX',
+      'district' => 'DISTRICT',
       _ => report.focusCategory.toUpperCase(),
     };
 
@@ -145,7 +145,7 @@ class IntelligenceReportOverlay extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '+${Consts.intelligenceRiskModifier.toInt()} RISK MODIFIER applied to matching citizens this cycle.',
+                    '+${Consts.intelligenceRiskModifier.toInt()} RISK MODIFIER applied to matching residents this cycle.',
                     style: TextStyle(
                       color: Colors.orange,
                       fontSize: 13,

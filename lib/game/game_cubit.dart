@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'game_state.dart';
-import '../models/citizen.dart';
-import '../systems/citizen_generator.dart';
+import '../models/resident.dart';
+import '../systems/resident_generator.dart';
 import '../systems/news_report_generator.dart';
 import '../systems/report_generator.dart';
 import '../consts.dart';
@@ -24,13 +24,13 @@ class GameCubit extends Cubit<GameState> {
   double _highRiskPressureAccumulator = 0.0;
   int _sampledHighRiskFreeCount = 0;
 
-  // Citizens are generated once when the game session starts and persist
-  // across day rollovers. Only detaining removes citizens from this pool.
+  // Residents are generated once when the game session starts and persist
+  // across day rollovers. Only detaining removes residents from this pool.
   GameCubit()
     : super(
         GameState.initial().copyWith(
-          todayCitizens: CitizenGenerator.generateDailyCitizens(
-            Consts.citizensPerDay,
+          todayResidents: ResidentGenerator.generateDailyResidents(
+            Consts.residentsPerDay,
           ),
         ),
       );
@@ -77,8 +77,9 @@ class GameCubit extends Cubit<GameState> {
     // Pause the game loop while any report overlay is visible.
     if (state.isNewsReportPending ||
         state.isReportPending ||
-        state.isCctvEventPending)
+        state.isCctvEventPending) {
       return;
+    }
     if (state.terroristThreat >= Consts.maxThreatLevel) return;
 
     _pendingDt += dt;
@@ -101,26 +102,26 @@ class GameCubit extends Cubit<GameState> {
       return;
     }
 
-    final updatedCitizens = List<Citizen>.from(state.todayCitizens);
+    final updatedResidents = List<Resident>.from(state.todayResidents);
     _riskDriftAccumulator += effectiveDt;
     while (_riskDriftAccumulator >= Consts.riskDriftIntervalSeconds) {
       _riskDriftAccumulator -= Consts.riskDriftIntervalSeconds;
-      _applyRiskDrift(updatedCitizens);
+      _applyRiskDrift(updatedResidents);
     }
 
-    // Sample how many high-risk citizens remain free every 5 seconds.
+    // Sample how many high-risk residents remain free every 5 seconds.
     _highRiskPressureAccumulator += effectiveDt;
     while (_highRiskPressureAccumulator >=
         Consts.highRiskPressureCheckIntervalSeconds) {
       _highRiskPressureAccumulator -=
           Consts.highRiskPressureCheckIntervalSeconds;
-      _sampledHighRiskFreeCount = _countHighRiskFreeCitizens(updatedCitizens);
+      _sampledHighRiskFreeCount = _countHighRiskFreeResidents(updatedResidents);
     }
 
     if (_sampledHighRiskFreeCount > Consts.highRiskPressureTriggerCount) {
       final hiddenThreatRate =
           Consts.highRiskPressureBasePerSecond +
-          (Consts.highRiskPressurePerCitizenPerSecond *
+          (Consts.highRiskPressurePerResidentPerSecond *
               _sampledHighRiskFreeCount);
       newThreat = (newThreat + hiddenThreatRate * effectiveDt).clamp(
         Consts.minThreatLevel,
@@ -132,32 +133,32 @@ class GameCubit extends Cubit<GameState> {
       state.copyWith(
         remainingTimeInDay: newTime,
         terroristThreat: newThreat,
-        todayCitizens: updatedCitizens,
+        todayResidents: updatedResidents,
       ),
     );
   }
 
-  void _applyRiskDrift(List<Citizen> citizens) {
-    if (citizens.isEmpty) return;
+  void _applyRiskDrift(List<Resident> residents) {
+    if (residents.isEmpty) return;
 
-    final sampleSize = citizens.length < Consts.riskDriftSampleSize
-        ? citizens.length
+    final sampleSize = residents.length < Consts.riskDriftSampleSize
+        ? residents.length
         : Consts.riskDriftSampleSize;
-    final shuffledIndices = List<int>.generate(citizens.length, (i) => i)
+    final shuffledIndices = List<int>.generate(residents.length, (i) => i)
       ..shuffle(_random);
     final selectedIndices = shuffledIndices.take(sampleSize);
 
-    // Keep >70 risk citizens uncommon by capping them around ~10% of the pool.
-    final maxHighRisk = citizens.length < 10
+    // Keep >70 risk residents uncommon by capping them around ~10% of the pool.
+    final maxHighRisk = residents.length < 10
         ? Consts.highRiskCapMinCount
-        : (citizens.length * Consts.highRiskCapRatio).ceil();
-    int highRiskCount = citizens
+        : (residents.length * Consts.highRiskCapRatio).ceil();
+    int highRiskCount = residents
         .where((c) => c.riskScore > Consts.highRiskThreshold)
         .length;
 
     for (final index in selectedIndices) {
-      final citizen = citizens[index];
-      final current = citizen.riskScore;
+      final resident = residents[index];
+      final current = resident.riskScore;
 
       var delta = _random.nextBool()
           ? Consts.riskDriftStep
@@ -172,7 +173,7 @@ class GameCubit extends Cubit<GameState> {
         }
       }
 
-      // Nudge existing high-risk citizens downward more often to keep rarity.
+      // Nudge existing high-risk residents downward more often to keep rarity.
       if (current > Consts.highRiskThreshold &&
           _random.nextDouble() < Consts.driftHighRiskReductionChance) {
         delta = -Consts.riskDriftStep;
@@ -187,12 +188,12 @@ class GameCubit extends Cubit<GameState> {
       if (!wasHigh && isHigh) highRiskCount += 1;
       if (wasHigh && !isHigh) highRiskCount -= 1;
 
-      citizens[index] = citizen.copyWith(riskScore: next);
+      residents[index] = resident.copyWith(riskScore: next);
     }
   }
 
-  int _countHighRiskFreeCitizens(List<Citizen> citizens) {
-    return citizens
+  int _countHighRiskFreeResidents(List<Resident> residents) {
+    return residents
         .where((c) => !c.isDetained && c.riskScore > Consts.highRiskThreshold)
         .length;
   }
@@ -215,15 +216,15 @@ class GameCubit extends Cubit<GameState> {
     emit(state.copyWith(isCctvEventPending: false, terroristThreat: newThreat));
   }
 
-  /// Action: Detain a citizen.
-  /// The citizen remains in the database but is marked as detained.
+  /// Action: Detain a resident.
+  /// The resident remains in the database but is marked as detained.
   /// Threat impact is evaluated using [effectiveRiskScore], which includes
-  /// the day's intelligence report modifier if the citizen matches.
-  void detainCitizen(Citizen citizen) {
-    if (citizen.isDetained) return;
+  /// the day's intelligence report modifier if the resident matches.
+  void detainResident(Resident resident) {
+    if (resident.isDetained) return;
 
-    final updatedCitizens = state.todayCitizens.map((c) {
-      if (c.idNumber == citizen.idNumber) {
+    final updatedResidents = state.todayResidents.map((c) {
+      if (c.id == resident.id) {
         return c.copyWith(isDetained: true);
       }
       return c;
@@ -233,7 +234,7 @@ class GameCubit extends Cubit<GameState> {
 
     // Use effectiveRiskScore so the daily intelligence modifier participates
     // in the threat calculation without altering the stored base riskScore.
-    final effective = citizen.effectiveRiskScore(state.currentReport);
+    final effective = resident.effectiveRiskScore(state.currentReport);
     if (effective > Consts.detainGoodThreshold) {
       newThreat = (newThreat - Consts.detainThreatDelta).clamp(
         Consts.minThreatLevel,
@@ -249,17 +250,17 @@ class GameCubit extends Cubit<GameState> {
     emit(
       state.copyWith(
         detaineeCount: state.detaineeCount + 1,
-        todayCitizens: updatedCitizens,
+        todayResidents: updatedResidents,
         terroristThreat: newThreat,
       ),
     );
   }
 
-  /// Action: Investigate a citizen.
-  void investigateCitizen(Citizen citizen) {
-    if (!citizen.isInvestigated) {
-      final updatedCitizens = state.todayCitizens.map((c) {
-        if (c.idNumber == citizen.idNumber) {
+  /// Action: Investigate a resident.
+  void investigateResident(Resident resident) {
+    if (!resident.isInvestigated) {
+      final updatedResidents = state.todayResidents.map((c) {
+        if (c.id == resident.id) {
           return c.copyWith(isInvestigated: true);
         }
         return c;
@@ -268,7 +269,7 @@ class GameCubit extends Cubit<GameState> {
       emit(
         state.copyWith(
           investigationCount: state.investigationCount + 1,
-          todayCitizens: updatedCitizens,
+          todayResidents: updatedResidents,
         ),
       );
     }

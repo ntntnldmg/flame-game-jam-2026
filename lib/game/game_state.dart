@@ -1,6 +1,6 @@
 import 'package:bigbrother/consts.dart';
 import 'package:equatable/equatable.dart';
-import '../models/citizen.dart';
+import '../models/resident.dart';
 import '../models/intelligence_report.dart';
 import '../models/news_report.dart';
 
@@ -10,7 +10,7 @@ class GameState extends Equatable {
   final int detaineeCount;
   final int investigationCount;
   final double remainingTimeInDay;
-  final List<Citizen> todayCitizens;
+  final List<Resident> todayResidents;
 
   /// The active intelligence briefing for the current day. Null on day 1.
   final IntelligenceReport? currentReport;
@@ -34,7 +34,7 @@ class GameState extends Equatable {
     required this.detaineeCount,
     required this.investigationCount,
     required this.remainingTimeInDay,
-    required this.todayCitizens,
+    required this.todayResidents,
     this.currentReport,
     this.currentNewsReport,
     this.isNewsReportPending = false,
@@ -50,7 +50,7 @@ class GameState extends Equatable {
       detaineeCount: 0,
       investigationCount: 0,
       remainingTimeInDay: Consts.dayDuration,
-      todayCitizens: [],
+      todayResidents: [],
     );
   }
 
@@ -61,7 +61,7 @@ class GameState extends Equatable {
     int? detaineeCount,
     int? investigationCount,
     double? remainingTimeInDay,
-    List<Citizen>? todayCitizens,
+    List<Resident>? todayResidents,
     IntelligenceReport? currentReport,
     NewsReport? currentNewsReport,
     bool? isNewsReportPending,
@@ -74,7 +74,7 @@ class GameState extends Equatable {
       detaineeCount: detaineeCount ?? this.detaineeCount,
       investigationCount: investigationCount ?? this.investigationCount,
       remainingTimeInDay: remainingTimeInDay ?? this.remainingTimeInDay,
-      todayCitizens: todayCitizens ?? this.todayCitizens,
+      todayResidents: todayResidents ?? this.todayResidents,
       currentReport: currentReport ?? this.currentReport,
       currentNewsReport: currentNewsReport ?? this.currentNewsReport,
       isNewsReportPending: isNewsReportPending ?? this.isNewsReportPending,
@@ -92,7 +92,7 @@ class GameState extends Equatable {
     detaineeCount,
     investigationCount,
     remainingTimeInDay,
-    todayCitizens,
+    todayResidents,
     currentReport,
     currentNewsReport,
     isNewsReportPending,

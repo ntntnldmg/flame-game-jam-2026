@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 /// A daily intelligence briefing claiming a demographic has links to terrorism.
-/// Causes a temporary +15 effective risk modifier on matching citizens for the day.
+/// Causes a temporary +15 effective risk modifier on matching residents for the day.
 class IntelligenceReport extends Equatable {
   final int day;
 

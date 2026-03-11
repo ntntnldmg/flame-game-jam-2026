@@ -9,13 +9,13 @@ class Consts {
   /// That is 85% over 2 × [dayDuration] seconds.
   static const double threatRatePerSecond = 85.0 / (dayDuration * 2);
 
-  /// The initial threat level for when the game starts
+  /// The initial terrorist threat value when the game starts.
   static const double initialThreatLevel = 15.0;
 
-  // --- Citizen generation ---
-  static const int citizensPerDay = 30;
-  static const int citizenIdBase = 10000;
-  static const int citizenIdRange = 90000;
+  // --- Resident generation ---
+  static const int residentsPerDay = 30;
+  static const int residentIdBase = 10000;
+  static const int residentIdRange = 90000;
   static const double generatedHighRiskChance = 0.15;
   static const double generatedHighRiskMin = 70.0;
   static const double generatedHighRiskRange = 30.0;
@@ -46,7 +46,7 @@ class Consts {
   static const double highRiskPressureCheckIntervalSeconds = 5.0;
   static const int highRiskPressureTriggerCount = 2;
   static const double highRiskPressureBasePerSecond = 0.118;
-  static const double highRiskPressurePerCitizenPerSecond = 0.05;
+  static const double highRiskPressurePerResidentPerSecond = 0.05;
 
   // --- CCTV surveillance event ---
   static const double cctvMinIntervalSeconds = 25.0;
