@@ -18,6 +18,7 @@ enum _IntroPhase { soundPrompt, emptyLeadIn, credits, titleOnly, menu }
 
 class _IntroScreenState extends State<IntroScreen> {
   static bool? _globalSoundEnabled;
+  static int _openingMusicRequestId = 0;
 
   _IntroPhase _phase = _IntroPhase.soundPrompt;
   bool _soundEnabled = false;
@@ -41,13 +42,39 @@ class _IntroScreenState extends State<IntroScreen> {
     if (_globalSoundEnabled != null) {
       _soundEnabled = _globalSoundEnabled!;
       _phase = _IntroPhase.menu;
+      if (_soundEnabled) {
+        _startOpeningMusic();
+      }
     }
   }
 
-  @override
-  void dispose() {
-    FlameAudio.bgm.stop();
-    super.dispose();
+  Future<void> _startOpeningMusic() async {
+    final requestId = ++_openingMusicRequestId;
+    try {
+      await FlameAudio.bgm.stop();
+      await FlameAudio.bgm.play('opening.ogg');
+    } catch (error) {
+      if (!mounted || requestId != _openingMusicRequestId || !_soundEnabled) {
+        return;
+      }
+      // Common on web during route transitions when play() is interrupted.
+      if (error.toString().contains('AbortError')) {
+        await Future.delayed(const Duration(milliseconds: 220));
+        if (!mounted || requestId != _openingMusicRequestId || !_soundEnabled) {
+          return;
+        }
+        try {
+          await FlameAudio.bgm.stop();
+          await FlameAudio.bgm.play('opening.ogg');
+          return;
+        } catch (_) {
+          // Fall through to generic handler below.
+        }
+      }
+      // Unsupported codec or other failure; continue without music.
+      _soundEnabled = false;
+      debugPrint('Opening music unavailable: $error');
+    }
   }
 
   Future<void> _beginOpeningSequence({required bool enableSound}) async {
@@ -59,15 +86,7 @@ class _IntroScreenState extends State<IntroScreen> {
 
     if (!mounted) return;
     if (_soundEnabled) {
-      try {
-        await FlameAudio.bgm.stop();
-        await FlameAudio.bgm.play('opening.ogg');
-      } catch (error) {
-        // Some web targets cannot decode .ogg depending on browser codecs.
-        // Keep intro flow running even if music fails to start.
-        _soundEnabled = false;
-        debugPrint('Opening music unavailable: $error');
-      }
+      await _startOpeningMusic();
     }
 
     _setPhase(_IntroPhase.credits);
