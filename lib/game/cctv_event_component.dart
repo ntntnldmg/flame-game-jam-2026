@@ -15,6 +15,7 @@ class CCTVEventComponent extends Component {
   final GameCubit _gameCubit;
   double _accumulator = 0;
   late double _nextTrigger;
+  bool _wasGameOver = false;
 
   CCTVEventComponent(this._gameCubit) {
     _nextTrigger = _randomInterval();
@@ -24,6 +25,16 @@ class CCTVEventComponent extends Component {
   void update(double dt) {
     if (_gameCubit.isClosed) return;
     final s = _gameCubit.state;
+    if (!s.hasStartedGame) return;
+    if (s.isGameOver) {
+      _wasGameOver = true;
+      return;
+    }
+    if (_wasGameOver) {
+      _wasGameOver = false;
+      _accumulator = 0;
+      _nextTrigger = _randomInterval();
+    }
     if (s.isNewsReportPending || s.isReportPending || s.isCctvEventPending) {
       return;
     }

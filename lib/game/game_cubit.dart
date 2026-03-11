@@ -24,16 +24,35 @@ class GameCubit extends Cubit<GameState> {
   double _highRiskPressureAccumulator = 0.0;
   int _sampledHighRiskFreeCount = 0;
 
+  GameState _freshSimulationState() {
+    return GameState.initial().copyWith(
+      hasStartedGame: true,
+      isGameOver: false,
+      todayResidents: ResidentGenerator.generateDailyResidents(
+        Consts.residentsPerDay,
+      ),
+    );
+  }
+
+  void _resetInternalTimers() {
+    _pendingDt = 0.0;
+    _riskDriftAccumulator = 0.0;
+    _highRiskPressureAccumulator = 0.0;
+    _sampledHighRiskFreeCount = 0;
+  }
+
   // Residents are generated once when the game session starts and persist
   // across day rollovers. Only detaining removes residents from this pool.
-  GameCubit()
-    : super(
-        GameState.initial().copyWith(
-          todayResidents: ResidentGenerator.generateDailyResidents(
-            Consts.residentsPerDay,
-          ),
-        ),
-      );
+  GameCubit() : super(GameState.initial());
+
+  void startNewSimulation() {
+    _resetInternalTimers();
+    emit(_freshSimulationState());
+  }
+
+  void restartSimulation() {
+    startNewSimulation();
+  }
 
   void _startNewDay({required int newDay, required double currentThreat}) {
     _highRiskPressureAccumulator = 0.0;
@@ -47,6 +66,7 @@ class GameCubit extends Cubit<GameState> {
     final report = ReportGenerator.generate(newDay);
     emit(
       state.copyWith(
+        hasStartedGame: true,
         remainingTimeInDay: Consts.dayDuration,
         currentDay: newDay,
         terroristThreat: currentThreat,
@@ -54,6 +74,7 @@ class GameCubit extends Cubit<GameState> {
         isNewsReportPending: true,
         currentReport: report,
         isReportPending: false,
+        isCctvEventPending: false,
       ),
     );
   }
@@ -75,6 +96,7 @@ class GameCubit extends Cubit<GameState> {
   /// Updates the time and threat based on delta time (dt).
   void tick(double dt) {
     // Pause the game loop while any report overlay is visible.
+    if (!state.hasStartedGame || state.isGameOver) return;
     if (state.isNewsReportPending ||
         state.isReportPending ||
         state.isCctvEventPending) {
@@ -94,7 +116,17 @@ class GameCubit extends Cubit<GameState> {
             .clamp(Consts.minThreatLevel, Consts.maxThreatLevel);
 
     if (newThreat >= Consts.maxThreatLevel) {
-      // TODO: Handle game over condition
+      emit(
+        state.copyWith(
+          hasStartedGame: true,
+          isGameOver: true,
+          terroristThreat: Consts.maxThreatLevel,
+          isNewsReportPending: false,
+          isReportPending: false,
+          isCctvEventPending: false,
+        ),
+      );
+      return;
     }
 
     if (newTime <= 0) {
@@ -129,11 +161,18 @@ class GameCubit extends Cubit<GameState> {
       );
     }
 
+    final gameOver = newThreat >= Consts.maxThreatLevel;
+
     emit(
       state.copyWith(
+        hasStartedGame: true,
+        isGameOver: gameOver,
         remainingTimeInDay: newTime,
         terroristThreat: newThreat,
         todayResidents: updatedResidents,
+        isNewsReportPending: gameOver ? false : state.isNewsReportPending,
+        isReportPending: gameOver ? false : state.isReportPending,
+        isCctvEventPending: gameOver ? false : state.isCctvEventPending,
       ),
     );
   }
@@ -206,6 +245,7 @@ class GameCubit extends Cubit<GameState> {
   /// Called by [CCTVOverlay] when the player resolves the mini-game.
   /// [success] = true → player clicked the red face in time.
   void resolveCctvEvent(bool success) {
+    if (state.isGameOver) return;
     final delta = success
         ? -Consts.cctvSuccessThreatDelta
         : Consts.cctvFailureThreatDelta;
@@ -213,7 +253,15 @@ class GameCubit extends Cubit<GameState> {
       Consts.minThreatLevel,
       Consts.maxThreatLevel,
     );
-    emit(state.copyWith(isCctvEventPending: false, terroristThreat: newThreat));
+    final gameOver = newThreat >= Consts.maxThreatLevel;
+    emit(
+      state.copyWith(
+        hasStartedGame: true,
+        isGameOver: gameOver,
+        isCctvEventPending: false,
+        terroristThreat: newThreat,
+      ),
+    );
   }
 
   /// Action: Detain a resident.
@@ -221,7 +269,7 @@ class GameCubit extends Cubit<GameState> {
   /// Threat impact is evaluated using [effectiveRiskScore], which includes
   /// the day's intelligence report modifier if the resident matches.
   void detainResident(Resident resident) {
-    if (resident.isDetained) return;
+    if (state.isGameOver || resident.isDetained) return;
 
     final updatedResidents = state.todayResidents.map((c) {
       if (c.id == resident.id) {
@@ -247,17 +295,25 @@ class GameCubit extends Cubit<GameState> {
       );
     }
 
+    final gameOver = newThreat >= Consts.maxThreatLevel;
+
     emit(
       state.copyWith(
+        hasStartedGame: true,
+        isGameOver: gameOver,
         detaineeCount: state.detaineeCount + 1,
         todayResidents: updatedResidents,
         terroristThreat: newThreat,
+        isNewsReportPending: gameOver ? false : state.isNewsReportPending,
+        isReportPending: gameOver ? false : state.isReportPending,
+        isCctvEventPending: gameOver ? false : state.isCctvEventPending,
       ),
     );
   }
 
   /// Action: Investigate a resident.
   void investigateResident(Resident resident) {
+    if (state.isGameOver) return;
     if (!resident.isInvestigated) {
       final updatedResidents = state.todayResidents.map((c) {
         if (c.id == resident.id) {
@@ -268,6 +324,7 @@ class GameCubit extends Cubit<GameState> {
 
       emit(
         state.copyWith(
+          hasStartedGame: true,
           investigationCount: state.investigationCount + 1,
           todayResidents: updatedResidents,
         ),

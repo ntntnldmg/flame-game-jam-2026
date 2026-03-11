@@ -5,6 +5,8 @@ import '../models/intelligence_report.dart';
 import '../models/news_report.dart';
 
 class GameState extends Equatable {
+  final bool hasStartedGame;
+  final bool isGameOver;
   final int currentDay;
   final double terroristThreat; // 0.0 to 100.0
   final int detaineeCount;
@@ -29,6 +31,8 @@ class GameState extends Equatable {
   final bool isCctvEventPending;
 
   const GameState({
+    this.hasStartedGame = false,
+    this.isGameOver = false,
     required this.currentDay,
     required this.terroristThreat,
     required this.detaineeCount,
@@ -56,6 +60,8 @@ class GameState extends Equatable {
 
   /// Helper to copy the state with updated fields.
   GameState copyWith({
+    bool? hasStartedGame,
+    bool? isGameOver,
     int? currentDay,
     double? terroristThreat,
     int? detaineeCount,
@@ -69,6 +75,8 @@ class GameState extends Equatable {
     bool? isCctvEventPending,
   }) {
     return GameState(
+      hasStartedGame: hasStartedGame ?? this.hasStartedGame,
+      isGameOver: isGameOver ?? this.isGameOver,
       currentDay: currentDay ?? this.currentDay,
       terroristThreat: terroristThreat ?? this.terroristThreat,
       detaineeCount: detaineeCount ?? this.detaineeCount,
@@ -87,6 +95,8 @@ class GameState extends Equatable {
 
   @override
   List<Object?> get props => [
+    hasStartedGame,
+    isGameOver,
     currentDay,
     terroristThreat,
     detaineeCount,
