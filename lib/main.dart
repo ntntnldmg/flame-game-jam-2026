@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'game/game_cubit.dart';
 import 'ui/intro_screen.dart';
 
@@ -13,8 +14,9 @@ class BigBrotherApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // BlocProvider here ensures the cubit — and the citizens it holds — survive
+    // BlocProvider here ensures the cubit — and the residents it holds — survive
     // navigation between IntroScreen and GameScreen for the lifetime of the app.
+    final ubuntuMonoTheme = GoogleFonts.ubuntuMonoTextTheme();
     return BlocProvider(
       create: (_) => GameCubit(),
       child: MaterialApp(
@@ -22,7 +24,10 @@ class BigBrotherApp extends StatelessWidget {
         theme: ThemeData(
           brightness: Brightness.dark,
           scaffoldBackgroundColor: Colors.black,
-          fontFamily: 'monospace', // Gives the brutalist terminal feel
+          // Global font for the whole game.
+          fontFamily: GoogleFonts.ubuntuMono().fontFamily,
+          textTheme: ubuntuMonoTheme,
+          primaryTextTheme: ubuntuMonoTheme,
           colorScheme: const ColorScheme.dark(
             primary: Colors.greenAccent,
             secondary: Colors.redAccent,
@@ -40,21 +45,21 @@ class BigBrotherApp extends StatelessWidget {
               ),
             ),
           ),
-          dialogTheme: const DialogThemeData(
+          dialogTheme: DialogThemeData(
             backgroundColor: Color(0xFF111111),
-            shape: BeveledRectangleBorder(
+            shape: const BeveledRectangleBorder(
               side: BorderSide(color: Colors.greenAccent, width: 2),
             ),
             titleTextStyle: TextStyle(
               color: Colors.greenAccent,
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              fontFamily: 'monospace',
+              fontFamily: GoogleFonts.ubuntuMono().fontFamily,
             ),
             contentTextStyle: TextStyle(
               color: Colors.greenAccent,
               fontSize: 16,
-              fontFamily: 'monospace',
+              fontFamily: GoogleFonts.ubuntuMono().fontFamily,
             ),
           ),
         ),

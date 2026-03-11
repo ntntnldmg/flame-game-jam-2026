@@ -6,14 +6,15 @@ class ReportGenerator {
   static final Random _random = Random();
 
   static const List<String> _categories = [
-    'ageGroup',
+    'sex',
+    'age',
     'occupation',
-    'religion',
-    'ethnicity',
+    'district',
   ];
 
   static const Map<String, List<String>> _values = {
-    'ageGroup': ['18-25', '26-35', '36-45', '46-60', '60+'],
+    'sex': ['Male', 'Female'],
+    'age': ['18', '22', '27', '33', '39', '45', '51', '58', '64'],
     'occupation': [
       'Student',
       'Engineer',
@@ -26,22 +27,12 @@ class ReportGenerator {
       'Manager',
       'Catering',
     ],
-    'religion': [
-      'Agnostic',
-      'Christian',
-      'Muslim',
-      'Buddhist',
-      'Hindu',
-      'Atheist',
-      'Other',
-    ],
-    'ethnicity': [
-      'Caucasian',
-      'Asian',
-      'Hispanic',
-      'African',
-      'Middle Eastern',
-      'Mixed',
+    'district': [
+      'North District',
+      'South District',
+      'East District',
+      'West District',
+      'Central District',
     ],
   };
 
@@ -63,15 +54,15 @@ class ReportGenerator {
         "Recent intelligence suggests an increased correlation between the "
             "occupation group '$value' and extremist affiliations. "
             "Exercise heightened scrutiny toward individuals in this category.",
-      'religion' =>
+      'sex' =>
         "Classified intercepts indicate that individuals identifying as "
             "'$value' show elevated risk patterns this operational cycle. "
             "Proceed with caution during any interactions.",
-      'ageGroup' =>
+      'age' =>
         "Field reports point to a higher incidence of radicalization among "
-            "citizens in the '$value' age bracket. "
+            "residents in the '$value' age bracket. "
             "Remain vigilant and document all anomalous behavior.",
-      'ethnicity' =>
+      'district' =>
         "Threat analysis has flagged the '$value' demographic as a category "
             "of interest for this operational cycle. "
             "Monitor all individuals matching this classification closely.",

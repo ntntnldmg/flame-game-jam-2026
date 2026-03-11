@@ -1,16 +1,18 @@
 import 'package:bigbrother/consts.dart';
 import 'package:equatable/equatable.dart';
-import '../models/citizen.dart';
+import '../models/resident.dart';
 import '../models/intelligence_report.dart';
 import '../models/news_report.dart';
 
 class GameState extends Equatable {
+  final bool hasStartedGame;
+  final bool isGameOver;
   final int currentDay;
   final double terroristThreat; // 0.0 to 100.0
   final int detaineeCount;
   final int investigationCount;
   final double remainingTimeInDay;
-  final List<Citizen> todayCitizens;
+  final List<Resident> todayResidents;
 
   /// The active intelligence briefing for the current day. Null on day 1.
   final IntelligenceReport? currentReport;
@@ -29,12 +31,14 @@ class GameState extends Equatable {
   final bool isCctvEventPending;
 
   const GameState({
+    this.hasStartedGame = false,
+    this.isGameOver = false,
     required this.currentDay,
     required this.terroristThreat,
     required this.detaineeCount,
     required this.investigationCount,
     required this.remainingTimeInDay,
-    required this.todayCitizens,
+    required this.todayResidents,
     this.currentReport,
     this.currentNewsReport,
     this.isNewsReportPending = false,
@@ -50,18 +54,20 @@ class GameState extends Equatable {
       detaineeCount: 0,
       investigationCount: 0,
       remainingTimeInDay: Consts.dayDuration,
-      todayCitizens: [],
+      todayResidents: [],
     );
   }
 
   /// Helper to copy the state with updated fields.
   GameState copyWith({
+    bool? hasStartedGame,
+    bool? isGameOver,
     int? currentDay,
     double? terroristThreat,
     int? detaineeCount,
     int? investigationCount,
     double? remainingTimeInDay,
-    List<Citizen>? todayCitizens,
+    List<Resident>? todayResidents,
     IntelligenceReport? currentReport,
     NewsReport? currentNewsReport,
     bool? isNewsReportPending,
@@ -69,12 +75,14 @@ class GameState extends Equatable {
     bool? isCctvEventPending,
   }) {
     return GameState(
+      hasStartedGame: hasStartedGame ?? this.hasStartedGame,
+      isGameOver: isGameOver ?? this.isGameOver,
       currentDay: currentDay ?? this.currentDay,
       terroristThreat: terroristThreat ?? this.terroristThreat,
       detaineeCount: detaineeCount ?? this.detaineeCount,
       investigationCount: investigationCount ?? this.investigationCount,
       remainingTimeInDay: remainingTimeInDay ?? this.remainingTimeInDay,
-      todayCitizens: todayCitizens ?? this.todayCitizens,
+      todayResidents: todayResidents ?? this.todayResidents,
       currentReport: currentReport ?? this.currentReport,
       currentNewsReport: currentNewsReport ?? this.currentNewsReport,
       isNewsReportPending: isNewsReportPending ?? this.isNewsReportPending,
@@ -87,12 +95,14 @@ class GameState extends Equatable {
 
   @override
   List<Object?> get props => [
+    hasStartedGame,
+    isGameOver,
     currentDay,
     terroristThreat,
     detaineeCount,
     investigationCount,
     remainingTimeInDay,
-    todayCitizens,
+    todayResidents,
     currentReport,
     currentNewsReport,
     isNewsReportPending,
