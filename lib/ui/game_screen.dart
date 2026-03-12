@@ -7,6 +7,7 @@ import '../audio/audio_settings.dart';
 import '../game/big_brother_game.dart';
 import '../game/game_cubit.dart';
 import '../game/game_state.dart';
+import 'day_counter_widget.dart';
 import 'intro_screen.dart';
 import 'resident_panel.dart';
 import 'cctv_overlay.dart';
@@ -237,52 +238,57 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                 },
                 buildWhen: (previous, current) =>
                     previous.currentDay != current.currentDay ||
-                    previous.remainingTimeInDayInt !=
-                        current.remainingTimeInDayInt ||
+                    (previous.remainingTimeInDay * 10).round() !=
+                        (current.remainingTimeInDay * 10).round() ||
                     (previous.terroristThreat * 10).toInt() !=
                         (current.terroristThreat * 10).toInt(),
                 builder: (context, state) {
-                  return Container(
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withAlpha(220),
-                      border: Border.all(color: Colors.greenAccent, width: 2),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          'DAY: ${state.currentDay}',
-                          style: const TextStyle(
-                            color: Colors.greenAccent,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 2,
+                  final dayProgress =
+                      1.0 -
+                      (state.remainingTimeInDay / Consts.dayDuration).clamp(
+                        0.0,
+                        1.0,
+                      );
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      DayCounterWidget(
+                        day: state.currentDay,
+                        dayProgress: dayProgress,
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withAlpha(200),
+                          border: Border.all(
+                            color:
+                                state.terroristThreat >
+                                    Consts.threatWarningLevel
+                                ? Colors.redAccent
+                                : Colors.greenAccent,
+                            width: 1.5,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'TIME: ${((Consts.dayDuration - state.remainingTimeInDayInt) * 12 / Consts.dayDuration).toInt()} / 12',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'TERRORIST THREAT: ${state.terroristThreat.toStringAsFixed(1)}%',
+                        child: Text(
+                          'THREAT: ${state.terroristThreat.toStringAsFixed(1)}%',
                           style: TextStyle(
                             color:
                                 state.terroristThreat >
                                     Consts.threatWarningLevel
                                 ? Colors.redAccent
                                 : Colors.greenAccent,
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   );
                 },
               ),

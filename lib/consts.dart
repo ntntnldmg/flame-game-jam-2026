@@ -1,3 +1,28 @@
+import 'dart:ui' show Color;
+
+/// Centralised colour palette for the entire application.
+class AppColors {
+  AppColors._();
+
+  /// Primary teal/cyan used for UI chrome, rings, and labels.
+  static const Color green = Color(0xff6eb5bb);
+
+  /// Bright blueish-white used for highlights and progress arcs.
+  static const Color bluishWhite = Color(0xffceecf8);
+
+  /// Accent red used for threats, warnings, and danger states.
+  static const Color red = Color(0xffd73766);
+
+  /// Semi-transparent teal used for hover / selected-row backgrounds.
+  static const Color hoverBackground = Color(0x4d6eb5bb);
+
+  /// Semi-transparent blue used for breaking-news overlay backgrounds.
+  static const Color breakingNewsBackground = Color(0x796eb5e8);
+
+  /// Dark fill used inside the day-counter circle.
+  static const Color circleFill = Color(0xFF0C2A2A);
+}
+
 class Consts {
   // --- Core progression ---
   static const double dayDuration = 5.0;
