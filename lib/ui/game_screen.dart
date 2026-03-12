@@ -111,7 +111,9 @@ class _GameScreenContentState extends State<_GameScreenContent> {
         body: Stack(
           children: [
             // Background image
-            Positioned.fill(
+            SizedBox(
+              width: double.infinity,
+              height: double.infinity,
               child: Image.asset(
                 'assets/images/background.jpg',
                 fit: BoxFit.cover,
@@ -131,7 +133,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
 
             // Top left controls
             Positioned(
-              top: 20,
+              top: 104,
               left: 326, // right of panel (14 offset + 290 width + 22 gap)
               child: IconButton(
                 icon: const Icon(
@@ -153,157 +155,271 @@ class _GameScreenContentState extends State<_GameScreenContent> {
               ),
             ),
 
-            // Top right HUD — also listens for a pending intelligence report
-            // and shows it as a proper full-screen overlay (dialog).
-            Positioned(
-              top: 20,
-              right: 20,
-              child: BlocConsumer<GameCubit, GameState>(
-                listenWhen: (previous, current) =>
-                    (!previous.isGameOver && current.isGameOver) ||
-                    (!previous.isNewsReportPending &&
-                        current.isNewsReportPending) ||
-                    (!previous.isReportPending && current.isReportPending) ||
-                    (!previous.isCctvEventPending &&
-                        current.isCctvEventPending),
-                listener: (context, state) {
-                  if (state.isGameOver) {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      barrierColor: Colors.transparent,
-                      builder: (dialogContext) => BlocProvider.value(
-                        value: context.read<GameCubit>(),
-                        child: BlocListener<GameCubit, GameState>(
-                          listenWhen: (previous, current) =>
-                              previous.isGameOver && !current.isGameOver,
-                          listener: (_, _) => Navigator.of(dialogContext).pop(),
-                          child: const _GameOverOverlay(),
+            // Gameplay overlays listener (game over, CCTV, reports).
+            BlocListener<GameCubit, GameState>(
+              listenWhen: (previous, current) =>
+                  (!previous.isGameOver && current.isGameOver) ||
+                  (!previous.isNewsReportPending &&
+                      current.isNewsReportPending) ||
+                  (!previous.isReportPending && current.isReportPending) ||
+                  (!previous.isCctvEventPending && current.isCctvEventPending),
+              listener: (context, state) {
+                if (state.isGameOver) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    barrierColor: Colors.transparent,
+                    builder: (dialogContext) => BlocProvider.value(
+                      value: context.read<GameCubit>(),
+                      child: BlocListener<GameCubit, GameState>(
+                        listenWhen: (previous, current) =>
+                            previous.isGameOver && !current.isGameOver,
+                        listener: (_, _) => Navigator.of(dialogContext).pop(),
+                        child: const _GameOverOverlay(),
+                      ),
+                    ),
+                  );
+                  return;
+                }
+                if (state.isCctvEventPending) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    barrierColor: Colors.transparent,
+                    builder: (dialogContext) => BlocProvider.value(
+                      value: context.read<GameCubit>(),
+                      child: BlocListener<GameCubit, GameState>(
+                        listenWhen: (previous, current) =>
+                            previous.isCctvEventPending &&
+                            !current.isCctvEventPending,
+                        listener: (_, _) => Navigator.of(dialogContext).pop(),
+                        child: const CCTVOverlay(),
+                      ),
+                    ),
+                  );
+                  return;
+                }
+                if (state.isNewsReportPending &&
+                    state.currentNewsReport != null) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    barrierColor: Colors.transparent,
+                    builder: (dialogContext) => BlocProvider.value(
+                      value: context.read<GameCubit>(),
+                      child: BlocListener<GameCubit, GameState>(
+                        listenWhen: (previous, current) =>
+                            previous.isNewsReportPending &&
+                            !current.isNewsReportPending,
+                        listener: (_, _) => Navigator.of(dialogContext).pop(),
+                        child: NewsReportOverlay(
+                          report: state.currentNewsReport!,
                         ),
                       ),
-                    );
-                    return;
-                  }
-                  if (state.isCctvEventPending) {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      barrierColor: Colors.transparent,
-                      builder: (dialogContext) => BlocProvider.value(
-                        value: context.read<GameCubit>(),
-                        child: BlocListener<GameCubit, GameState>(
-                          listenWhen: (previous, current) =>
-                              previous.isCctvEventPending &&
-                              !current.isCctvEventPending,
-                          listener: (_, _) => Navigator.of(dialogContext).pop(),
-                          child: const CCTVOverlay(),
-                        ),
-                      ),
-                    );
-                    return;
-                  }
-                  if (state.isNewsReportPending &&
-                      state.currentNewsReport != null) {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      barrierColor: Colors.transparent,
-                      builder: (dialogContext) => BlocProvider.value(
-                        value: context.read<GameCubit>(),
-                        child: BlocListener<GameCubit, GameState>(
-                          listenWhen: (previous, current) =>
-                              previous.isNewsReportPending &&
-                              !current.isNewsReportPending,
-                          listener: (_, _) => Navigator.of(dialogContext).pop(),
-                          child: NewsReportOverlay(
-                            report: state.currentNewsReport!,
-                          ),
-                        ),
-                      ),
-                    );
-                    return;
-                  }
+                    ),
+                  );
+                  return;
+                }
 
-                  if (state.isReportPending && state.currentReport != null) {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      barrierColor: Colors.transparent,
-                      builder: (dialogContext) => BlocProvider.value(
-                        value: context.read<GameCubit>(),
-                        child: BlocListener<GameCubit, GameState>(
-                          listenWhen: (previous, current) =>
-                              previous.isReportPending &&
-                              !current.isReportPending,
-                          listener: (_, _) => Navigator.of(dialogContext).pop(),
-                          child: IntelligenceReportOverlay(
-                            report: state.currentReport!,
-                          ),
+                if (state.isReportPending && state.currentReport != null) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    barrierColor: Colors.transparent,
+                    builder: (dialogContext) => BlocProvider.value(
+                      value: context.read<GameCubit>(),
+                      child: BlocListener<GameCubit, GameState>(
+                        listenWhen: (previous, current) =>
+                            previous.isReportPending &&
+                            !current.isReportPending,
+                        listener: (_, _) => Navigator.of(dialogContext).pop(),
+                        child: IntelligenceReportOverlay(
+                          report: state.currentReport!,
                         ),
                       ),
-                    );
-                  }
-                },
+                    ),
+                  );
+                }
+              },
+              child: const SizedBox.shrink(),
+            ),
+
+            // Top status bar + day counter cluster.
+            Positioned(
+              top: 14,
+              right: 20,
+              child: BlocBuilder<GameCubit, GameState>(
                 buildWhen: (previous, current) =>
                     previous.currentDay != current.currentDay ||
                     (previous.remainingTimeInDay * 10).round() !=
                         (current.remainingTimeInDay * 10).round() ||
                     (previous.terroristThreat * 10).toInt() !=
-                        (current.terroristThreat * 10).toInt(),
-                builder: (context, state) {
-                  final dayProgress =
-                      1.0 -
-                      (state.remainingTimeInDay / Consts.dayDuration).clamp(
-                        0.0,
-                        1.0,
-                      );
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      DayCounterWidget(
-                        day: state.currentDay,
-                        dayProgress: dayProgress,
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withAlpha(200),
-                          border: Border.all(
-                            color:
-                                state.terroristThreat >
-                                    Consts.threatWarningLevel
-                                ? Colors.redAccent
-                                : Colors.greenAccent,
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Text(
-                          'THREAT: ${state.terroristThreat.toStringAsFixed(1)}%',
-                          style: TextStyle(
-                            color:
-                                state.terroristThreat >
-                                    Consts.threatWarningLevel
-                                ? Colors.redAccent
-                                : Colors.greenAccent,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                        (current.terroristThreat * 10).toInt() ||
+                    previous.todayResidents != current.todayResidents ||
+                    previous.remainingArrestsToday !=
+                        current.remainingArrestsToday ||
+                    previous.remainingInvestigationsToday !=
+                        current.remainingInvestigationsToday ||
+                    previous.remainingWireTapsToday !=
+                        current.remainingWireTapsToday,
+                builder: (context, state) => LayoutBuilder(
+                  builder: (context, constraints) {
+                    final compact = constraints.maxWidth < 920;
+                    final veryCompact = constraints.maxWidth < 700;
+
+                    return _TopStatusHud(
+                      state: state,
+                      compact: compact,
+                      veryCompact: veryCompact,
+                    );
+                  },
+                ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TopStatusHud extends StatelessWidget {
+  final GameState state;
+  final bool compact;
+  final bool veryCompact;
+
+  const _TopStatusHud({
+    required this.state,
+    this.compact = false,
+    this.veryCompact = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final dayProgress =
+        1.0 - (state.remainingTimeInDay / Consts.dayDuration).clamp(0.0, 1.0);
+    final ongoingArrests = state.todayResidents
+        .where((r) => r.isArrestPending)
+        .length;
+    final pendingInvestigations = state.todayResidents
+        .where((r) => r.isInvestigationPending)
+        .length;
+    final installedWireTaps = state.todayResidents
+        .where((r) => r.hasWireTap)
+        .length;
+
+    final dayCounterSize = veryCompact ? 92.0 : (compact ? 112.0 : 142.0);
+
+    final labelStyle = TextStyle(
+      color: AppColors.bluishWhite,
+      fontSize: veryCompact ? 14 : (compact ? 16 : 21),
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.6,
+      height: 1.15,
+    );
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: EdgeInsets.fromLTRB(
+            veryCompact ? 10 : 14,
+            12,
+            veryCompact ? 10 : 14,
+            12,
+          ),
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.green, width: 2),
+            gradient: const LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [Color(0x730C4D66), Color(0x2A0B1E2B), Color(0x12050F16)],
+              stops: [0.0, 0.42, 1.0],
+            ),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'STATUS',
+                    style: TextStyle(
+                      color: AppColors.green,
+                      fontSize: veryCompact ? 30 : (compact ? 36 : 45),
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 1.5,
+                      height: 0.95,
+                    ),
+                  ),
+                  Text(
+                    'Terrorist Threat: ${state.terroristThreat.toStringAsFixed(1)} %',
+                    style: TextStyle(
+                      color: AppColors.red,
+                      fontSize: veryCompact ? 17 : (compact ? 21 : 27),
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 1.0,
+                      height: 1.0,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: veryCompact ? 8 : 14),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Ongoing arrests: $ongoingArrests',
+                        style: labelStyle,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Pending investigations: $pendingInvestigations',
+                        style: labelStyle,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Installed wire taps: $installedWireTaps',
+                        style: labelStyle,
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: veryCompact ? 8 : 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Remaining arrest capacity: ${state.remainingArrestsToday}',
+                        style: labelStyle,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Remaining investigation capacity: ${state.remainingInvestigationsToday}',
+                        style: labelStyle,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Available wire taps: ${state.remainingWireTapsToday}',
+                        style: labelStyle,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        SizedBox(width: veryCompact ? 10 : 24),
+        DayCounterWidget(
+          day: state.currentDay,
+          dayProgress: dayProgress,
+          size: dayCounterSize,
+        ),
+      ],
     );
   }
 }

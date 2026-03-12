@@ -254,35 +254,42 @@ class _ResidentRowState extends State<_ResidentRow> {
                         ],
                       ),
                     ),
+                    if (isPending)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4, right: 2),
+                        child: Icon(
+                          Icons.schedule,
+                          size: 15,
+                          color: AppColors.green,
+                        ),
+                      ),
+                    // Completed action marker badge.
+                    if (hasCompletionMarker)
+                      Container(
+                        margin: const EdgeInsets.only(left: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: AppColors.bluishWhite,
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          '!',
+                          style: TextStyle(
+                            color: AppColors.bluishWhite,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            height: 1,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
-              if (isPending)
-                Padding(
-                  padding: const EdgeInsets.only(left: 4, right: 2),
-                  child: Icon(Icons.schedule, size: 15, color: AppColors.green),
-                ),
-              // Completed action marker badge.
-              if (hasCompletionMarker)
-                Container(
-                  margin: const EdgeInsets.only(left: 4),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 5,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.bluishWhite, width: 1),
-                  ),
-                  child: Text(
-                    '!',
-                    style: TextStyle(
-                      color: AppColors.bluishWhite,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      height: 1,
-                    ),
-                  ),
-                ),
               Divider(
                 height: 1,
                 thickness: 1,
@@ -336,52 +343,62 @@ class _ResidentDetailDialogState extends State<_ResidentDetailDialog> {
           );
         }
 
+        final selectedResident = resident;
+
         final canOrderInvestigation =
-            !resident.isInvestigated &&
-            !resident.isInvestigationPending &&
-            !resident.isArrested &&
+            !selectedResident.isInvestigated &&
+            !selectedResident.isInvestigationPending &&
+            !selectedResident.isArrested &&
             state.remainingInvestigationsToday > 0;
         final canIssueArrest =
-            !resident.isArrested &&
-            !resident.isArrestPending &&
+            !selectedResident.isArrested &&
+            !selectedResident.isArrestPending &&
             state.remainingArrestsToday > 0;
         final canInstallWireTap =
-            !resident.hasWireTap && state.remainingWireTapsToday > 0;
+            !selectedResident.hasWireTap && state.remainingWireTapsToday > 0;
 
         return AlertDialog(
-          title: Text('Resident Details: ${resident.id}'),
+          title: Text('Resident Details: ${selectedResident.id}'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('ID: ${resident.id}'),
-                Text('Name: ${resident.name}'),
-                Text('Sex: ${resident.sex}'),
-                Text('Age: ${resident.age}'),
-                Text('Address: ${resident.street}, ${resident.district}'),
-                Text('Phone: ${resident.phoneNumber}'),
-                Text('Occupation: ${resident.occupation}'),
-                Text('Status: ${resident.isArrested ? 'ARRESTED' : 'FREE'}'),
-                Text('Wire Tap: ${resident.hasWireTap ? 'INSTALLED' : 'NONE'}'),
+                Text('ID: ${selectedResident.id}'),
+                Text('Name: ${selectedResident.name}'),
+                Text('Sex: ${selectedResident.sex}'),
+                Text('Age: ${selectedResident.age}'),
+                Text(
+                  'Address: ${selectedResident.street}, ${selectedResident.district}',
+                ),
+                Text('Phone: ${selectedResident.phoneNumber}'),
+                Text('Occupation: ${selectedResident.occupation}'),
+                Text(
+                  'Status: ${selectedResident.isArrested ? 'ARRESTED' : 'FREE'}',
+                ),
+                Text(
+                  'Wire Tap: ${selectedResident.hasWireTap ? 'INSTALLED' : 'NONE'}',
+                ),
                 const SizedBox(height: 10),
-                if (resident.isInvestigated)
+                if (selectedResident.isInvestigated)
                   Text(
-                    'Estimated Risk: ${resident.riskScore.toStringAsFixed(1)}%',
+                    'Estimated Risk: ${selectedResident.riskScore.toStringAsFixed(1)}%',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: resident.riskScore > Consts.arrestGoodThreshold
+                      color:
+                          selectedResident.riskScore >
+                              Consts.arrestGoodThreshold
                           ? Colors.red
                           : Colors.greenAccent,
                     ),
                   ),
-                if (resident.isInvestigationPending)
+                if (selectedResident.isInvestigationPending)
                   const Padding(
                     padding: EdgeInsets.only(top: 6),
                     child: Text('Investigation ordered...'),
                   ),
-                if (resident.isArrestPending)
+                if (selectedResident.isArrestPending)
                   const Padding(
                     padding: EdgeInsets.only(top: 6),
                     child: Text('Arrest warrant issued...'),
@@ -398,7 +415,9 @@ class _ResidentDetailDialogState extends State<_ResidentDetailDialog> {
                   children: [
                     ElevatedButton(
                       onPressed: canOrderInvestigation
-                          ? () => widget.cubit.orderInvestigation(resident!)
+                          ? () => widget.cubit.orderInvestigation(
+                              selectedResident,
+                            )
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
@@ -408,7 +427,9 @@ class _ResidentDetailDialogState extends State<_ResidentDetailDialog> {
                     ),
                     ElevatedButton(
                       onPressed: canIssueArrest
-                          ? () => widget.cubit.issueArrestWarrant(resident!)
+                          ? () => widget.cubit.issueArrestWarrant(
+                              selectedResident,
+                            )
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.redAccent,
@@ -418,7 +439,7 @@ class _ResidentDetailDialogState extends State<_ResidentDetailDialog> {
                     ),
                     ElevatedButton(
                       onPressed: canInstallWireTap
-                          ? () => widget.cubit.installWireTap(resident!)
+                          ? () => widget.cubit.installWireTap(selectedResident)
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
