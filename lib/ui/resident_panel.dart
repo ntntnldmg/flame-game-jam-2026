@@ -16,11 +16,6 @@ class ResidentPanel extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.todayResidents != current.todayResidents,
       builder: (context, state) {
-        // Free residents first, detained at the bottom.
-        final sorted = [
-          ...state.todayResidents.where((r) => !r.isDetained),
-          ...state.todayResidents.where((r) => r.isDetained),
-        ];
         return Container(
           width: 290,
           decoration: BoxDecoration(
@@ -29,13 +24,16 @@ class ResidentPanel extends StatelessWidget {
           ),
           child: Column(
             children: [
-              _PanelHeader(entryCount: sorted.length),
+              _PanelHeader(entryCount: state.todayResidents.length),
               Expanded(
                 child: ListView.builder(
-                  itemCount: sorted.length,
+                  itemCount: state.todayResidents.length,
                   itemBuilder: (context, index) => _ResidentRow(
-                    resident: sorted[index],
-                    onTap: () => _showResidentDetails(context, sorted[index]),
+                    resident: state.todayResidents[index],
+                    onTap: () => _showResidentDetails(
+                      context,
+                      state.todayResidents[index],
+                    ),
                   ),
                 ),
               ),
@@ -49,10 +47,11 @@ class ResidentPanel extends StatelessWidget {
   void _showResidentDetails(BuildContext context, Resident resident) {
     if (context.read<GameCubit>().state.isCctvEventPending) return;
     final cubit = context.read<GameCubit>();
+    cubit.clearResidentCompletionMarkers(resident.id);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return _ResidentDetailDialog(resident: resident, cubit: cubit);
+        return _ResidentDetailDialog(residentId: resident.id, cubit: cubit);
       },
     );
   }
@@ -134,9 +133,9 @@ class _ResidentRowState extends State<_ResidentRow> {
   @override
   Widget build(BuildContext context) {
     final r = widget.resident;
-    final dimmed = r.isDetained;
-    final flagged =
-        r.isInvestigated && r.riskScore > Consts.detainGoodThreshold && !dimmed;
+    final dimmed = r.isArrested;
+    final hasCompletionMarker = r.hasCompletedActionMarker;
+    final isPending = r.isInvestigationPending || r.isArrestPending;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
@@ -189,21 +188,54 @@ class _ResidentRowState extends State<_ResidentRow> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            r.name.toUpperCase(),
-                            style: TextStyle(
-                              color: dimmed
-                                  ? AppColors.bluishWhite.withAlpha(50)
-                                  : AppColors.bluishWhite,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
+                          Row(
+                            children: [
+                              if (r.isArrested)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 6),
+                                  child: Icon(
+                                    Icons.lock,
+                                    size: 14,
+                                    color: AppColors.red.withAlpha(210),
+                                  ),
+                                ),
+                              Expanded(
+                                child: Text(
+                                  r.name.toUpperCase(),
+                                  style: TextStyle(
+                                    color: dimmed
+                                        ? AppColors.bluishWhite.withAlpha(50)
+                                        : AppColors.bluishWhite,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 2),
-                          if (dimmed)
+                          if (r.isArrestPending)
                             Text(
-                              '[DETAINED]',
+                              'ARREST WARRANT IN PROGRESS',
+                              style: TextStyle(
+                                color: AppColors.red.withAlpha(180),
+                                fontSize: 10,
+                                letterSpacing: 0.6,
+                              ),
+                            )
+                          else if (r.isInvestigationPending)
+                            Text(
+                              'INVESTIGATION IN PROGRESS',
+                              style: TextStyle(
+                                color: AppColors.green.withAlpha(200),
+                                fontSize: 10,
+                                letterSpacing: 0.6,
+                              ),
+                            )
+                          else if (dimmed)
+                            Text(
+                              '[ARRESTED]',
                               style: TextStyle(
                                 color: AppColors.red.withAlpha(160),
                                 fontSize: 10,
@@ -222,30 +254,35 @@ class _ResidentRowState extends State<_ResidentRow> {
                         ],
                       ),
                     ),
-                    // High-risk flag badge
-                    if (flagged)
-                      Container(
-                        margin: const EdgeInsets.only(left: 4),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 5,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: AppColors.red, width: 1),
-                        ),
-                        child: Text(
-                          '!',
-                          style: TextStyle(
-                            color: AppColors.red,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            height: 1,
-                          ),
-                        ),
-                      ),
                   ],
                 ),
               ),
+              if (isPending)
+                Padding(
+                  padding: const EdgeInsets.only(left: 4, right: 2),
+                  child: Icon(Icons.schedule, size: 15, color: AppColors.green),
+                ),
+              // Completed action marker badge.
+              if (hasCompletionMarker)
+                Container(
+                  margin: const EdgeInsets.only(left: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.bluishWhite, width: 1),
+                  ),
+                  child: Text(
+                    '!',
+                    style: TextStyle(
+                      color: AppColors.bluishWhite,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      height: 1,
+                    ),
+                  ),
+                ),
               Divider(
                 height: 1,
                 thickness: 1,
@@ -260,101 +297,159 @@ class _ResidentRowState extends State<_ResidentRow> {
 }
 
 class _ResidentDetailDialog extends StatefulWidget {
-  final Resident resident;
+  final String residentId;
   final GameCubit cubit;
 
-  const _ResidentDetailDialog({required this.resident, required this.cubit});
+  const _ResidentDetailDialog({required this.residentId, required this.cubit});
 
   @override
   State<_ResidentDetailDialog> createState() => _ResidentDetailDialogState();
 }
 
 class _ResidentDetailDialogState extends State<_ResidentDetailDialog> {
-  late bool _isInvestigated;
-  late bool _isDetained;
-
-  @override
-  void initState() {
-    super.initState();
-    _isInvestigated = widget.resident.isInvestigated;
-    _isDetained = widget.resident.isDetained;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Resident Details: ${widget.resident.id}'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('ID: ${widget.resident.id}'),
-          Text('Name: ${widget.resident.name}'),
-          Text('Sex: ${widget.resident.sex}'),
-          Text('Age: ${widget.resident.age}'),
-          Text(
-            'Address: ${widget.resident.street}, ${widget.resident.district}',
-          ),
-          Text('Phone: ${widget.resident.phoneNumber}'),
-          Text('Occupation: ${widget.resident.occupation}'),
-          Text('Status: ${_isDetained ? 'DETAINED' : 'FREE'}'),
-          const SizedBox(height: 10),
-          if (_isInvestigated)
-            Text(
-              'Estimated Risk: ${widget.resident.riskScore.toStringAsFixed(1)}%',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: widget.resident.riskScore > Consts.detainGoodThreshold
-                    ? Colors.red
-                    : Colors.greenAccent,
-              ),
-            ),
-          const SizedBox(height: 20),
-          const Text('ACTIONS:', style: TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                onPressed: (_isInvestigated || _isDetained)
-                    ? null
-                    : () {
-                        widget.cubit.investigateResident(widget.resident);
-                        setState(() => _isInvestigated = true);
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.black,
-                ),
-                child: const Text('INVESTIGATE'),
-              ),
-              ElevatedButton(
-                onPressed: _isDetained
-                    ? null
-                    : () {
-                        widget.cubit.detainResident(widget.resident);
-                        setState(() => _isDetained = true);
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  foregroundColor: Colors.black,
-                ),
-                child: const Text('DETAIN'),
+    return BlocBuilder<GameCubit, GameState>(
+      buildWhen: (previous, current) =>
+          previous.todayResidents != current.todayResidents ||
+          previous.investigationsUsedToday != current.investigationsUsedToday ||
+          previous.arrestsUsedToday != current.arrestsUsedToday ||
+          previous.wireTapsUsedToday != current.wireTapsUsedToday,
+      builder: (context, state) {
+        Resident? resident;
+        for (final candidate in state.todayResidents) {
+          if (candidate.id == widget.residentId) {
+            resident = candidate;
+            break;
+          }
+        }
+        if (resident == null) {
+          return AlertDialog(
+            title: const Text('Resident Unavailable'),
+            content: const Text('This resident record is no longer available.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('CLOSE'),
               ),
             ],
+          );
+        }
+
+        final canOrderInvestigation =
+            !resident.isInvestigated &&
+            !resident.isInvestigationPending &&
+            !resident.isArrested &&
+            state.remainingInvestigationsToday > 0;
+        final canIssueArrest =
+            !resident.isArrested &&
+            !resident.isArrestPending &&
+            state.remainingArrestsToday > 0;
+        final canInstallWireTap =
+            !resident.hasWireTap && state.remainingWireTapsToday > 0;
+
+        return AlertDialog(
+          title: Text('Resident Details: ${resident.id}'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('ID: ${resident.id}'),
+                Text('Name: ${resident.name}'),
+                Text('Sex: ${resident.sex}'),
+                Text('Age: ${resident.age}'),
+                Text('Address: ${resident.street}, ${resident.district}'),
+                Text('Phone: ${resident.phoneNumber}'),
+                Text('Occupation: ${resident.occupation}'),
+                Text('Status: ${resident.isArrested ? 'ARRESTED' : 'FREE'}'),
+                Text('Wire Tap: ${resident.hasWireTap ? 'INSTALLED' : 'NONE'}'),
+                const SizedBox(height: 10),
+                if (resident.isInvestigated)
+                  Text(
+                    'Estimated Risk: ${resident.riskScore.toStringAsFixed(1)}%',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: resident.riskScore > Consts.arrestGoodThreshold
+                          ? Colors.red
+                          : Colors.greenAccent,
+                    ),
+                  ),
+                if (resident.isInvestigationPending)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 6),
+                    child: Text('Investigation ordered...'),
+                  ),
+                if (resident.isArrestPending)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 6),
+                    child: Text('Arrest warrant issued...'),
+                  ),
+                const SizedBox(height: 20),
+                const Text(
+                  'ACTIONS:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    ElevatedButton(
+                      onPressed: canOrderInvestigation
+                          ? () => widget.cubit.orderInvestigation(resident!)
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.black,
+                      ),
+                      child: const Text('ORDER INVESTIGATION'),
+                    ),
+                    ElevatedButton(
+                      onPressed: canIssueArrest
+                          ? () => widget.cubit.issueArrestWarrant(resident!)
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        foregroundColor: Colors.black,
+                      ),
+                      child: const Text('ISSUE ARREST WARRANT'),
+                    ),
+                    ElevatedButton(
+                      onPressed: canInstallWireTap
+                          ? () => widget.cubit.installWireTap(resident!)
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('INSTALL WIRE TAP'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Remaining Today: '
+                  'Investigations ${state.remainingInvestigationsToday}, '
+                  'Arrests ${state.remainingArrestsToday}, '
+                  'Wire Taps ${state.remainingWireTapsToday}',
+                  style: const TextStyle(fontSize: 12, color: Colors.white70),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text(
-            'CLOSE',
-            style: TextStyle(color: Colors.greenAccent),
-          ),
-        ),
-      ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'CLOSE',
+                style: TextStyle(color: Colors.greenAccent),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

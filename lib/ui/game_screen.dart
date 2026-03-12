@@ -343,7 +343,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
           child: BlocBuilder<GameCubit, GameState>(
             buildWhen: (previous, current) =>
                 previous.currentDay != current.currentDay ||
-                previous.detaineeCount != current.detaineeCount ||
+                previous.arrestCount != current.arrestCount ||
                 previous.investigationCount != current.investigationCount,
             builder: (context, state) {
               return Column(
@@ -366,7 +366,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Total Detainees: ${state.detaineeCount}',
+                      'Total Arrests: ${state.arrestCount}',
                       style: const TextStyle(color: Colors.white, fontSize: 22),
                     ),
                     const SizedBox(height: 8),

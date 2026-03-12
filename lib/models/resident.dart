@@ -20,8 +20,29 @@ class Resident extends Equatable {
   /// Track if the player has investigated this resident
   final bool isInvestigated;
 
-  /// Track if the resident is currently in custody
-  final bool isDetained;
+  /// True while an investigation is currently queued.
+  final bool isInvestigationPending;
+
+  /// Seconds remaining for the queued investigation.
+  final double? investigationRemainingSeconds;
+
+  /// Track if the resident is currently under arrest.
+  final bool isArrested;
+
+  /// True while an arrest warrant is currently queued.
+  final bool isArrestPending;
+
+  /// Seconds remaining for the queued arrest.
+  final double? arrestRemainingSeconds;
+
+  /// Tracks whether a wire tap has been installed for this resident.
+  final bool hasWireTap;
+
+  /// Notification marker state for completed investigation.
+  final bool hasInvestigationCompletedMarker;
+
+  /// Notification marker state for completed arrest.
+  final bool hasArrestCompletedMarker;
 
   const Resident({
     required this.id,
@@ -34,10 +55,20 @@ class Resident extends Equatable {
     required this.occupation,
     required this.riskScore,
     this.isInvestigated = false,
-    this.isDetained = false,
+    this.isInvestigationPending = false,
+    this.investigationRemainingSeconds,
+    this.isArrested = false,
+    this.isArrestPending = false,
+    this.arrestRemainingSeconds,
+    this.hasWireTap = false,
+    this.hasInvestigationCompletedMarker = false,
+    this.hasArrestCompletedMarker = false,
   });
 
-  String get status => isDetained ? 'DETAINED' : 'FREE';
+  String get status => isArrested ? 'ARRESTED' : 'FREE';
+
+  bool get hasCompletedActionMarker =>
+      hasInvestigationCompletedMarker || hasArrestCompletedMarker;
 
   Resident copyWith({
     String? id,
@@ -50,7 +81,16 @@ class Resident extends Equatable {
     String? occupation,
     double? riskScore,
     bool? isInvestigated,
-    bool? isDetained,
+    bool? isInvestigationPending,
+    double? investigationRemainingSeconds,
+    bool clearInvestigationRemainingSeconds = false,
+    bool? isArrested,
+    bool? isArrestPending,
+    double? arrestRemainingSeconds,
+    bool clearArrestRemainingSeconds = false,
+    bool? hasWireTap,
+    bool? hasInvestigationCompletedMarker,
+    bool? hasArrestCompletedMarker,
   }) {
     return Resident(
       id: id ?? this.id,
@@ -63,7 +103,22 @@ class Resident extends Equatable {
       occupation: occupation ?? this.occupation,
       riskScore: riskScore ?? this.riskScore,
       isInvestigated: isInvestigated ?? this.isInvestigated,
-      isDetained: isDetained ?? this.isDetained,
+      isInvestigationPending:
+          isInvestigationPending ?? this.isInvestigationPending,
+      investigationRemainingSeconds: clearInvestigationRemainingSeconds
+          ? null
+          : investigationRemainingSeconds ?? this.investigationRemainingSeconds,
+      isArrested: isArrested ?? this.isArrested,
+      isArrestPending: isArrestPending ?? this.isArrestPending,
+      arrestRemainingSeconds: clearArrestRemainingSeconds
+          ? null
+          : arrestRemainingSeconds ?? this.arrestRemainingSeconds,
+      hasWireTap: hasWireTap ?? this.hasWireTap,
+      hasInvestigationCompletedMarker:
+          hasInvestigationCompletedMarker ??
+          this.hasInvestigationCompletedMarker,
+      hasArrestCompletedMarker:
+          hasArrestCompletedMarker ?? this.hasArrestCompletedMarker,
     );
   }
 
@@ -79,7 +134,14 @@ class Resident extends Equatable {
     occupation,
     riskScore,
     isInvestigated,
-    isDetained,
+    isInvestigationPending,
+    investigationRemainingSeconds,
+    isArrested,
+    isArrestPending,
+    arrestRemainingSeconds,
+    hasWireTap,
+    hasInvestigationCompletedMarker,
+    hasArrestCompletedMarker,
   ];
 
   /// Returns the risk score with the daily intelligence modifier applied.

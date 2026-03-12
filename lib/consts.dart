@@ -47,10 +47,21 @@ class Consts {
   static const double generatedLowRiskMax = 30.0;
 
   // --- Player action impact ---
-  static const double detainGoodThreshold = 60.0;
-  static const double detainBadThreshold = 40.0;
-  static const double detainThreatDelta = 10.0;
+  static const double arrestGoodThreshold = 60.0;
+  static const double arrestBadThreshold = 40.0;
+  static const double arrestThreatDelta = 10.0;
   static const double threatWarningLevel = 80.0;
+
+  // --- Action workflow timings (seconds) ---
+  static const int investigationDelayMinSeconds = 90;
+  static const int investigationDelayMaxSeconds = 120;
+  static const int arrestDelayMinSeconds = 45;
+  static const int arrestDelayMaxSeconds = 60;
+
+  // --- Daily action caps ---
+  static const int maxInvestigationsPerDay = 15;
+  static const int maxArrestsPerDay = 20;
+  static const int maxWireTapsPerDay = 7;
 
   // --- Intelligence report modifier ---
   static const double intelligenceRiskModifier = 15.0;

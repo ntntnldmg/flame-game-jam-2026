@@ -42,7 +42,7 @@ class GameCubit extends Cubit<GameState> {
   }
 
   // Residents are generated once when the game session starts and persist
-  // across day rollovers. Only detaining removes residents from this pool.
+  // across day rollovers.
   GameCubit() : super(GameState.initial());
 
   void startNewSimulation() {
@@ -69,6 +69,9 @@ class GameCubit extends Cubit<GameState> {
         hasStartedGame: true,
         remainingTimeInDay: Consts.dayDuration,
         currentDay: newDay,
+        investigationsUsedToday: 0,
+        arrestsUsedToday: 0,
+        wireTapsUsedToday: 0,
         terroristThreat: currentThreat,
         currentNewsReport: newsReport,
         isNewsReportPending: true,
@@ -135,6 +138,16 @@ class GameCubit extends Cubit<GameState> {
     }
 
     final updatedResidents = List<Resident>.from(state.todayResidents);
+
+    var completedInvestigations = 0;
+    var completedArrests = 0;
+    _processResidentActionCompletions(
+      updatedResidents,
+      effectiveDt,
+      onInvestigationCompleted: () => completedInvestigations += 1,
+      onArrestCompleted: () => completedArrests += 1,
+    );
+
     _riskDriftAccumulator += effectiveDt;
     while (_riskDriftAccumulator >= Consts.riskDriftIntervalSeconds) {
       _riskDriftAccumulator -= Consts.riskDriftIntervalSeconds;
@@ -168,6 +181,8 @@ class GameCubit extends Cubit<GameState> {
         hasStartedGame: true,
         isGameOver: gameOver,
         remainingTimeInDay: newTime,
+        investigationCount: state.investigationCount + completedInvestigations,
+        arrestCount: state.arrestCount + completedArrests,
         terroristThreat: newThreat,
         todayResidents: updatedResidents,
         isNewsReportPending: gameOver ? false : state.isNewsReportPending,
@@ -233,8 +248,64 @@ class GameCubit extends Cubit<GameState> {
 
   int _countHighRiskFreeResidents(List<Resident> residents) {
     return residents
-        .where((c) => !c.isDetained && c.riskScore > Consts.highRiskThreshold)
+        .where((c) => !c.isArrested && c.riskScore > Consts.highRiskThreshold)
         .length;
+  }
+
+  void _processResidentActionCompletions(
+    List<Resident> residents,
+    double dt, {
+    required void Function() onInvestigationCompleted,
+    required void Function() onArrestCompleted,
+  }) {
+    for (var i = 0; i < residents.length; i++) {
+      var resident = residents[i];
+
+      if (resident.isInvestigationPending &&
+          resident.investigationRemainingSeconds != null) {
+        final nextRemaining = resident.investigationRemainingSeconds! - dt;
+        if (nextRemaining <= 0) {
+          resident = resident.copyWith(
+            isInvestigated: true,
+            isInvestigationPending: false,
+            clearInvestigationRemainingSeconds: true,
+            hasInvestigationCompletedMarker: true,
+          );
+          onInvestigationCompleted();
+        } else {
+          resident = resident.copyWith(
+            investigationRemainingSeconds: nextRemaining,
+          );
+        }
+      }
+
+      if (resident.isArrestPending && resident.arrestRemainingSeconds != null) {
+        final nextRemaining = resident.arrestRemainingSeconds! - dt;
+        if (nextRemaining <= 0) {
+          resident = resident.copyWith(
+            isArrested: true,
+            isArrestPending: false,
+            clearArrestRemainingSeconds: true,
+            hasArrestCompletedMarker: true,
+          );
+          onArrestCompleted();
+        } else {
+          resident = resident.copyWith(arrestRemainingSeconds: nextRemaining);
+        }
+      }
+
+      residents[i] = resident;
+    }
+  }
+
+  double _randomDelaySeconds({required int min, required int max}) =>
+      min + _random.nextInt(max - min + 1).toDouble();
+
+  Resident? _findResidentById(String id) {
+    for (final resident in state.todayResidents) {
+      if (resident.id == id) return resident;
+    }
+    return null;
   }
 
   /// Triggers the CCTV surveillance mini-game overlay.
@@ -264,71 +335,105 @@ class GameCubit extends Cubit<GameState> {
     );
   }
 
-  /// Action: Detain a resident.
-  /// The resident remains in the database but is marked as detained.
-  /// Threat impact is evaluated using [effectiveRiskScore], which includes
-  /// the day's intelligence report modifier if the resident matches.
-  void detainResident(Resident resident) {
-    if (state.isGameOver || resident.isDetained) return;
-
-    final updatedResidents = state.todayResidents.map((c) {
-      if (c.id == resident.id) {
-        return c.copyWith(isDetained: true);
-      }
-      return c;
-    }).toList();
-
-    double newThreat = state.terroristThreat;
-
-    // Use effectiveRiskScore so the daily intelligence modifier participates
-    // in the threat calculation without altering the stored base riskScore.
-    final effective = resident.effectiveRiskScore(state.currentReport);
-    if (effective > Consts.detainGoodThreshold) {
-      newThreat = (newThreat - Consts.detainThreatDelta).clamp(
-        Consts.minThreatLevel,
-        Consts.maxThreatLevel,
-      );
-    } else if (effective < Consts.detainBadThreshold) {
-      newThreat = (newThreat + Consts.detainThreatDelta).clamp(
-        Consts.minThreatLevel,
-        Consts.maxThreatLevel,
-      );
+  /// Action: Order an investigation that completes after a random delay.
+  void orderInvestigation(Resident resident) {
+    if (state.isGameOver) return;
+    if (state.investigationsUsedToday >= Consts.maxInvestigationsPerDay) {
+      return;
     }
 
-    final gameOver = newThreat >= Consts.maxThreatLevel;
+    final current = _findResidentById(resident.id);
+    if (current == null ||
+        current.isInvestigated ||
+        current.isInvestigationPending ||
+        current.isArrested) {
+      return;
+    }
+
+    final updatedResidents = state.todayResidents.map((c) {
+      if (c.id != resident.id) return c;
+      return c.copyWith(
+        isInvestigationPending: true,
+        investigationRemainingSeconds: _randomDelaySeconds(
+          min: Consts.investigationDelayMinSeconds,
+          max: Consts.investigationDelayMaxSeconds,
+        ),
+      );
+    }).toList();
 
     emit(
       state.copyWith(
         hasStartedGame: true,
-        isGameOver: gameOver,
-        detaineeCount: state.detaineeCount + 1,
+        investigationsUsedToday: state.investigationsUsedToday + 1,
         todayResidents: updatedResidents,
-        terroristThreat: newThreat,
-        isNewsReportPending: gameOver ? false : state.isNewsReportPending,
-        isReportPending: gameOver ? false : state.isReportPending,
-        isCctvEventPending: gameOver ? false : state.isCctvEventPending,
       ),
     );
   }
 
-  /// Action: Investigate a resident.
-  void investigateResident(Resident resident) {
+  /// Action: Issue an arrest warrant that completes after a random delay.
+  void issueArrestWarrant(Resident resident) {
     if (state.isGameOver) return;
-    if (!resident.isInvestigated) {
-      final updatedResidents = state.todayResidents.map((c) {
-        if (c.id == resident.id) {
-          return c.copyWith(isInvestigated: true);
-        }
-        return c;
-      }).toList();
+    if (state.arrestsUsedToday >= Consts.maxArrestsPerDay) return;
 
-      emit(
-        state.copyWith(
-          hasStartedGame: true,
-          investigationCount: state.investigationCount + 1,
-          todayResidents: updatedResidents,
+    final current = _findResidentById(resident.id);
+    if (current == null || current.isArrested || current.isArrestPending) {
+      return;
+    }
+
+    final updatedResidents = state.todayResidents.map((c) {
+      if (c.id != resident.id) return c;
+      return c.copyWith(
+        isArrestPending: true,
+        arrestRemainingSeconds: _randomDelaySeconds(
+          min: Consts.arrestDelayMinSeconds,
+          max: Consts.arrestDelayMaxSeconds,
         ),
       );
-    }
+    }).toList();
+
+    emit(
+      state.copyWith(
+        hasStartedGame: true,
+        arrestsUsedToday: state.arrestsUsedToday + 1,
+        todayResidents: updatedResidents,
+      ),
+    );
+  }
+
+  /// Action: Install a wire tap immediately.
+  void installWireTap(Resident resident) {
+    if (state.isGameOver) return;
+    if (state.wireTapsUsedToday >= Consts.maxWireTapsPerDay) return;
+
+    final current = _findResidentById(resident.id);
+    if (current == null || current.hasWireTap) return;
+
+    final updatedResidents = state.todayResidents.map((c) {
+      if (c.id != resident.id) return c;
+      return c.copyWith(hasWireTap: true);
+    }).toList();
+
+    emit(
+      state.copyWith(
+        hasStartedGame: true,
+        wireTapsUsedToday: state.wireTapsUsedToday + 1,
+        todayResidents: updatedResidents,
+      ),
+    );
+  }
+
+  /// Clears per-resident completion markers after the player reviews details.
+  void clearResidentCompletionMarkers(String residentId) {
+    final updatedResidents = state.todayResidents.map((c) {
+      if (c.id != residentId) return c;
+      return c.copyWith(
+        hasInvestigationCompletedMarker: false,
+        hasArrestCompletedMarker: false,
+      );
+    }).toList();
+
+    emit(
+      state.copyWith(hasStartedGame: true, todayResidents: updatedResidents),
+    );
   }
 }
