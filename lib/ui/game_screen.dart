@@ -110,21 +110,29 @@ class _GameScreenContentState extends State<_GameScreenContent> {
         // appBar: AppBar(),
         body: Stack(
           children: [
-            // The Flame game widget
+            // Background image
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/background.jpg',
+                fit: BoxFit.cover,
+              ),
+            ),
+
+            // The Flame game widget (transparent background)
             Positioned.fill(child: GameWidget(game: _game)),
 
-            // Left side resident panel
+            // Left side resident panel — inset from all edges
             const Positioned(
-              top: 0,
-              bottom: 0,
-              left: 0,
+              top: 14,
+              bottom: 14,
+              left: 14,
               child: ResidentPanel(),
             ),
 
             // Top left controls
             Positioned(
               top: 20,
-              left: 320, // Moved to the right of the resident panel
+              left: 326, // right of panel (14 offset + 290 width + 22 gap)
               child: IconButton(
                 icon: const Icon(
                   Icons.power_settings_new,
