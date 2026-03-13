@@ -9,8 +9,11 @@ class GameState extends Equatable {
   final bool isGameOver;
   final int currentDay;
   final double terroristThreat; // 0.0 to 100.0
-  final int detaineeCount;
+  final int arrestCount;
   final int investigationCount;
+  final int investigationsUsedToday;
+  final int arrestsUsedToday;
+  final int wireTapsUsedToday;
   final double remainingTimeInDay;
   final List<Resident> todayResidents;
 
@@ -35,8 +38,11 @@ class GameState extends Equatable {
     this.isGameOver = false,
     required this.currentDay,
     required this.terroristThreat,
-    required this.detaineeCount,
+    required this.arrestCount,
     required this.investigationCount,
+    this.investigationsUsedToday = 0,
+    this.arrestsUsedToday = 0,
+    this.wireTapsUsedToday = 0,
     required this.remainingTimeInDay,
     required this.todayResidents,
     this.currentReport,
@@ -51,8 +57,11 @@ class GameState extends Equatable {
     return const GameState(
       currentDay: 1,
       terroristThreat: Consts.initialThreatLevel,
-      detaineeCount: 0,
+      arrestCount: 0,
       investigationCount: 0,
+      investigationsUsedToday: 0,
+      arrestsUsedToday: 0,
+      wireTapsUsedToday: 0,
       remainingTimeInDay: Consts.dayDuration,
       todayResidents: [],
     );
@@ -64,8 +73,11 @@ class GameState extends Equatable {
     bool? isGameOver,
     int? currentDay,
     double? terroristThreat,
-    int? detaineeCount,
+    int? arrestCount,
     int? investigationCount,
+    int? investigationsUsedToday,
+    int? arrestsUsedToday,
+    int? wireTapsUsedToday,
     double? remainingTimeInDay,
     List<Resident>? todayResidents,
     IntelligenceReport? currentReport,
@@ -79,8 +91,12 @@ class GameState extends Equatable {
       isGameOver: isGameOver ?? this.isGameOver,
       currentDay: currentDay ?? this.currentDay,
       terroristThreat: terroristThreat ?? this.terroristThreat,
-      detaineeCount: detaineeCount ?? this.detaineeCount,
+      arrestCount: arrestCount ?? this.arrestCount,
       investigationCount: investigationCount ?? this.investigationCount,
+      investigationsUsedToday:
+          investigationsUsedToday ?? this.investigationsUsedToday,
+      arrestsUsedToday: arrestsUsedToday ?? this.arrestsUsedToday,
+      wireTapsUsedToday: wireTapsUsedToday ?? this.wireTapsUsedToday,
       remainingTimeInDay: remainingTimeInDay ?? this.remainingTimeInDay,
       todayResidents: todayResidents ?? this.todayResidents,
       currentReport: currentReport ?? this.currentReport,
@@ -93,14 +109,31 @@ class GameState extends Equatable {
 
   int get remainingTimeInDayInt => remainingTimeInDay.ceil();
 
+  int get remainingInvestigationsToday =>
+      (Consts.maxInvestigationsPerDay - investigationsUsedToday)
+          .clamp(0, Consts.maxInvestigationsPerDay)
+          .toInt();
+
+  int get remainingArrestsToday => (Consts.maxArrestsPerDay - arrestsUsedToday)
+      .clamp(0, Consts.maxArrestsPerDay)
+      .toInt();
+
+  int get remainingWireTapsToday =>
+      (Consts.maxWireTapsPerDay - wireTapsUsedToday)
+          .clamp(0, Consts.maxWireTapsPerDay)
+          .toInt();
+
   @override
   List<Object?> get props => [
     hasStartedGame,
     isGameOver,
     currentDay,
     terroristThreat,
-    detaineeCount,
+    arrestCount,
     investigationCount,
+    investigationsUsedToday,
+    arrestsUsedToday,
+    wireTapsUsedToday,
     remainingTimeInDay,
     todayResidents,
     currentReport,

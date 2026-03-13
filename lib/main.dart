@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'app_typography.dart';
 import 'game/game_cubit.dart';
-import 'ui/intro_screen.dart';
+import 'screens/intro_screen.dart';
 
 void main() {
   runApp(const BigBrotherApp());
@@ -16,7 +17,9 @@ class BigBrotherApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // BlocProvider here ensures the cubit — and the residents it holds — survive
     // navigation between IntroScreen and GameScreen for the lifetime of the app.
-    final ubuntuMonoTheme = GoogleFonts.ubuntuMonoTextTheme();
+    final ubuntuMonoTheme = GoogleFonts.ubuntuMonoTextTheme().apply(
+      fontFamily: AppTypography.ubuntuMonoFamily,
+    );
     return BlocProvider(
       create: (_) => GameCubit(),
       child: MaterialApp(
@@ -25,7 +28,7 @@ class BigBrotherApp extends StatelessWidget {
           brightness: Brightness.dark,
           scaffoldBackgroundColor: Colors.black,
           // Global font for the whole game.
-          fontFamily: GoogleFonts.ubuntuMono().fontFamily,
+          fontFamily: AppTypography.ubuntuMonoFamily,
           textTheme: ubuntuMonoTheme,
           primaryTextTheme: ubuntuMonoTheme,
           colorScheme: const ColorScheme.dark(
@@ -39,7 +42,7 @@ class BigBrotherApp extends StatelessWidget {
               side: const BorderSide(color: Colors.greenAccent),
               backgroundColor: Colors.black,
               foregroundColor: Colors.greenAccent,
-              textStyle: const TextStyle(
+              textStyle: AppTypography.mono(
                 fontWeight: FontWeight.bold,
                 letterSpacing: 2,
               ),
@@ -50,16 +53,14 @@ class BigBrotherApp extends StatelessWidget {
             shape: const BeveledRectangleBorder(
               side: BorderSide(color: Colors.greenAccent, width: 2),
             ),
-            titleTextStyle: TextStyle(
+            titleTextStyle: AppTypography.mono(
               color: Colors.greenAccent,
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              fontFamily: GoogleFonts.ubuntuMono().fontFamily,
             ),
-            contentTextStyle: TextStyle(
+            contentTextStyle: AppTypography.mono(
               color: Colors.greenAccent,
               fontSize: 16,
-              fontFamily: GoogleFonts.ubuntuMono().fontFamily,
             ),
           ),
         ),
