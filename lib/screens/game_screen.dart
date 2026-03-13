@@ -135,7 +135,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                         alignment: Alignment.topLeft,
                         child: IconButton(
                           icon: const Icon(
-                            Icons.arrow_back,
+                            Icons.power_settings_new,
                             color: Colors.greenAccent,
                           ),
                           tooltip: 'Home Screen',

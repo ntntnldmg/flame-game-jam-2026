@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,7 +34,7 @@ class _IntroScreenState extends State<IntroScreen> {
   final List<_CreditScreenData> _credits = const [
     _CreditScreenData.image('assets/images/flame_icon.png', imageWidth: 320),
     _CreditScreenData.text('Programming', 'Mussie Alemayehu'),
-    _CreditScreenData.text('Artwork', 'Hopefully Someone'),
+    _CreditScreenData.text('Writing', 'AChenM'),
     _CreditScreenData.text('Music, writing, creative direction', 'NTNTNLDMG'),
   ];
 
@@ -221,7 +223,7 @@ class _IntroScreenState extends State<IntroScreen> {
                             credit.title!,
                             style: AppTypography.mono(
                               color: Colors.white,
-                              fontSize: 56,
+                              fontSize: 42,
                               letterSpacing: 2,
                               fontWeight: FontWeight.w600,
                             ),
@@ -232,7 +234,7 @@ class _IntroScreenState extends State<IntroScreen> {
                             credit.subtitle!,
                             style: AppTypography.mono(
                               color: Colors.white,
-                              fontSize: 26,
+                              fontSize: 56,
                               letterSpacing: 1,
                               fontWeight: FontWeight.w600,
                             ),
@@ -249,15 +251,10 @@ class _IntroScreenState extends State<IntroScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'Terrorist Threat',
-                  style: AppTypography.mono(
-                    fontSize: 84,
-                    color: Colors.white,
-                    letterSpacing: 3.2,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
+                Image.asset(
+                  'assets/images/logo.png',
+                  width: min(800, MediaQuery.of(context).size.width * 0.8),
+                  errorBuilder: (_, _, _) => const SizedBox.shrink(),
                 ),
                 if (showMenu) ...[
                   const SizedBox(height: 60),

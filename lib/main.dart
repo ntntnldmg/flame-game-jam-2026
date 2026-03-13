@@ -23,7 +23,7 @@ class BigBrotherApp extends StatelessWidget {
     return BlocProvider(
       create: (_) => GameCubit(),
       child: MaterialApp(
-        title: 'Big Brother Game',
+        title: 'Terrorist Threat',
         theme: ThemeData(
           brightness: Brightness.dark,
           scaffoldBackgroundColor: Colors.black,

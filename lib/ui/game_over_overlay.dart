@@ -47,7 +47,7 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "WE'VE WARNED YOU",
+                    "CRIME PARADOX",
                     style: AppTypography.mono(
                       color: Colors.redAccent,
                       fontSize: 48,

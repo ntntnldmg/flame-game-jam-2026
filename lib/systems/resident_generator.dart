@@ -65,7 +65,7 @@ class ResidentGenerator {
     List<Resident> residents = [];
     for (int i = 0; i < count; i++) {
       final id =
-          'ID-${_random.nextInt(Consts.residentIdRange) + Consts.residentIdBase}';
+          '${_random.nextInt(Consts.residentIdRange) + Consts.residentIdBase}';
 
       final riskScore = _random.nextDouble() < Consts.generatedHighRiskChance
           ? Consts.generatedHighRiskMin +
