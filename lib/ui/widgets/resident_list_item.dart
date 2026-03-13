@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../app_typography.dart';
 import '../../consts.dart';
 import '../../models/resident.dart';
-import '../painters.dart';
 
 class ResidentListItem extends StatefulWidget {
   final Resident resident;
@@ -47,30 +47,14 @@ class _ResidentListItemState extends State<ResidentListItem> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      width: 72,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 72,
-                            height: 28,
-                            child: CustomPaint(
-                              painter: BarcodePainter(dimmed: dimmed),
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            resident.id,
-                            style: TextStyle(
-                              color: dimmed
-                                  ? AppColors.green.withAlpha(60)
-                                  : AppColors.green.withAlpha(150),
-                              fontSize: 8,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                        ],
+                    Text(
+                      resident.id,
+                      style: AppTypography.barcode39(
+                        color: dimmed
+                            ? AppColors.green.withAlpha(60)
+                            : AppColors.green.withAlpha(150),
+                        fontSize: 24,
+                        letterSpacing: 3,
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -92,11 +76,11 @@ class _ResidentListItemState extends State<ResidentListItem> {
                               Expanded(
                                 child: Text(
                                   resident.name.toUpperCase(),
-                                  style: TextStyle(
+                                  style: AppTypography.mono(
                                     color: dimmed
                                         ? AppColors.bluishWhite.withAlpha(50)
                                         : AppColors.bluishWhite,
-                                    fontSize: 13,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 0.5,
                                   ),
@@ -108,36 +92,36 @@ class _ResidentListItemState extends State<ResidentListItem> {
                           if (resident.isArrestPending)
                             Text(
                               'ARREST WARRANT IN PROGRESS',
-                              style: TextStyle(
+                              style: AppTypography.mono(
                                 color: AppColors.red.withAlpha(180),
-                                fontSize: 10,
+                                fontSize: 13,
                                 letterSpacing: 0.6,
                               ),
                             )
                           else if (resident.isInvestigationPending)
                             Text(
                               'INVESTIGATION IN PROGRESS',
-                              style: TextStyle(
+                              style: AppTypography.mono(
                                 color: AppColors.green.withAlpha(200),
-                                fontSize: 10,
+                                fontSize: 13,
                                 letterSpacing: 0.6,
                               ),
                             )
                           else if (dimmed)
                             Text(
                               '[ARRESTED]',
-                              style: TextStyle(
+                              style: AppTypography.mono(
                                 color: AppColors.red.withAlpha(160),
-                                fontSize: 10,
+                                fontSize: 13,
                                 letterSpacing: 1,
                               ),
                             )
                           else
                             Text(
                               '${resident.occupation.toUpperCase()} // ${resident.district.toUpperCase()}',
-                              style: TextStyle(
+                              style: AppTypography.mono(
                                 color: AppColors.green.withAlpha(190),
-                                fontSize: 10,
+                                fontSize: 13,
                                 letterSpacing: 0.4,
                               ),
                             ),
@@ -168,7 +152,7 @@ class _ResidentListItemState extends State<ResidentListItem> {
                         ),
                         child: Text(
                           '!',
-                          style: TextStyle(
+                          style: AppTypography.mono(
                             color: AppColors.bluishWhite,
                             fontSize: 11,
                             fontWeight: FontWeight.bold,

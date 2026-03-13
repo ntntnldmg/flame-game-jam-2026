@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:bigbrother/app_typography.dart';
 import 'package:bigbrother/consts.dart';
 import 'package:flutter/material.dart';
 
@@ -36,7 +37,7 @@ class DayCounterWidget extends StatelessWidget {
             children: [
               Text(
                 'DAY',
-                style: TextStyle(
+                style: AppTypography.mono(
                   color: AppColors.bluishWhite,
                   fontSize: size * 0.13,
                   fontWeight: FontWeight.bold,
@@ -46,7 +47,7 @@ class DayCounterWidget extends StatelessWidget {
               ),
               Text(
                 '$day',
-                style: TextStyle(
+                style: AppTypography.mono(
                   color: AppColors.bluishWhite,
                   fontSize: size * 0.23,
                   fontWeight: FontWeight.bold,

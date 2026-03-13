@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app_typography.dart';
 import '../../consts.dart';
 
 class ResidentDatabaseHeader extends StatelessWidget {
@@ -24,7 +25,7 @@ class ResidentDatabaseHeader extends StatelessWidget {
             ),
             child: Text(
               'RESIDENT DATABASE',
-              style: TextStyle(
+              style: AppTypography.mono(
                 color: AppColors.green,
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
@@ -43,7 +44,7 @@ class ResidentDatabaseHeader extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: Text(
                 '$entryCount entries',
-                style: TextStyle(
+                style: AppTypography.mono(
                   color: AppColors.bluishWhite.withAlpha(150),
                   fontSize: 11,
                   letterSpacing: 1,

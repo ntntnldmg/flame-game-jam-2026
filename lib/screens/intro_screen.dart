@@ -2,6 +2,7 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../app_typography.dart';
 import '../audio/audio_settings.dart';
 import '../game/game_cubit.dart';
 import '../game/game_state.dart';
@@ -218,7 +219,7 @@ class _IntroScreenState extends State<IntroScreen> {
                         children: [
                           Text(
                             credit.title!,
-                            style: const TextStyle(
+                            style: AppTypography.mono(
                               color: Colors.white,
                               fontSize: 56,
                               letterSpacing: 2,
@@ -229,7 +230,7 @@ class _IntroScreenState extends State<IntroScreen> {
                           const SizedBox(height: 30),
                           Text(
                             credit.subtitle!,
-                            style: const TextStyle(
+                            style: AppTypography.mono(
                               color: Colors.white,
                               fontSize: 26,
                               letterSpacing: 1,
@@ -248,9 +249,9 @@ class _IntroScreenState extends State<IntroScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Terrorist Threat',
-                  style: TextStyle(
+                  style: AppTypography.mono(
                     fontSize: 84,
                     color: Colors.white,
                     letterSpacing: 3.2,
@@ -312,9 +313,9 @@ class _SoundPrompt extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'Enable Sound',
-              style: TextStyle(
+              style: AppTypography.mono(
                 color: Colors.white,
                 fontSize: 32,
                 letterSpacing: 2,
@@ -353,7 +354,7 @@ class _MenuButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Text(
             label,
-            style: const TextStyle(fontSize: 22, color: Colors.white),
+            style: AppTypography.mono(fontSize: 22, color: Colors.white),
             textAlign: TextAlign.center,
           ),
         ),

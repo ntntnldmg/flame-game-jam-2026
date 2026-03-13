@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../app_typography.dart';
 import '../../consts.dart';
 import '../../game/game_cubit.dart';
 import '../../game/game_state.dart';
 import '../../models/resident.dart';
-import '../painters.dart';
 
 class ResidentDetailsPanel extends StatelessWidget {
   final Resident resident;
@@ -77,34 +77,20 @@ class ResidentDetailsPanel extends StatelessWidget {
                 children: [
                   const SizedBox(height: 10),
                   Center(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          width: 198,
-                          height: 38,
-                          child: CustomPaint(
-                            painter: BarcodePainter(
-                              dimmed: resident.isArrested,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          resident.id,
-                          style: TextStyle(
-                            color: AppColors.green.withAlpha(180),
-                            fontSize: 12,
-                            letterSpacing: 8,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
+                    child: Text(
+                      resident.id,
+                      style: AppTypography.barcode39(
+                        color: AppColors.green.withAlpha(180),
+                        fontSize: 32,
+                        letterSpacing: 6,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 28),
                   RichText(
                     text: TextSpan(
-                      style: TextStyle(
+                      style: AppTypography.mono(
                         color: AppColors.green.withAlpha(180),
                         fontSize: 18,
                         letterSpacing: 0.6,
@@ -148,7 +134,7 @@ class ResidentDetailsPanel extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 6),
                       child: Text(
                         'ESTIMATED RISK: ${resident.riskScore.toStringAsFixed(1)}%',
-                        style: TextStyle(
+                        style: AppTypography.mono(
                           color: resident.riskScore > Consts.arrestGoodThreshold
                               ? AppColors.red
                               : AppColors.bluishWhite,
@@ -163,7 +149,7 @@ class ResidentDetailsPanel extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 6),
                       child: Text(
                         'WIRE TAP INSTALLED',
-                        style: TextStyle(
+                        style: AppTypography.mono(
                           color: AppColors.green,
                           fontSize: 15,
                           letterSpacing: 0.8,
@@ -247,7 +233,7 @@ class _DetailLine extends StatelessWidget {
           width: 92,
           child: Text(
             '$label:',
-            style: TextStyle(
+            style: AppTypography.mono(
               color: AppColors.green.withAlpha(190),
               fontSize: 14,
               letterSpacing: 0.7,
@@ -258,7 +244,7 @@ class _DetailLine extends StatelessWidget {
         Expanded(
           child: Text(
             value,
-            style: TextStyle(
+            style: AppTypography.mono(
               color: AppColors.bluishWhite,
               fontSize: 14,
               letterSpacing: 0.6,
@@ -312,7 +298,7 @@ class _ResidentActionButtonState extends State<_ResidentActionButton> {
           alignment: Alignment.center,
           child: Text(
             widget.label,
-            style: TextStyle(
+            style: AppTypography.mono(
               color: active
                   ? AppColors.bluishWhite.withAlpha(220)
                   : AppColors.bluishWhite.withAlpha(90),

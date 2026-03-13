@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../app_typography.dart';
 import '../game/game_cubit.dart';
 import '../game/game_state.dart';
 
@@ -45,9 +46,9 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
+                  Text(
                     "WE'VE WARNED YOU",
-                    style: TextStyle(
+                    style: AppTypography.mono(
                       color: Colors.redAccent,
                       fontSize: 48,
                       fontWeight: FontWeight.bold,
@@ -58,30 +59,39 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                   if (_showStats) ...[
                     Text(
                       'Days Survived: ${state.currentDay}',
-                      style: const TextStyle(color: Colors.white, fontSize: 22),
+                      style: AppTypography.mono(
+                        color: Colors.white,
+                        fontSize: 22,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Total Arrests: ${state.arrestCount}',
-                      style: const TextStyle(color: Colors.white, fontSize: 22),
+                      style: AppTypography.mono(
+                        color: Colors.white,
+                        fontSize: 22,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Investigations Performed: ${state.investigationCount}',
-                      style: const TextStyle(color: Colors.white, fontSize: 22),
+                      style: AppTypography.mono(
+                        color: Colors.white,
+                        fontSize: 22,
+                      ),
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: () =>
                           context.read<GameCubit>().restartSimulation(),
-                      child: const Padding(
+                      child: Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 14,
                         ),
                         child: Text(
                           'RESTART SIMULATION',
-                          style: TextStyle(fontSize: 20),
+                          style: AppTypography.mono(fontSize: 20),
                         ),
                       ),
                     ),
