@@ -221,7 +221,6 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                             Icons.power_settings_new,
                             color: AppColors.green,
                           ),
-                          tooltip: 'Home Screen',
                           onPressed: () async {
                             final navigator = Navigator.of(context);
                             await _stopGameplayMusic();

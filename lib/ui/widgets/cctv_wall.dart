@@ -1,46 +1,123 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'cctv_screen_tile.dart';
 
-class CctvWall extends StatelessWidget {
+class CctvWall extends StatefulWidget {
   const CctvWall({super.key});
 
-  static const String _stamp = '2064-18-04 12:08:45.627';
+  @override
+  State<CctvWall> createState() => _CctvWallState();
+}
+
+class _CctvWallState extends State<CctvWall> {
+  static final Random _random = Random();
+
   static const double _spacing = 2;
+  static const double _tileAspectRatio = 16 / 9;
+  static const _baseDate = (year: 2064, month: 4, day: 18);
+  static const _feeds = [
+    ('assets/images/cam1.png', 1),
+    ('assets/images/cam2.png', 2),
+    ('assets/images/cam3.png', 3),
+    ('assets/images/cam4.png', 4),
+  ];
+
+  final DateTime _mountedAt = DateTime.now();
+  late final List<DateTime> _cameraStartTimes;
+  Timer? _ticker;
+  DateTime _now = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _cameraStartTimes = List<DateTime>.generate(
+      _feeds.length,
+      (_) => _randomStartTime(),
+    );
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      setState(() => _now = DateTime.now());
+    });
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
+
+  DateTime _randomStartTime() {
+    final hour = 10 + _random.nextInt(8); // 10..17
+    final minute = _random.nextInt(60);
+    final second = _random.nextInt(60);
+    final millisecond = _random.nextInt(1000);
+    return DateTime(
+      _baseDate.year,
+      _baseDate.month,
+      _baseDate.day,
+      hour,
+      minute,
+      second,
+      millisecond,
+    );
+  }
+
+  String _timestampForCamera(int index) {
+    final elapsed = _now.difference(_mountedAt);
+    final time = _cameraStartTimes[index].add(elapsed);
+    final yyyy = time.year.toString().padLeft(4, '0');
+    final dd = time.day.toString().padLeft(2, '0');
+    final mm = time.month.toString().padLeft(2, '0');
+    final hh = time.hour.toString().padLeft(2, '0');
+    final min = time.minute.toString().padLeft(2, '0');
+    final ss = time.second.toString().padLeft(2, '0');
+    final ms = time.millisecond.toString().padLeft(3, '0');
+    return '$yyyy-$dd-$mm $hh:$min:$ss.$ms';
+  }
 
   @override
   Widget build(BuildContext context) {
-    const feeds = [
-      ('assets/images/cam1.jpg', 1),
-      ('assets/images/cam2.jpg', 2),
-      ('assets/images/cam3.jpg', 3),
-      ('assets/images/cam4.jpg', 4),
-      ('assets/images/cam5.jpg', 5),
-      ('assets/images/cam6.jpg', 6),
-    ];
-
     return LayoutBuilder(
       builder: (context, constraints) {
-        final tileWidth = (constraints.maxWidth - _spacing) / 2;
-        final tileHeight = (constraints.maxHeight - (_spacing * 2)) / 3;
-        final childAspectRatio = tileWidth / tileHeight;
+        const columns = 2;
+        final rows = (_feeds.length / columns).ceil();
 
-        return GridView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: feeds.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: _spacing,
-            crossAxisSpacing: _spacing,
-            childAspectRatio: childAspectRatio,
+        final tileWidthByWidth =
+            (constraints.maxWidth - (_spacing * (columns - 1))) / columns;
+        final tileWidthByHeight =
+            ((constraints.maxHeight - (_spacing * (rows - 1))) / rows) *
+            _tileAspectRatio;
+        final tileWidth = min(tileWidthByWidth, tileWidthByHeight);
+        final tileHeight = tileWidth / _tileAspectRatio;
+
+        final wallWidth = (tileWidth * columns) + (_spacing * (columns - 1));
+        final wallHeight = (tileHeight * rows) + (_spacing * (rows - 1));
+
+        return Center(
+          child: SizedBox(
+            width: wallWidth,
+            height: wallHeight,
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _feeds.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: _spacing,
+                crossAxisSpacing: _spacing,
+                childAspectRatio: _tileAspectRatio,
+              ),
+              itemBuilder: (context, index) {
+                return CctvScreenTile(
+                  cameraNumber: _feeds[index].$2,
+                  imageAsset: _feeds[index].$1,
+                  timestamp: _timestampForCamera(index),
+                );
+              },
+            ),
           ),
-          itemBuilder: (context, index) {
-            return CctvScreenTile(
-              cameraNumber: feeds[index].$2,
-              imageAsset: feeds[index].$1,
-              timestamp: _stamp,
-            );
-          },
         );
       },
     );
