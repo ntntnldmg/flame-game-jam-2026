@@ -133,6 +133,11 @@ class NewsReportGenerator {
 
   static List<int> _remainingIndices = [];
 
+  /// Resets the shuffled bag so a new simulation starts fresh.
+  static void resetCycle() {
+    _remainingIndices = [];
+  }
+
   static NewsReport generate(int day) {
     if (_remainingIndices.isEmpty) {
       _remainingIndices = List<int>.generate(_templates.length, (i) => i)

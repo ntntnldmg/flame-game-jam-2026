@@ -61,11 +61,22 @@ class GameCubit extends Cubit<GameState> {
 
   void startNewSimulation() {
     _resetInternalTimers();
+    NewsReportGenerator.resetCycle();
     emit(_freshSimulationState());
   }
 
   void restartSimulation() {
-    startNewSimulation();
+    _resetInternalTimers();
+    NewsReportGenerator.resetCycle();
+
+    // Two-phase reset prevents overlay route races:
+    // 1) clear game-over/pending flags and return to a pristine state
+    // 2) on the next microtask, start a fresh simulation (day 1 reports etc.)
+    emit(GameState.initial());
+    Future.microtask(() {
+      if (isClosed) return;
+      emit(_freshSimulationState());
+    });
   }
 
   void _startNewDay({required int newDay, required double currentThreat}) {
