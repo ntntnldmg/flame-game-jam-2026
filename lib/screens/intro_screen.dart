@@ -8,6 +8,7 @@ import '../app_typography.dart';
 import '../audio/audio_settings.dart';
 import '../game/game_cubit.dart';
 import '../game/game_state.dart';
+import 'exposition_screen.dart';
 import 'game_screen.dart';
 
 /// The introduction screen shown when the app starts.
@@ -273,10 +274,9 @@ class _IntroScreenState extends State<IntroScreen> {
                   _MenuButton(
                     label: 'New game',
                     onPressed: () {
-                      context.read<GameCubit>().startNewSimulation();
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                          builder: (context) => const GameScreen(),
+                          builder: (context) => const ExpositionScreen(),
                         ),
                       );
                     },
