@@ -29,12 +29,20 @@ class GameCubit extends Cubit<GameState> {
   double _threatPauseRemaining = 0.0;
 
   GameState _freshSimulationState() {
+    final newsReport = NewsReportGenerator.generate(1);
+    final report = ReportGenerator.generate(1);
+
     return GameState.initial().copyWith(
       hasStartedGame: true,
       isGameOver: false,
       todayResidents: ResidentGenerator.generateDailyResidents(
         Consts.residentsPerDay,
       ),
+      currentNewsReport: newsReport,
+      isNewsReportPending: true,
+      currentReport: report,
+      isReportPending: false,
+      isCctvEventPending: false,
     );
   }
 

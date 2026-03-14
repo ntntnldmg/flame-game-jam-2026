@@ -17,7 +17,7 @@ class GameState extends Equatable {
   final double remainingTimeInDay;
   final List<Resident> todayResidents;
 
-  /// The active intelligence briefing for the current day. Null on day 1.
+  /// The active intelligence briefing for the current day.
   final IntelligenceReport? currentReport;
 
   /// The active atmospheric news bulletin for the current day.
