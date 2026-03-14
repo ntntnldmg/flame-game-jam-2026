@@ -88,129 +88,132 @@ class _CCTVOverlayState extends State<CCTVOverlay>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.cctvScrim,
-      child: Column(
-        children: [
-          // Header bar
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-            decoration: BoxDecoration(
-              color: AppColors.black,
-              border: const Border(
-                bottom: BorderSide(color: AppColors.green, width: 2),
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        color: AppColors.cctvScrim,
+        child: Column(
+          children: [
+            // Header bar
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              decoration: BoxDecoration(
+                color: AppColors.black,
+                border: const Border(
+                  bottom: BorderSide(color: AppColors.green, width: 2),
+                ),
               ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'CCTV // SECTOR 7 LIVE FEED',
-                  style: TextStyle(
-                    color: AppColors.green,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'CCTV // SECTOR 7 LIVE FEED',
+                    style: TextStyle(
+                      color: AppColors.green,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                    ),
                   ),
-                ),
-                Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: AppColors.red,
-                        shape: BoxShape.circle,
+                  Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: AppColors.red,
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 6),
-                    const Text(
-                      'REC',
-                      style: TextStyle(
-                        color: AppColors.red,
-                        fontSize: 13,
-                        letterSpacing: 2,
+                      const SizedBox(width: 6),
+                      const Text(
+                        'REC',
+                        style: TextStyle(
+                          color: AppColors.red,
+                          fontSize: 13,
+                          letterSpacing: 2,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // Scanline instruction
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Text(
-              _targetVisible
-                  ? 'THREAT DETECTED — TAP TO NEUTRALISE'
-                  : 'SCANNING CROWD...',
-              style: TextStyle(
-                color: _targetVisible ? AppColors.red : AppColors.textMuted,
-                fontSize: 14,
-                letterSpacing: 2,
+                    ],
+                  ),
+                ],
               ),
             ),
-          ),
 
-          // Click-window countdown bar — visible only once target is live.
-          if (_targetVisible)
+            // Scanline instruction
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: AnimatedBuilder(
-                animation: _timerController,
-                builder: (_, _) => LinearProgressIndicator(
-                  value: 1.0 - _timerController.value,
-                  backgroundColor: AppColors.textDisabled,
-                  valueColor: AlwaysStoppedAnimation(
-                    _timerController.value > 0.6
-                        ? AppColors.red
-                        : AppColors.green,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                _targetVisible
+                    ? 'THREAT DETECTED — TAP TO NEUTRALISE'
+                    : 'SCANNING CROWD...',
+                style: TextStyle(
+                  color: _targetVisible ? AppColors.red : AppColors.textMuted,
+                  fontSize: 14,
+                  letterSpacing: 2,
+                ),
+              ),
+            ),
+
+            // Click-window countdown bar — visible only once target is live.
+            if (_targetVisible)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: AnimatedBuilder(
+                  animation: _timerController,
+                  builder: (_, _) => LinearProgressIndicator(
+                    value: 1.0 - _timerController.value,
+                    backgroundColor: AppColors.textDisabled,
+                    valueColor: AlwaysStoppedAnimation(
+                      _timerController.value > 0.6
+                          ? AppColors.red
+                          : AppColors.green,
+                    ),
+                    minHeight: 6,
                   ),
-                  minHeight: 6,
+                ),
+              ),
+
+            const SizedBox(height: 16),
+
+            // CCTV face grid
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 120,
+                    mainAxisSpacing: 20,
+                    crossAxisSpacing: 20,
+                  ),
+                  itemCount: _faceCount,
+                  itemBuilder: (_, index) {
+                    final isTarget = index == _targetIndex && _targetVisible;
+                    return GestureDetector(
+                      onTap: isTarget ? () => _resolve(success: true) : null,
+                      child: _FaceCell(isTarget: isTarget),
+                    );
+                  },
                 ),
               ),
             ),
 
-          const SizedBox(height: 16),
-
-          // CCTV face grid
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 120,
-                  mainAxisSpacing: 20,
-                  crossAxisSpacing: 20,
+            // Static noise footer label
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20, top: 12),
+              child: Text(
+                'MINISTRY OF SECURITY — INTERNAL NETWORK //  AUTHORISED ONLY',
+                style: TextStyle(
+                  color: AppColors.textLowEmphasis,
+                  fontSize: 11,
+                  letterSpacing: 1.4,
                 ),
-                itemCount: _faceCount,
-                itemBuilder: (_, index) {
-                  final isTarget = index == _targetIndex && _targetVisible;
-                  return GestureDetector(
-                    onTap: isTarget ? () => _resolve(success: true) : null,
-                    child: _FaceCell(isTarget: isTarget),
-                  );
-                },
               ),
             ),
-          ),
-
-          // Static noise footer label
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20, top: 12),
-            child: Text(
-              'MINISTRY OF SECURITY — INTERNAL NETWORK //  AUTHORISED ONLY',
-              style: TextStyle(
-                color: AppColors.textLowEmphasis,
-                fontSize: 11,
-                letterSpacing: 1.4,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

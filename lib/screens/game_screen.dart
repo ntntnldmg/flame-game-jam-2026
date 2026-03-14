@@ -13,6 +13,8 @@ import '../ui/cctv_overlay.dart';
 import '../ui/intelligence_report_overlay.dart';
 import '../ui/news_report_overlay.dart';
 import '../ui/game_over_overlay.dart';
+import '../ui/widgets/breaking_news_ticker.dart';
+import '../ui/widgets/cctv_wall.dart';
 import '../ui/widgets/top_status_hud.dart';
 
 /// The main screen where the game is rendered.
@@ -208,7 +210,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
             Positioned.fill(
               child: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.fromLTRB(14, 14, 14, 52),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -266,13 +268,24 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                                 return TopStatusHud(state: state);
                               },
                             ),
-                            const Spacer(),
+                            const SizedBox(height: 16),
+                            const Expanded(child: CctvWall()),
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
+              ),
+            ),
+
+            const Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: BreakingNewsTicker(
+                headline:
+                    'Detained father of four claims innocence: "I was only trying to buy a pair of pliers for my garden!"',
               ),
             ),
 
