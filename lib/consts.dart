@@ -67,6 +67,13 @@ class AppColors {
   /// News/intel panel surfaces.
   static const Color reportPanelBackground = Color(0xFF020402);
 
+  /// Epilogue newspaper styling.
+  static const Color newspaperPaper = Color(0xFFF2F0EC);
+  static const Color newspaperInk = Color(0xFF2F3138);
+  static const Color newspaperAccent = Color(0xFFE6656E);
+  static const Color newspaperRule = Color(0xFFD8C8C8);
+  static const Color newspaperImageBackground = Color(0xFFA8C6CD);
+
   /// Utility aliases.
   static const Color danger = red;
   static const Color success = green;
@@ -74,7 +81,7 @@ class AppColors {
 
 class Consts {
   // --- Core progression ---
-  static const double dayDuration = 300.0;
+  static const double dayDuration = 10.0;
   static const double minThreatLevel = 0.0;
   static const double maxThreatLevel = 100.0;
 

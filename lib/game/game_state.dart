@@ -33,6 +33,9 @@ class GameState extends Equatable {
   /// True while the CCTV surveillance mini-game overlay is active.
   final bool isCctvEventPending;
 
+  /// True while the endgame epilogue sequence is being shown.
+  final bool isEpiloguePending;
+
   const GameState({
     this.hasStartedGame = false,
     this.isGameOver = false,
@@ -50,6 +53,7 @@ class GameState extends Equatable {
     this.isNewsReportPending = false,
     this.isReportPending = false,
     this.isCctvEventPending = false,
+    this.isEpiloguePending = false,
   });
 
   /// Factory for the initial game state.
@@ -85,6 +89,7 @@ class GameState extends Equatable {
     bool? isNewsReportPending,
     bool? isReportPending,
     bool? isCctvEventPending,
+    bool? isEpiloguePending,
   }) {
     return GameState(
       hasStartedGame: hasStartedGame ?? this.hasStartedGame,
@@ -104,6 +109,7 @@ class GameState extends Equatable {
       isNewsReportPending: isNewsReportPending ?? this.isNewsReportPending,
       isReportPending: isReportPending ?? this.isReportPending,
       isCctvEventPending: isCctvEventPending ?? this.isCctvEventPending,
+      isEpiloguePending: isEpiloguePending ?? this.isEpiloguePending,
     );
   }
 
@@ -141,5 +147,6 @@ class GameState extends Equatable {
     isNewsReportPending,
     isReportPending,
     isCctvEventPending,
+    isEpiloguePending,
   ];
 }
