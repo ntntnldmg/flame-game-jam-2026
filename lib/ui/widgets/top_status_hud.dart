@@ -2,7 +2,7 @@ import 'package:bigbrother/app_typography.dart';
 import 'package:bigbrother/consts.dart';
 import 'package:flutter/material.dart';
 
-import '../game/game_state.dart';
+import '../../game/game_state.dart';
 import 'day_counter_widget.dart';
 
 class TopStatusHud extends StatelessWidget {

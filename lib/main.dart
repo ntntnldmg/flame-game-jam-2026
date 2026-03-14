@@ -51,7 +51,7 @@ class BigBrotherApp extends StatelessWidget {
           ),
           dialogTheme: const DialogThemeData(
             backgroundColor: AppColors.surface,
-            shape: const BeveledRectangleBorder(
+            shape: BeveledRectangleBorder(
               side: BorderSide(color: AppColors.green, width: 2),
             ),
             titleTextStyle: TextStyle(

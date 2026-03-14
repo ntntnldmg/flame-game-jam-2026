@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../consts.dart';
-import '../game/game_cubit.dart';
-import '../game/game_state.dart';
-import '../models/resident.dart';
-import 'widgets/resident_database_header.dart';
-import 'widgets/resident_details_panel.dart';
-import 'widgets/resident_list_item.dart';
+import '../../consts.dart';
+import '../../game/game_cubit.dart';
+import '../../game/game_state.dart';
+import '../../models/resident.dart';
+import 'resident_database_header.dart';
+import 'resident_details_panel.dart';
+import 'resident_list_item.dart';
 
 class ResidentPanel extends StatefulWidget {
   const ResidentPanel({super.key});

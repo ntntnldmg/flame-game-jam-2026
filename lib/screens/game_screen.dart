@@ -8,12 +8,12 @@ import '../game/big_brother_game.dart';
 import '../game/game_cubit.dart';
 import '../game/game_state.dart';
 import 'intro_screen.dart';
-import '../ui/resident_panel.dart';
+import '../ui/widgets/resident_panel.dart';
 import '../ui/cctv_overlay.dart';
 import '../ui/intelligence_report_overlay.dart';
 import '../ui/news_report_overlay.dart';
 import '../ui/game_over_overlay.dart';
-import '../ui/top_status_hud.dart';
+import '../ui/widgets/top_status_hud.dart';
 
 /// The main screen where the game is rendered.
 class GameScreen extends StatelessWidget {
