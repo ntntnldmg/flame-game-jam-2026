@@ -432,7 +432,7 @@ class GameCubit extends Cubit<GameState> {
       }
     }
 
-    return releasedThreat / 12;
+    return releasedThreat / 9;
   }
 
   Resident? _findResidentById(String id) {
