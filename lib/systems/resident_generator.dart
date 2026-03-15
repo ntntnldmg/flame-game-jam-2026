@@ -12,23 +12,8 @@ class ResidentGenerator {
   static const List<String> _lastNames = GameScript.lastNames;
   static const List<String> _sexes = ['Male', 'Female'];
   static const List<String> _occupations = GameScript.occupations;
-  static const List<String> _streets = [
-    'Oak Street',
-    'Maple Avenue',
-    'River Road',
-    'Sunset Lane',
-    'Central Boulevard',
-    'Harbor Street',
-    'Market Street',
-    'Hillcrest Road',
-  ];
-  static const List<String> _districts = [
-    'North District',
-    'South District',
-    'East District',
-    'West District',
-    'Central District',
-  ];
+  static const Map<String,List<String>> _streets = GameScript.streetNames;
+  static const List<String> _districts = GameScript.districtNames;
 
   static List<Resident> generateDailyResidents(int count) {
     List<Resident> residents = [];
@@ -47,8 +32,8 @@ class ResidentGenerator {
 				_femaleFirstNames[_random.nextInt(_femaleFirstNames.length)];
 			final lastName = _lastNames[_random.nextInt(_lastNames.length)];
       final age = 18 + _random.nextInt(53);
-      final street = _streets[_random.nextInt(_streets.length)];
       final district = _districts[_random.nextInt(_districts.length)];
+      final street = _streets[district]![_random.nextInt(_streets[district]!.length)];
       final phoneNumber =
           '+000-${_random.nextInt(900) + 100}-${_random.nextInt(9000) + 1000}';
 
