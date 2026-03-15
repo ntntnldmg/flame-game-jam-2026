@@ -1,12 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../../app_typography.dart';
 import '../../consts.dart';
+import '../../game_script.dart';
 
 class BreakingNewsTicker extends StatefulWidget {
-  final String headline;
-
-  const BreakingNewsTicker({super.key, required this.headline});
+  const BreakingNewsTicker({super.key});
 
   @override
   State<BreakingNewsTicker> createState() => _BreakingNewsTickerState();
@@ -14,16 +15,29 @@ class BreakingNewsTicker extends StatefulWidget {
 
 class _BreakingNewsTickerState extends State<BreakingNewsTicker>
     with SingleTickerProviderStateMixin {
+  static final Random _random = Random();
+
   late final AnimationController _controller;
+  late final List<String> _gameplayBulletins;
+
   static const double _height = 40;
+  int _currentHeadlineIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 24),
-    )..repeat();
+    _gameplayBulletins = _buildGameplayBulletins();
+
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 24))
+          ..addStatusListener((status) {
+            if (status != AnimationStatus.completed || !mounted) return;
+            setState(() {
+              _currentHeadlineIndex =
+                  (_currentHeadlineIndex + 1) % _gameplayBulletins.length;
+            });
+          })
+          ..repeat();
   }
 
   @override
@@ -34,8 +48,7 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
 
   @override
   Widget build(BuildContext context) {
-    final tickerText =
-        '${widget.headline.toUpperCase()}';
+    final tickerText = _gameplayBulletins[_currentHeadlineIndex].toUpperCase();
 
     return Container(
       height: _height,
@@ -115,6 +128,44 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
       maxLines: 1,
     )..layout();
     return painter.width;
+  }
+
+  List<String> _buildGameplayBulletins() {
+    final allBulletins = GameScript.newsBulletins.values
+        .expand((entries) => entries)
+        .toList();
+
+    if (allBulletins.isEmpty) {
+      return const ['No news available at this time.'];
+    }
+
+    final count = 10 + _random.nextInt(3); // 10..12
+    final selected = List<String>.from(allBulletins)..shuffle(_random);
+
+    return selected
+        .take(min(count, selected.length))
+        .map(_resolvePlaceholders)
+        .toList(growable: false);
+  }
+
+  String _resolvePlaceholders(String text) {
+    final firstName = _pickAny([
+      ...GameScript.maleFirstNames,
+      ...GameScript.femaleFirstNames,
+    ]);
+    final lastName = _pickAny(GameScript.lastNames);
+    final district = _pickAny(GameScript.districtNames);
+    final age = (18 + _random.nextInt(53)).toString();
+
+    return text
+        .replaceAll(GameScript.firstNameStandin, firstName)
+        .replaceAll(GameScript.lastNameStandin, lastName)
+        .replaceAll(GameScript.districtStandin, district)
+        .replaceAll(GameScript.ageStandin, age);
+  }
+
+  String _pickAny(List<String> values) {
+    return values[_random.nextInt(values.length)];
   }
 }
 

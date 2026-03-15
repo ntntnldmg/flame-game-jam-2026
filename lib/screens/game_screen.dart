@@ -221,23 +221,63 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                     children: [
                       Align(
                         alignment: Alignment.topLeft,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.power_settings_new,
-                            color: AppColors.green,
-                          ),
-                          onPressed: () async {
-                            final navigator = Navigator.of(context);
-                            await _stopGameplayMusic();
-                            if (!mounted) return;
-                            navigator.pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) => const IntroScreen(
-                                  playShortOpeningTrack: true,
-                                ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.power_settings_new,
+                                color: AppColors.green,
                               ),
-                            );
-                          },
+                              onPressed: () async {
+                                final navigator = Navigator.of(context);
+                                await _stopGameplayMusic();
+                                if (!mounted) return;
+                                navigator.pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => const IntroScreen(
+                                      playShortOpeningTrack: true,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            BlocBuilder<GameCubit, GameState>(
+                              buildWhen: (previous, current) =>
+                                  previous.isReportPending !=
+                                      current.isReportPending ||
+                                  previous.currentReport !=
+                                      current.currentReport ||
+                                  previous.isGameOver != current.isGameOver ||
+                                  previous.isEpiloguePending !=
+                                      current.isEpiloguePending ||
+                                  previous.isCctvEventPending !=
+                                      current.isCctvEventPending,
+                              builder: (context, state) {
+                                final canOpenReport =
+                                    state.currentReport != null &&
+                                    !state.isReportPending &&
+                                    !state.isGameOver &&
+                                    !state.isEpiloguePending &&
+                                    !state.isCctvEventPending;
+
+                                return IconButton(
+                                  icon: Icon(
+                                    Icons.description,
+                                    color: canOpenReport
+                                        ? AppColors.green
+                                        : AppColors.textDisabled,
+                                  ),
+                                  tooltip: 'Reopen Daily Report',
+                                  onPressed: canOpenReport
+                                      ? () => context
+                                            .read<GameCubit>()
+                                            .reopenCurrentReport()
+                                      : null,
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -288,10 +328,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
               left: 0,
               right: 0,
               bottom: 40,
-              child: BreakingNewsTicker(
-                headline:
-                    'Detained father of four claims innocence: "I was only trying to buy a pair of pliers for my garden!"',
-              ),
+              child: BreakingNewsTicker(),
             ),
 
             Positioned(

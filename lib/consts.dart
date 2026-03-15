@@ -158,6 +158,10 @@ class Consts {
   static const double cctvSuccessThreatDelta = 5.0;
   static const double cctvFailureThreatDelta = 5.0;
 
+  /// Extra scale applied from top to bottom of each CCTV feed.
+  /// 0.28 means sprites grow up to 28% by the time they reach the bottom.
+  static const double cctvPerspectiveScaleFactor = 0.28;
+
   // epilogue
   static const briefingDuration = 25;
 }

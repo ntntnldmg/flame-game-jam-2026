@@ -7,10 +7,36 @@ import '../models/intelligence_report.dart';
 
 /// Full-screen overlay shown at the start of each new day.
 /// Pauses gameplay and presents the day's intelligence briefing.
-class IntelligenceReportOverlay extends StatelessWidget {
+class IntelligenceReportOverlay extends StatefulWidget {
   final IntelligenceReport report;
 
   const IntelligenceReportOverlay({super.key, required this.report});
+
+  @override
+  State<IntelligenceReportOverlay> createState() =>
+      _IntelligenceReportOverlayState();
+}
+
+class _IntelligenceReportOverlayState extends State<IntelligenceReportOverlay>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final textLength = widget.report.narrativeText.length;
+    final ms = (textLength * 18).clamp(1400, 11000).toInt();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: ms),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +70,7 @@ class IntelligenceReportOverlay extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'DAY ${report.day}',
+                      'DAY ${widget.report.day}',
                       style: const TextStyle(
                         color: AppColors.textMuted,
                         fontSize: 16,
@@ -82,13 +108,25 @@ class IntelligenceReportOverlay extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Narrative
-                Text(
-                  report.narrativeText,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 16,
-                    height: 1.6,
-                  ),
+                AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, _) {
+                    final visibleChars =
+                        (widget.report.narrativeText.length * _controller.value)
+                            .floor();
+                    final visibleText = widget.report.narrativeText.substring(
+                      0,
+                      visibleChars,
+                    );
+                    return Text(
+                      visibleText,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 16,
+                        height: 1.6,
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 24),
 

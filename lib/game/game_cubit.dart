@@ -114,6 +114,19 @@ class GameCubit extends Cubit<GameState> {
     emit(state.copyWith(isReportPending: false));
   }
 
+  /// Reopens the current day's intelligence report in the middle of gameplay.
+  void reopenCurrentReport() {
+    if (state.currentReport == null) return;
+    if (state.isGameOver ||
+        state.isEpiloguePending ||
+        state.isCctvEventPending) {
+      return;
+    }
+    if (state.isReportPending) return;
+
+    emit(state.copyWith(isNewsReportPending: false, isReportPending: true));
+  }
+
   /// Updates the time and threat based on delta time (dt).
   void tick(double dt) {
     // Pause the game loop while any report overlay is visible.

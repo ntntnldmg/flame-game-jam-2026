@@ -65,7 +65,10 @@ class CctvFeedGame extends FlameGame {
         : _pickRegisteredResident();
     if (resident == null) return;
 
-    final lanePadding = (_Walker.spriteWidth / 2) + 2;
+    final aspectRatio = _aspectForResident(resident);
+    final maxScale = 1 + Consts.cctvPerspectiveScaleFactor;
+    final lanePadding =
+        ((_Walker.spriteHeight * aspectRatio * maxScale) / 2) + 2;
     final x =
         lanePadding + _random.nextDouble() * max(1, size.x - (lanePadding * 2));
     final durationSeconds = 3 + _random.nextDouble() * 3; // 3..6
@@ -80,6 +83,12 @@ class CctvFeedGame extends FlameGame {
 
     _walkers.add(walker);
     add(walker);
+  }
+
+  double _aspectForResident(Resident resident) {
+    return resident.sex.toLowerCase() == 'female'
+        ? _sprites.femaleAspect
+        : _sprites.maleAspect;
   }
 
   @override
@@ -152,6 +161,9 @@ class _WalkerSprites {
   final Sprite femaleLeftBlink;
   final Sprite femaleRightBlink;
 
+  double get maleAspect => maleLeft.srcSize.x / maleLeft.srcSize.y;
+  double get femaleAspect => femaleLeft.srcSize.x / femaleLeft.srcSize.y;
+
   static Future<_WalkerSprites> load(Images images) async {
     return _WalkerSprites(
       maleLeft: Sprite(await images.load('left_step.png')),
@@ -170,7 +182,6 @@ class _WalkerSprites {
 
 class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
   static final Random _random = Random();
-  static const double spriteWidth = 34;
   static const double spriteHeight = 78;
 
   static final TextPaint _idPaint = TextPaint(
@@ -206,7 +217,10 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    size = Vector2(spriteWidth, spriteHeight);
+    final aspectRatio = resident.sex.toLowerCase() == 'female'
+        ? sprites.femaleAspect
+        : sprites.maleAspect;
+    size = Vector2(spriteHeight * aspectRatio, spriteHeight);
     position = Vector2(laneX, -size.y);
     sprite = _currentSprite;
   }
@@ -218,6 +232,13 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
     final travelDistance = game.size.y + size.y + size.y;
     final velocity = travelDistance / travelDurationSeconds;
     position.y += velocity * dt;
+
+    final progress = ((position.y + size.y) / (game.size.y + size.y)).clamp(
+      0.0,
+      1.0,
+    );
+    final scaleValue = 1 + (progress * Consts.cctvPerspectiveScaleFactor);
+    scale = Vector2.all(scaleValue);
 
     _stepAccumulator += dt;
     while (_stepAccumulator >= 0.2) {
@@ -249,10 +270,10 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
   }
 
   Rect get hitRect => Rect.fromLTWH(
-    position.x - (size.x * anchor.x),
-    position.y - (size.y * anchor.y),
-    size.x,
-    size.y,
+    position.x - ((size.x * scale.x) * anchor.x),
+    position.y - ((size.y * scale.y) * anchor.y),
+    size.x * scale.x,
+    size.y * scale.y,
   );
 
   Rect get registrationHitRect {
@@ -266,11 +287,13 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
   void render(Canvas canvas) {
     super.render(canvas);
 
+    final headBoxHeight = size.y * 0.40;
+    final headBoxWidth = headBoxHeight * 0.78;
     final headRect = Rect.fromLTWH(
-      size.x * 0.12,
-      0,
-      size.x * 0.76,
-      size.y * 0.36,
+      (size.x - headBoxWidth) / 2,
+      size.y * 0.03,
+      headBoxWidth,
+      headBoxHeight,
     );
     final boxPaint = Paint()
       ..style = PaintingStyle.stroke

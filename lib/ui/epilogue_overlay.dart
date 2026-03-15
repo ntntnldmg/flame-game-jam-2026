@@ -27,10 +27,13 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
   bool _playedEpilogueMusic = false;
   dynamic _epiloguePlayer;
   Timer? _briefingTimer;
+  int _briefingVisibleChars = 0;
+  Timer? _briefingTypeTimer;
 
   @override
   void dispose() {
     _briefingTimer?.cancel();
+    _briefingTypeTimer?.cancel();
     _stopEpilogueAudio();
     super.dispose();
   }
@@ -40,6 +43,30 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
     _briefingTimer = Timer(_briefingDuration, () {
       if (!mounted) return;
       context.read<GameCubit>().completeEpilogue();
+    });
+  }
+
+  void _startBriefingTypewriter() {
+    _briefingTypeTimer?.cancel();
+    _briefingVisibleChars = 0;
+    final fullText = GameScript.epilogueBriefingText.trim();
+    _briefingTypeTimer = Timer.periodic(const Duration(milliseconds: 18), (
+      timer,
+    ) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_briefingVisibleChars >= fullText.length) {
+        timer.cancel();
+        return;
+      }
+      setState(() {
+        _briefingVisibleChars = (_briefingVisibleChars + 2).clamp(
+          0,
+          fullText.length,
+        );
+      });
     });
   }
 
@@ -234,6 +261,7 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
                     onPressed: () {
                       setState(() => _stage = 1);
                       _playEpilogueMusicOnce();
+                      _startBriefingTypewriter();
                       _startBriefingCountdown();
                     },
                     child: Padding(
@@ -301,7 +329,10 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  GameScript.epilogueBriefingText.trim(),
+                  GameScript.epilogueBriefingText.trim().substring(
+                    0,
+                    _briefingVisibleChars,
+                  ),
                   style: AppTypography.mono(
                     color: AppColors.textSecondary,
                     fontSize: 20,
