@@ -268,33 +268,33 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                       const SizedBox(width: 22),
                       Expanded(
                         flex: 5,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            BlocBuilder<GameCubit, GameState>(
-                              buildWhen: (previous, current) =>
-                                  previous.currentDay != current.currentDay ||
-                                  (previous.remainingTimeInDay * 10).round() !=
-                                      (current.remainingTimeInDay * 10)
-                                          .round() ||
-                                  (previous.terroristThreat * 10).toInt() !=
-                                      (current.terroristThreat * 10).toInt() ||
-                                  previous.todayResidents !=
-                                      current.todayResidents ||
-                                  previous.remainingArrestsToday !=
-                                      current.remainingArrestsToday ||
-                                  previous.remainingInvestigationsToday !=
-                                      current.remainingInvestigationsToday ||
-                                  previous.remainingWireTapsToday !=
-                                      current.remainingWireTapsToday,
-                              builder: (context, state) {
-                                return TopStatusHud(state: state);
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            const Expanded(child: CctvWall()),
-                          ],
-                        ),
+                        child: BlocBuilder<GameCubit, GameState>(
+                          buildWhen: (previous, current) =>
+                              previous.currentDay != current.currentDay ||
+                              (previous.remainingTimeInDay * 10).round() !=
+                                  (current.remainingTimeInDay * 10)
+                                      .round() ||
+                              (previous.terroristThreat * 10).toInt() !=
+                                  (current.terroristThreat * 10).toInt() ||
+                              previous.todayResidents !=
+                                  current.todayResidents ||
+                              previous.remainingArrestsToday !=
+                                  current.remainingArrestsToday ||
+                              previous.remainingInvestigationsToday !=
+                                  current.remainingInvestigationsToday ||
+                              previous.remainingWireTapsToday !=
+                                  current.remainingWireTapsToday,
+                          builder: (context, state) {
+                            return Column(
+                            	crossAxisAlignment: CrossAxisAlignment.stretch,
+                          		children: [
+                          			TopStatusHud(state: state),
+                          			const SizedBox(height: 16),
+                            		Expanded(child: CctvWall(state: state)),
+                          		],
+                            );  
+                          },
+                        ),  
                       ),
                     ],
                   ),
