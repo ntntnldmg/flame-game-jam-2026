@@ -3,11 +3,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../game/game_state.dart';
 import 'cctv_screen_tile.dart';
 
 class CctvWall extends StatefulWidget {
-  const CctvWall({super.key});
-
+ 	final GameState state;
+ 
+  CctvWall({required this.state, super.key});
+  
   @override
   State<CctvWall> createState() => _CctvWallState();
 }
@@ -26,18 +29,15 @@ class _CctvWallState extends State<CctvWall> {
   ];
 
   final DateTime _mountedAt = DateTime.now();
-  late final List<DateTime> _cameraStartTimes;
+  late final DateTime _cameraStartTime;
   Timer? _ticker;
   DateTime _now = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    _cameraStartTimes = List<DateTime>.generate(
-      _feeds.length,
-      (_) => _randomStartTime(),
-    );
-    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+    _cameraStartTime = _randomStartTime();
+    _ticker = Timer.periodic(const Duration(milliseconds: 10), (_) {
       if (!mounted) return;
       setState(() => _now = DateTime.now());
     });
@@ -67,15 +67,15 @@ class _CctvWallState extends State<CctvWall> {
 
   String _timestampForCamera(int index) {
     final elapsed = _now.difference(_mountedAt);
-    final time = _cameraStartTimes[index].add(elapsed);
+    final time = _cameraStartTime.add(elapsed);
     final yyyy = time.year.toString().padLeft(4, '0');
-    final dd = time.day.toString().padLeft(2, '0');
+    final dd = (time.day + widget.state.currentDay - 1).toString().padLeft(2, '0');
     final mm = time.month.toString().padLeft(2, '0');
     final hh = time.hour.toString().padLeft(2, '0');
     final min = time.minute.toString().padLeft(2, '0');
     final ss = time.second.toString().padLeft(2, '0');
     final ms = time.millisecond.toString().padLeft(3, '0');
-    return '$yyyy-$dd-$mm $hh:$min:$ss.$ms';
+    return '$dd-$mm-$yyyy $hh:$min:$ss.$ms';
   }
 
   @override
