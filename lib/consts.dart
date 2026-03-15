@@ -81,7 +81,7 @@ class AppColors {
 
 class Consts {
   // --- Core progression ---
-  static const double dayDuration = 100.0; //200.0
+  static const double dayDuration = 10.0; //200.0
   static const double minThreatLevel = 0.0;
   static const double maxThreatLevel = 100.0;
 
