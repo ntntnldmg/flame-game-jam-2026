@@ -571,6 +571,19 @@ class GameCubit extends Cubit<GameState> {
     );
   }
 
+  /// Adds a newly identified unregistered resident to today's database.
+  void registerResidentFromCctv(Resident resident) {
+    if (state.isGameOver) return;
+    if (state.todayResidents.any((r) => r.id == resident.id)) return;
+
+    final updatedResidents = List<Resident>.from(state.todayResidents)
+      ..add(resident);
+
+    emit(
+      state.copyWith(hasStartedGame: true, todayResidents: updatedResidents),
+    );
+  }
+
   /// Clears per-resident completion markers after the player reviews details.
   void clearResidentCompletionMarkers(String residentId) {
     final updatedResidents = state.todayResidents.map((c) {

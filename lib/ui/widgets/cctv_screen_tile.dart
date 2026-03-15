@@ -1,9 +1,13 @@
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../app_typography.dart';
 import '../../consts.dart';
+import '../../game/game_cubit.dart';
+import 'cctv_feed_game.dart';
 
-class CctvScreenTile extends StatelessWidget {
+class CctvScreenTile extends StatefulWidget {
   final int cameraNumber;
   final String imageAsset;
   final String timestamp;
@@ -16,13 +20,35 @@ class CctvScreenTile extends StatelessWidget {
   });
 
   @override
+  State<CctvScreenTile> createState() => _CctvScreenTileState();
+}
+
+class _CctvScreenTileState extends State<CctvScreenTile> {
+  late final CctvFeedGame _feedGame;
+
+  @override
+  void initState() {
+    super.initState();
+    _feedGame = CctvFeedGame(gameCubit: context.read<GameCubit>());
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(border: Border.all(color: AppColors.green)),
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(imageAsset, fit: BoxFit.cover),
+          Image.asset(widget.imageAsset, fit: BoxFit.cover),
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTapDown: (details) {
+                _feedGame.handleTap(details.localPosition);
+              },
+              child: GameWidget(game: _feedGame),
+            ),
+          ),
           DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -47,7 +73,7 @@ class CctvScreenTile extends StatelessWidget {
                 border: Border.all(color: AppColors.green),
               ),
               child: Text(
-                '$cameraNumber',
+                '${widget.cameraNumber}',
                 style: AppTypography.mono(
                   color: AppColors.green,
                   fontSize: 14,
@@ -61,7 +87,7 @@ class CctvScreenTile extends StatelessWidget {
             left: 6,
             bottom: 4,
             child: Text(
-              timestamp,
+              widget.timestamp,
               style: AppTypography.mono(
                 color: AppColors.textSecondary,
                 fontSize: 10,
