@@ -121,7 +121,7 @@ class ResidentDetailsPanel extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 6),
                       child: Text(
-                        'ESTIMATED RISK: ${effectiveRisk.toStringAsFixed(1)}%',
+                        'ESTIMATED RISK: ${_residentRiskText(effectiveRisk)}',
                         style: AppTypography.mono(
                           color: effectiveRisk > Consts.arrestGoodThreshold
                               ? AppColors.red
@@ -185,6 +185,18 @@ class ResidentDetailsPanel extends StatelessWidget {
     if (resident.isInvestigationPending) return 'PENDING INVESTIGATION';
     if (resident.hasWireTap) return 'MONITORED';
     return 'NORMAL';
+  }
+  
+  String _residentRiskText(double risk) {
+  	if (risk >= 0.0 && risk < 25.0) {
+  		return 'low risk';
+  	} else if (risk >= 25.0 && risk < 50.0) {
+  		return 'medium risk';
+  	} else if (risk >= 50.0 && risk < 75.0) {
+  		return 'high risk';
+  	} else {
+  		return 'critical – arrest immediately';
+  	}
   }
 }
 

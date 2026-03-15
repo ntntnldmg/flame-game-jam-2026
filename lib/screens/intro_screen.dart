@@ -270,12 +270,6 @@ class _IntroScreenState extends State<IntroScreen> {
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 32),
-                          (_creditIndex == 3) ?
-                          Padding(
-                          	padding: EdgeInsets.only(top: 23),
-                          	child: Image.asset('assets/images/ntntnldmg.png', height: 32),
-                          )
-                          :
                           Text(
                             credit.subtitle!,
                             style: AppTypography.mono(
@@ -283,6 +277,7 @@ class _IntroScreenState extends State<IntroScreen> {
                               fontSize: 52,
                               letterSpacing: 1,
                               fontWeight: FontWeight.w600,
+                              height: (_creditIndex == 3) ? 0.5 : 1,
                             ),
                             textAlign: TextAlign.center,
                           ),
