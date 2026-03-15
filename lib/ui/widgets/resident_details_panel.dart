@@ -23,7 +23,6 @@ class ResidentDetailsPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<GameCubit>();
     final residentStatus = _residentStatusText(resident);
-    final nameParts = _splitResidentName(resident.name);
     final effectiveRisk = resident.effectiveRiskScore(state.currentReport);
 
     final canOrderInvestigation =
@@ -187,24 +186,6 @@ class ResidentDetailsPanel extends StatelessWidget {
     if (resident.hasWireTap) return 'MONITORED';
     return 'NORMAL';
   }
-
-  _ResidentNameParts _splitResidentName(String fullName) {
-    if (fullName.contains(',')) {
-      final parts = fullName.split(',');
-      final lastName = parts.first.trim();
-      final firstName = parts.skip(1).join(',').trim();
-      return _ResidentNameParts(firstName: firstName, lastName: lastName);
-    }
-
-    final parts = fullName.trim().split(RegExp(r'\s+'));
-    if (parts.length <= 1) {
-      return _ResidentNameParts(firstName: fullName, lastName: 'Unknown');
-    }
-    return _ResidentNameParts(
-      firstName: parts.first,
-      lastName: parts.sublist(1).join(' '),
-    );
-  }
 }
 
 class _DetailLine extends StatelessWidget {
@@ -300,11 +281,4 @@ class _ResidentActionButtonState extends State<_ResidentActionButton> {
       ),
     );
   }
-}
-
-class _ResidentNameParts {
-  final String firstName;
-  final String lastName;
-
-  const _ResidentNameParts({required this.firstName, required this.lastName});
 }

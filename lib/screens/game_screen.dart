@@ -288,10 +288,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
               left: 0,
               right: 0,
               bottom: 40,
-              child: BreakingNewsTicker(
-                headline:
-                    'Detained father of four claims innocence: "I was only trying to buy a pair of pliers for my garden!"',
-              ),
+              child: BreakingNewsTicker(),
             ),
 
             Positioned(
