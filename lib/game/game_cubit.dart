@@ -43,6 +43,7 @@ class GameCubit extends Cubit<GameState> {
       currentReport: report,
       isReportPending: false,
       isCctvEventPending: false,
+      isEpiloguePending: false,
     );
   }
 
@@ -105,6 +106,7 @@ class GameCubit extends Cubit<GameState> {
         currentReport: report,
         isReportPending: false,
         isCctvEventPending: false,
+        isEpiloguePending: false,
       ),
     );
   }
@@ -129,7 +131,8 @@ class GameCubit extends Cubit<GameState> {
     if (!state.hasStartedGame || state.isGameOver) return;
     if (state.isNewsReportPending ||
         state.isReportPending ||
-        state.isCctvEventPending) {
+        state.isCctvEventPending ||
+        state.isEpiloguePending) {
       return;
     }
     if (state.terroristThreat >= Consts.maxThreatLevel) return;
@@ -191,20 +194,54 @@ class GameCubit extends Cubit<GameState> {
                 ))
             .clamp(Consts.minThreatLevel, Consts.maxThreatLevel);
 
-    final gameOver = newThreat >= Consts.maxThreatLevel;
+    if (newThreat >= Consts.maxThreatLevel) {
+      _triggerEpilogue(
+        newThreat: newThreat,
+        newTime: newTime,
+        updatedResidents: updatedResidents,
+        completedInvestigations: completedInvestigations,
+        completedArrests: completedArrests,
+      );
+      return;
+    }
 
     emit(
       state.copyWith(
         hasStartedGame: true,
-        isGameOver: gameOver,
+        isGameOver: false,
         remainingTimeInDay: newTime,
         investigationCount: state.investigationCount + completedInvestigations,
         arrestCount: state.arrestCount + completedArrests,
         terroristThreat: newThreat,
         todayResidents: updatedResidents,
-        isNewsReportPending: gameOver ? false : state.isNewsReportPending,
-        isReportPending: gameOver ? false : state.isReportPending,
-        isCctvEventPending: gameOver ? false : state.isCctvEventPending,
+        isNewsReportPending: state.isNewsReportPending,
+        isReportPending: state.isReportPending,
+        isCctvEventPending: state.isCctvEventPending,
+        isEpiloguePending: false,
+      ),
+    );
+  }
+
+  void _triggerEpilogue({
+    required double newThreat,
+    required double newTime,
+    required List<Resident> updatedResidents,
+    required int completedInvestigations,
+    required int completedArrests,
+  }) {
+    emit(
+      state.copyWith(
+        hasStartedGame: true,
+        isGameOver: false,
+        remainingTimeInDay: newTime,
+        investigationCount: state.investigationCount + completedInvestigations,
+        arrestCount: state.arrestCount + completedArrests,
+        terroristThreat: newThreat,
+        todayResidents: updatedResidents,
+        isNewsReportPending: false,
+        isReportPending: false,
+        isCctvEventPending: false,
+        isEpiloguePending: true,
       ),
     );
   }
@@ -381,15 +418,54 @@ class GameCubit extends Cubit<GameState> {
       Consts.minThreatLevel,
       Consts.maxThreatLevel,
     );
-    final gameOver = newThreat >= Consts.maxThreatLevel;
+    if (newThreat >= Consts.maxThreatLevel) {
+      emit(
+        state.copyWith(
+          hasStartedGame: true,
+          isGameOver: false,
+          isCctvEventPending: false,
+          isNewsReportPending: false,
+          isReportPending: false,
+          isEpiloguePending: true,
+          terroristThreat: newThreat,
+        ),
+      );
+      return;
+    }
+
     emit(
       state.copyWith(
         hasStartedGame: true,
-        isGameOver: gameOver,
+        isGameOver: false,
         isCctvEventPending: false,
+        isEpiloguePending: false,
         terroristThreat: newThreat,
       ),
     );
+  }
+
+  /// Called when the 2-part epilogue sequence has finished.
+  void completeEpilogue() {
+    // Two-step transition avoids dialog route race conditions:
+    // 1) close epilogue overlay
+    // 2) then show game-over overlay
+    emit(
+      state.copyWith(
+        hasStartedGame: true,
+        isEpiloguePending: false,
+        isGameOver: false,
+      ),
+    );
+    Future.microtask(() {
+      if (isClosed) return;
+      emit(
+        state.copyWith(
+          hasStartedGame: true,
+          isEpiloguePending: false,
+          isGameOver: true,
+        ),
+      );
+    });
   }
 
   /// Action: Order an investigation that completes after a random delay.

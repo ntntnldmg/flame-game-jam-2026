@@ -13,6 +13,7 @@ import '../ui/cctv_overlay.dart';
 import '../ui/intelligence_report_overlay.dart';
 import '../ui/news_report_overlay.dart';
 import '../ui/game_over_overlay.dart';
+import '../ui/epilogue_overlay.dart';
 import '../ui/widgets/breaking_news_ticker.dart';
 import '../ui/widgets/cctv_wall.dart';
 import '../ui/widgets/top_status_hud.dart';
@@ -99,7 +100,10 @@ class _GameScreenContentState extends State<_GameScreenContent> {
 
   void _syncGameplayMusic(GameState state) {
     final shouldPlay =
-        AudioSettings.isEnabled && state.hasStartedGame && !state.isGameOver;
+        AudioSettings.isEnabled &&
+        state.hasStartedGame &&
+        !state.isGameOver &&
+        !state.isEpiloguePending;
     if (shouldPlay) {
       _startGameplayMusic();
     } else {
@@ -109,6 +113,24 @@ class _GameScreenContentState extends State<_GameScreenContent> {
 
   void _presentPendingOverlay(GameState state) {
     if (!mounted) return;
+
+    if (state.isEpiloguePending) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        barrierColor: AppColors.transparent,
+        builder: (dialogContext) => BlocProvider.value(
+          value: context.read<GameCubit>(),
+          child: BlocListener<GameCubit, GameState>(
+            listenWhen: (previous, current) =>
+                previous.isEpiloguePending && !current.isEpiloguePending,
+            listener: (_, _) => Navigator.of(dialogContext).pop(),
+            child: const EpilogueOverlay(),
+          ),
+        ),
+      );
+      return;
+    }
 
     if (state.isGameOver) {
       showDialog(
@@ -187,7 +209,8 @@ class _GameScreenContentState extends State<_GameScreenContent> {
     return BlocListener<GameCubit, GameState>(
       listenWhen: (previous, current) =>
           previous.hasStartedGame != current.hasStartedGame ||
-          previous.isGameOver != current.isGameOver,
+          previous.isGameOver != current.isGameOver ||
+          previous.isEpiloguePending != current.isEpiloguePending,
       listener: (_, state) => _syncGameplayMusic(state),
       child: Scaffold(
         // appBar: AppBar(),
@@ -221,7 +244,6 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                             Icons.power_settings_new,
                             color: AppColors.green,
                           ),
-                          tooltip: 'Home Screen',
                           onPressed: () async {
                             final navigator = Navigator.of(context);
                             await _stopGameplayMusic();
@@ -292,6 +314,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
             // Gameplay overlays listener (game over, CCTV, reports).
             BlocListener<GameCubit, GameState>(
               listenWhen: (previous, current) =>
+                  (!previous.isEpiloguePending && current.isEpiloguePending) ||
                   (!previous.isGameOver && current.isGameOver) ||
                   (!previous.isNewsReportPending &&
                       current.isNewsReportPending) ||
