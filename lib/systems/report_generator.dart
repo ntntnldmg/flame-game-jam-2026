@@ -20,9 +20,22 @@ class ReportGenerator {
       ...risklessSelections,
     ]..shuffle(_random);
 
+    final instructionsText = lines.map((line) => '- $line').join('\n\n');
+    final narrativeText = day == 1
+        ? '''
+${GameScript.intelBriefing.trim()}
+
+=====================================
+FIRST INTEL REPORT INCOMING
+=====================================
+
+$instructionsText
+'''
+        : instructionsText;
+
     return IntelligenceReport(
       day: day,
-      narrativeText: lines.map((line) => '- $line').join('\n\n'),
+      narrativeText: narrativeText,
       modifiers: [
         IntelligenceModifier(
           category: 'district',

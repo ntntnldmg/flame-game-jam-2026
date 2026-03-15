@@ -16,9 +16,10 @@ import '../../systems/resident_generator.dart';
 class CctvFeedGame extends FlameGame {
   static final Random _random = Random();
 
-  CctvFeedGame({required this.gameCubit});
+  CctvFeedGame({required this.gameCubit, required this.baseScale});
 
   final GameCubit gameCubit;
+  final double baseScale;
 
   final List<_Walker> _walkers = [];
   late _WalkerSprites _sprites;
@@ -66,7 +67,7 @@ class CctvFeedGame extends FlameGame {
     if (resident == null) return;
 
     final aspectRatio = _aspectForResident(resident);
-    final maxScale = 1 + Consts.cctvPerspectiveScaleFactor;
+    final maxScale = baseScale * (1 + Consts.cctvPerspectiveScaleFactor);
     final lanePadding =
         ((_Walker.spriteHeight * aspectRatio * maxScale) / 2) + 2;
     final x =
@@ -79,6 +80,7 @@ class CctvFeedGame extends FlameGame {
       sprites: _sprites,
       laneX: x,
       travelDurationSeconds: durationSeconds,
+      baseScale: baseScale,
     );
 
     _walkers.add(walker);
@@ -198,12 +200,14 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
     required this.sprites,
     required this.laneX,
     required this.travelDurationSeconds,
+    required this.baseScale,
   }) : super(anchor: Anchor.topCenter, priority: 10);
 
   final Resident resident;
   final _WalkerSprites sprites;
   final double laneX;
   final double travelDurationSeconds;
+  final double baseScale;
 
   bool isUnregistered;
 
@@ -222,6 +226,7 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
         : sprites.maleAspect;
     size = Vector2(spriteHeight * aspectRatio, spriteHeight);
     position = Vector2(laneX, -size.y);
+    scale = Vector2.all(baseScale);
     sprite = _currentSprite;
   }
 
@@ -237,7 +242,8 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
       0.0,
       1.0,
     );
-    final scaleValue = 1 + (progress * Consts.cctvPerspectiveScaleFactor);
+    final scaleValue =
+        baseScale * (1 + (progress * Consts.cctvPerspectiveScaleFactor));
     scale = Vector2.all(scaleValue);
 
     _stepAccumulator += dt;

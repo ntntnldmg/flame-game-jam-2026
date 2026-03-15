@@ -7,7 +7,9 @@ import '../../consts.dart';
 import '../../game_script.dart';
 
 class BreakingNewsTicker extends StatefulWidget {
-  const BreakingNewsTicker({super.key});
+  final int day;
+
+  const BreakingNewsTicker({super.key, required this.day});
 
   @override
   State<BreakingNewsTicker> createState() => _BreakingNewsTickerState();
@@ -18,7 +20,7 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
   static final Random _random = Random();
 
   late final AnimationController _controller;
-  late final List<String> _gameplayBulletins;
+  late List<String> _gameplayBulletins;
 
   static const double _height = 40;
   int _currentHeadlineIndex = 0;
@@ -26,7 +28,7 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
   @override
   void initState() {
     super.initState();
-    _gameplayBulletins = _buildGameplayBulletins();
+    _gameplayBulletins = _buildGameplayBulletinsForDay(widget.day);
 
     _controller =
         AnimationController(vsync: this, duration: const Duration(seconds: 24))
@@ -38,6 +40,21 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
             });
           })
           ..repeat();
+  }
+
+  @override
+  void didUpdateWidget(covariant BreakingNewsTicker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.day == widget.day) return;
+
+    setState(() {
+      _currentHeadlineIndex = 0;
+      _gameplayBulletins = _buildGameplayBulletinsForDay(widget.day);
+    });
+
+    _controller
+      ..reset()
+      ..repeat();
   }
 
   @override
@@ -130,17 +147,15 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
     return painter.width;
   }
 
-  List<String> _buildGameplayBulletins() {
-    final allBulletins = GameScript.newsBulletins.values
-        .expand((entries) => entries)
-        .toList();
+  List<String> _buildGameplayBulletinsForDay(int day) {
+    final dayBulletins = List<String>.from(GameScript.newsBulletins[day] ?? []);
 
-    if (allBulletins.isEmpty) {
+    if (dayBulletins.isEmpty) {
       return const ['No news available at this time.'];
     }
 
-    final count = 10 + _random.nextInt(3); // 10..12
-    final selected = List<String>.from(allBulletins)..shuffle(_random);
+    final count = 5 + _random.nextInt(2); // 5..6
+    final selected = List<String>.from(dayBulletins)..shuffle(_random);
 
     return selected
         .take(min(count, selected.length))
