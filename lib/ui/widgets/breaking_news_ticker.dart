@@ -35,7 +35,7 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
   @override
   Widget build(BuildContext context) {
     final tickerText =
-        'BREAKING NEWS   ${widget.headline.toUpperCase()}   BREAKING NEWS   ';
+        '${widget.headline.toUpperCase()}';
 
     return Container(
       height: _height,

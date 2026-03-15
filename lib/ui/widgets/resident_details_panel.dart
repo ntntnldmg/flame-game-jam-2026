@@ -39,6 +39,7 @@ class ResidentDetailsPanel extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
+        /*
         gradient: const LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
@@ -50,6 +51,7 @@ class ResidentDetailsPanel extends StatelessWidget {
           ],
           stops: [0.0, 0.18, 0.55, 1.0],
         ),
+        */
         border: Border(top: BorderSide(color: AppColors.green, width: 1.5)),
       ),
       child: Column(
@@ -69,7 +71,8 @@ class ResidentDetailsPanel extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
+          SizedBox(
+          	height: 700,
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
               child: Column(
@@ -81,8 +84,7 @@ class ResidentDetailsPanel extends StatelessWidget {
                       resident.id,
                       style: AppTypography.barcode39(
                         color: AppColors.green.withAlpha(180),
-                        fontSize: 32,
-                        letterSpacing: 6,
+                        fontSize: 80,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -92,7 +94,7 @@ class ResidentDetailsPanel extends StatelessWidget {
                     text: TextSpan(
                       style: AppTypography.mono(
                         color: AppColors.green.withAlpha(180),
-                        fontSize: 18,
+                        fontSize: 20,
                         letterSpacing: 0.6,
                         fontWeight: FontWeight.w400,
                       ),
@@ -113,7 +115,7 @@ class ResidentDetailsPanel extends StatelessWidget {
                   const SizedBox(height: 4),
                   _DetailLine(label: 'ADDRESS', value: resident.street),
                   Padding(
-                    padding: const EdgeInsets.only(left: 98),
+                    padding: const EdgeInsets.only(left: 110),
                     child: Text(
                       resident.district,
                       style: TextStyle(
@@ -164,21 +166,21 @@ class ResidentDetailsPanel extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _ResidentActionButton(
-                label: 'Order investigation',
+                label: 'ORDER INVESTIGATION',
                 enabled: canOrderInvestigation,
                 onTap: canOrderInvestigation
                     ? () => cubit.orderInvestigation(resident)
                     : null,
               ),
               _ResidentActionButton(
-                label: 'Install wire tap',
+                label: 'INSTALL WIRE TAP',
                 enabled: canInstallWireTap,
                 onTap: canInstallWireTap
                     ? () => cubit.installWireTap(resident)
                     : null,
               ),
               _ResidentActionButton(
-                label: 'Issue arrest warrant',
+                label: 'ISSUE ARREST WARRANT',
                 enabled: canIssueArrest,
                 onTap: canIssueArrest
                     ? () => cubit.issueArrestWarrant(resident)
@@ -192,9 +194,9 @@ class ResidentDetailsPanel extends StatelessWidget {
   }
 
   String _residentStatusText(Resident resident) {
-    if (resident.isArrested) return 'ARRESTED';
+    if (resident.isArrested) return 'DETAINED';
     if (resident.isArrestPending) return 'WARRANT ISSUED';
-    if (resident.isInvestigationPending) return 'UNDER REVIEW';
+    if (resident.isInvestigationPending) return 'PENDING INVESTIGATION';
     if (resident.hasWireTap) return 'MONITORED';
     return 'NORMAL';
   }
@@ -230,12 +232,12 @@ class _DetailLine extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 92,
+          width: 110,
           child: Text(
             '$label:',
             style: AppTypography.mono(
               color: AppColors.green.withAlpha(190),
-              fontSize: 14,
+              fontSize: 16,
               letterSpacing: 0.7,
               height: 1.35,
             ),
@@ -246,7 +248,7 @@ class _DetailLine extends StatelessWidget {
             value,
             style: AppTypography.mono(
               color: AppColors.bluishWhite,
-              fontSize: 14,
+              fontSize: 16,
               letterSpacing: 0.6,
               height: 1.35,
             ),
@@ -288,7 +290,7 @@ class _ResidentActionButtonState extends State<_ResidentActionButton> {
       child: GestureDetector(
         onTap: widget.onTap,
         child: Container(
-          height: 40,
+          height: 60,
           decoration: BoxDecoration(
             color: background,
             border: Border(
@@ -302,7 +304,7 @@ class _ResidentActionButtonState extends State<_ResidentActionButton> {
               color: active
                   ? AppColors.bluishWhite.withAlpha(220)
                   : AppColors.bluishWhite.withAlpha(90),
-              fontSize: 15,
+              fontSize: 20,
               letterSpacing: 0.6,
               fontWeight: FontWeight.w400,
             ),

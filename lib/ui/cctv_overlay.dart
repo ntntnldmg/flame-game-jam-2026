@@ -107,8 +107,8 @@ class _CCTVOverlayState extends State<CCTVOverlay>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'CCTV // SECTOR 7 LIVE FEED',
+                  Text(
+                    'SECTOR ${_random.nextInt(9)} LIVE FEED',
                     style: TextStyle(
                       color: AppColors.green,
                       fontSize: 16,
@@ -204,7 +204,7 @@ class _CCTVOverlayState extends State<CCTVOverlay>
             Padding(
               padding: const EdgeInsets.only(bottom: 20, top: 12),
               child: Text(
-                'MINISTRY OF SECURITY — INTERNAL NETWORK //  AUTHORISED ONLY',
+                'MAVENPORT COUNTER-TERRORIST AGENCY // AUTHORISED PERSONNEL ONLY',
                 style: TextStyle(
                   color: AppColors.textLowEmphasis,
                   fontSize: 11,
