@@ -37,7 +37,7 @@ class _IntroScreenState extends State<IntroScreen> {
     _CreditScreenData.image('assets/images/flame_icon.png', imageWidth: 320),
     _CreditScreenData.text('Programming', 'Mussie Alemayehu'),
     _CreditScreenData.text('Writing', 'AChenM'),
-    _CreditScreenData.text('Music, writing, creative direction', 'NTNTNLDMG'),
+    _CreditScreenData.text('Artwork, music, creative direction', 'NTNTNLDMG'),
   ];
 
   @override
@@ -258,8 +258,13 @@ class _IntroScreenState extends State<IntroScreen> {
                   width: min(800, MediaQuery.of(context).size.width * 0.8),
                   errorBuilder: (_, _, _) => const SizedBox.shrink(),
                 ),
-                if (showMenu) ...[
-                  const SizedBox(height: 60),
+                
+                SizedBox(
+                	height: 350,
+                	child: Column(
+                		children: showMenu ? [
+                
+                  const SizedBox(height: 90),
                   if (state.hasStartedGame)
                     _MenuButton(
                       label: 'Continue',
@@ -271,7 +276,7 @@ class _IntroScreenState extends State<IntroScreen> {
                         );
                       },
                     ),
-                  if (state.hasStartedGame) const SizedBox(height: 20),
+                  if (state.hasStartedGame) const SizedBox(height: 30),
                   _MenuButton(
                     label: 'New game',
                     onPressed: () {
@@ -282,9 +287,15 @@ class _IntroScreenState extends State<IntroScreen> {
                       );
                     },
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                   _MenuButton(label: 'Settings', onPressed: _openSettings),
+                ] : [
+                	Container(),
                 ],
+                
+                ),
+                ),
+                
               ],
             ),
           );

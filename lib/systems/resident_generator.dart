@@ -1,65 +1,19 @@
 import 'dart:math';
 
 import '../consts.dart';
+import '../game_script.dart';
 import '../models/resident.dart';
 
 class ResidentGenerator {
   static final Random _random = Random();
 
-  static const List<String> _firstNames = [
-    'Ari',
-    'Mika',
-    'Nora',
-    'Rami',
-    'Lena',
-    'Tomas',
-    'Nadia',
-    'Dani',
-    'Selam',
-    'Iris',
-  ];
-  static const List<String> _lastNames = [
-    'Khan',
-    'Miller',
-    'Santos',
-    'Abebe',
-    'Park',
-    'Ivanov',
-    'Nasser',
-    'Ortiz',
-    'Mensah',
-    'Dubois',
-  ];
+  static const List<String> _maleFirstNames = GameScript.maleFirstNames;
+  static const List<String> _femaleFirstNames = GameScript.femaleFirstNames;
+  static const List<String> _lastNames = GameScript.lastNames;
   static const List<String> _sexes = ['Male', 'Female'];
-  static const List<String> _occupations = [
-    'Student',
-    'Engineer',
-    'Doctor',
-    'Teacher',
-    'Unemployed',
-    'Artist',
-    'Mechanic',
-    'Clerk',
-    'Manager',
-    'Catering',
-  ];
-  static const List<String> _streets = [
-    'Oak Street',
-    'Maple Avenue',
-    'River Road',
-    'Sunset Lane',
-    'Central Boulevard',
-    'Harbor Street',
-    'Market Street',
-    'Hillcrest Road',
-  ];
-  static const List<String> _districts = [
-    'North District',
-    'South District',
-    'East District',
-    'West District',
-    'Central District',
-  ];
+  static const List<String> _occupations = GameScript.occupations;
+  static const Map<String,List<String>> _streets = GameScript.streetNames;
+  static const List<String> _districts = GameScript.districtNames;
 
   static List<Resident> generateDailyResidents(int count) {
     List<Resident> residents = [];
@@ -72,19 +26,22 @@ class ResidentGenerator {
                 _random.nextDouble() * Consts.generatedHighRiskRange
           : _random.nextDouble() * Consts.generatedLowRiskMax;
 
-      final name =
-          '${_firstNames[_random.nextInt(_firstNames.length)]} ${_lastNames[_random.nextInt(_lastNames.length)]}';
-      final sex = _sexes[_random.nextInt(_sexes.length)];
+			final sex = _sexes[_random.nextInt(_sexes.length)];
+			final firstName = (sex == 'Male') ?
+				_maleFirstNames[_random.nextInt(_maleFirstNames.length)] :
+				_femaleFirstNames[_random.nextInt(_femaleFirstNames.length)];
+			final lastName = _lastNames[_random.nextInt(_lastNames.length)];
       final age = 18 + _random.nextInt(53);
-      final street = _streets[_random.nextInt(_streets.length)];
       final district = _districts[_random.nextInt(_districts.length)];
+      final street = _streets[district]![_random.nextInt(_streets[district]!.length)];
       final phoneNumber =
-          '+1-555-${_random.nextInt(900) + 100}-${_random.nextInt(9000) + 1000}';
+          '+000-${_random.nextInt(900) + 100}-${_random.nextInt(9000) + 1000}';
 
       residents.add(
         Resident(
           id: id,
-          name: name,
+          firstName: firstName,
+          lastName: lastName,
           sex: sex,
           age: age,
           street: street,

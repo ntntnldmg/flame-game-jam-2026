@@ -1,7 +1,7 @@
 name: bigbrother
-description: 'Big Brother is watching.'
+description: 'A dystopian surveillance simulator. Submission for the 5th official Flame Game Jam.'
 publish_to: 'none'
-version: 0.1.0+1
+version: 1.0.0
 
 environment:
   sdk: ^3.8.0

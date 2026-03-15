@@ -49,7 +49,7 @@ class _ResidentPanelState extends State<ResidentPanel> {
         return Container(
           width: 290,
           decoration: BoxDecoration(
-            color: AppColors.residentPanelBackground,
+            //color: AppColors.residentPanelBackground,
             border: Border.all(color: AppColors.green, width: 1.5),
           ),
           child: Column(

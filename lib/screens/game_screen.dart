@@ -2,6 +2,7 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../app_typography.dart';
 import '../consts.dart';
 import '../audio/audio_settings.dart';
 import '../game/big_brother_game.dart';
@@ -304,11 +305,39 @@ class _GameScreenContentState extends State<_GameScreenContent> {
             const Positioned(
               left: 0,
               right: 0,
-              bottom: 0,
+              bottom: 40,
               child: BreakingNewsTicker(
                 headline:
                     'Detained father of four claims innocence: "I was only trying to buy a pair of pliers for my garden!"',
               ),
+            ),
+            
+            Positioned(
+            	left: 10,
+            	bottom: 0,
+            	child: Text(
+            		'MCTA',
+            		style: AppTypography.mono(
+                  color: AppColors.green,
+                  fontSize: 23,
+                  letterSpacing: 0.6,
+                  height: 1.5,
+                ),
+            	),
+            ),
+            
+            Positioned(
+            	right: 10,
+            	bottom: 0,
+            	child: Text(
+            		'SMSAIAAASS v.1.0.2.6',
+            		style: AppTypography.mono(
+                  color: AppColors.green,
+                  fontSize: 17,
+                  letterSpacing: 0.6,
+                  height: 1.5,
+                ),
+            	),
             ),
 
             // Gameplay overlays listener (game over, CCTV, reports).

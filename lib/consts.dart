@@ -81,7 +81,7 @@ class AppColors {
 
 class Consts {
   // --- Core progression ---
-  static const double dayDuration = 10.0;
+  static const double dayDuration = 100.0; //200.0
   static const double minThreatLevel = 0.0;
   static const double maxThreatLevel = 100.0;
 
@@ -94,7 +94,7 @@ class Consts {
   static const double initialThreatLevel = 15.0;
 
   // --- Resident generation ---
-  static const int residentsPerDay = 30;
+  static const int residentsPerDay = 80;
   static const int residentIdBase = 10000;
   static const int residentIdRange = 90000;
   static const double generatedHighRiskChance = 0.15;

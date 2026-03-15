@@ -123,11 +123,11 @@ class _ExpositionScreenState extends State<ExpositionScreen> {
     final page = _pages[_pageIndex];
 
     return Scaffold(
-      backgroundColor: AppColors.expositionBackground,
+      backgroundColor: AppColors.appBackground,
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned.fill(
+            /*Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -140,7 +140,7 @@ class _ExpositionScreenState extends State<ExpositionScreen> {
                   ),
                 ),
               ),
-            ),
+            ),*/
             Positioned.fill(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(28, 20, 28, 100),
@@ -166,6 +166,7 @@ class _ExpositionScreenState extends State<ExpositionScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          /*
                           Text(
                             'CLASSIFIED BRIEFING // ${GameScript.cityName.toUpperCase()}',
                             style: AppTypography.mono(
@@ -178,6 +179,7 @@ class _ExpositionScreenState extends State<ExpositionScreen> {
                           const SizedBox(height: 10),
                           Container(height: 2, color: AppColors.green),
                           const SizedBox(height: 26),
+                          */
                           Expanded(
                             child: SingleChildScrollView(
                               child: Column(
@@ -193,14 +195,12 @@ class _ExpositionScreenState extends State<ExpositionScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 20),
-                                  AspectRatio(
-                                    aspectRatio: 16 / 9,
-                                    child: Image.asset(
-                                      page.imageAsset,
-                                      fit: BoxFit.contain,
-                                      errorBuilder: (_, _, _) =>
-                                          const SizedBox.shrink(),
-                                    ),
+                                  Image.asset(
+                                    page.imageAsset,
+                                    height: 400,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (_, _, _) =>
+                                        const SizedBox.shrink(),
                                   ),
                                 ],
                               ),
@@ -255,6 +255,7 @@ class _ExpositionScreenState extends State<ExpositionScreen> {
                 ),
               ),
             ),
+            /*
             Positioned(
               left: 0,
               right: 0,
@@ -274,6 +275,7 @@ class _ExpositionScreenState extends State<ExpositionScreen> {
                 ),
               ),
             ),
+            */
           ],
         ),
       ),
