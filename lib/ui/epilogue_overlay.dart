@@ -19,7 +19,9 @@ class EpilogueOverlay extends StatefulWidget {
 }
 
 class _EpilogueOverlayState extends State<EpilogueOverlay> {
-  static const Duration _briefingDuration = Duration(seconds: 25);
+  static const Duration _briefingDuration = Duration(
+    seconds: Consts.briefingDuration,
+  );
 
   int _stage = 0;
   bool _playedEpilogueMusic = false;

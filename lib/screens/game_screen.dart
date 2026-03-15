@@ -144,10 +144,10 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                 previous.isEpiloguePending && !current.isEpiloguePending,
             listener: (_, current) {
               Navigator.of(dialogContext).pop();
-              // WidgetsBinding.instance.addPostFrameCallback((_) {
-              //   if (!mounted) return;
-              //   _presentPendingOverlay(context.read<GameCubit>().state);
-              // });
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted) return;
+                _presentPendingOverlay(context.read<GameCubit>().state);
+              });
             },
             child: const EpilogueOverlay(),
           ),

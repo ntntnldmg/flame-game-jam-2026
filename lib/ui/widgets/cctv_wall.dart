@@ -7,10 +7,10 @@ import '../../game/game_state.dart';
 import 'cctv_screen_tile.dart';
 
 class CctvWall extends StatefulWidget {
- 	final GameState state;
- 
-  CctvWall({required this.state, super.key});
-  
+  final GameState state;
+
+  const CctvWall({required this.state, super.key});
+
   @override
   State<CctvWall> createState() => _CctvWallState();
 }
@@ -69,7 +69,10 @@ class _CctvWallState extends State<CctvWall> {
     final elapsed = _now.difference(_mountedAt);
     final time = _cameraStartTime.add(elapsed);
     final yyyy = time.year.toString().padLeft(4, '0');
-    final dd = (time.day + widget.state.currentDay - 1).toString().padLeft(2, '0');
+    final dd = (time.day + widget.state.currentDay - 1).toString().padLeft(
+      2,
+      '0',
+    );
     final mm = time.month.toString().padLeft(2, '0');
     final hh = time.hour.toString().padLeft(2, '0');
     final min = time.minute.toString().padLeft(2, '0');
