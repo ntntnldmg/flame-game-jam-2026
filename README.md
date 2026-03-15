@@ -16,9 +16,11 @@ flutter run
 
 ## Credits
 
-Music, artwork, creative direction: ɴᴛɴᴛɴʟᴅᴍɢ
-Programming: Mussie Alemayehu
-Writing: AChenM
+Artwork, music, creative direction: [ɴᴛɴᴛɴʟᴅᴍɢ](https://github.com/ntntnldmg)
+
+Programming: [Mussie Alemayehu](https://github.com/mussie-alemayehu)
+
+Writing: [AChenM](https://substack.com/@achenm)
 
 ## Contact
 
