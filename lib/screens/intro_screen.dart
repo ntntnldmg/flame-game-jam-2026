@@ -57,8 +57,8 @@ class _IntroScreenState extends State<IntroScreen> {
     }
   }
 
-  Future<void> _startOpeningMusic() async {
-    final trackName = widget.playShortOpeningTrack
+  Future<void> _startOpeningMusic({bool forceShortTrack = false}) async {
+    final trackName = (forceShortTrack || widget.playShortOpeningTrack)
         ? 'opening_short.ogg'
         : 'opening.ogg';
     if (_activeOpeningTrack == trackName) return;
@@ -115,17 +115,21 @@ class _IntroScreenState extends State<IntroScreen> {
     await FlameAudio.bgm.stop();
   }
 
-  Future<void> _beginOpeningSequence({required bool enableSound}) async {
-    _soundEnabled = enableSound;
-    AudioSettings.setEnabled(enableSound);
+  Future<void> _beginOpeningSequence({required bool playOpeningCredits}) async {
+    _soundEnabled = true;
+    AudioSettings.setEnabled(true);
+
+    if (!playOpeningCredits) {
+      _setPhase(_IntroPhase.menu);
+      await _startOpeningMusic(forceShortTrack: true);
+      return;
+    }
 
     _setPhase(_IntroPhase.emptyLeadIn);
     await Future.delayed(const Duration(milliseconds: 580));
 
     if (!mounted) return;
-    if (_soundEnabled) {
-      await _startOpeningMusic();
-    }
+    await _startOpeningMusic();
 
     _setPhase(_IntroPhase.credits);
 
@@ -235,7 +239,8 @@ class _IntroScreenState extends State<IntroScreen> {
         builder: (context, state) {
           if (_phase == _IntroPhase.soundPrompt) {
             return _SoundPrompt(
-              onSelect: (enable) => _beginOpeningSequence(enableSound: enable),
+              onSelect: (playOpeningCredits) =>
+                  _beginOpeningSequence(playOpeningCredits: playOpeningCredits),
             );
           }
 
@@ -364,7 +369,7 @@ class _SoundPrompt extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Enable Sound',
+              'Play opening credits?',
               style: AppTypography.mono(
                 color: AppColors.textPrimary,
                 fontSize: 32,
