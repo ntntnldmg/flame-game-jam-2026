@@ -25,6 +25,7 @@ class BigBrotherApp extends StatelessWidget {
       create: (_) => GameCubit(),
       child: MaterialApp(
         title: 'Terrorist Threat',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           brightness: Brightness.dark,
           scaffoldBackgroundColor: AppColors.appBackground,

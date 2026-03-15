@@ -81,17 +81,17 @@ class AppColors {
 
 class Consts {
   // --- Core progression ---
-  static const double dayDuration = 10.0; //200.0
+  static const double dayDuration = 150.0;
   static const double minThreatLevel = 0.0;
   static const double maxThreatLevel = 100.0;
 
   /// Threat starts at 15% and must reach 100% in exactly 2 days of passive play.
   ///
   /// That is 85% over 2 × [dayDuration] seconds.
-  static const double threatRatePerSecond = 8.0 / (dayDuration * 2); //85
+  static const double threatRatePerSecond = 5.0 / (dayDuration * 2); //85
 
   /// The initial terrorist threat value when the game starts.
-  static const double initialThreatLevel = 15.0;
+  static const double initialThreatLevel = 33.0;
 
   // --- Resident generation ---
   static const int residentsPerDay = 80;
@@ -109,14 +109,14 @@ class Consts {
   static const double threatWarningLevel = 80.0;
 
   // --- Threat presentation cadence ---
-  static const int threatPauseMinSeconds = 3;
-  static const int threatPauseMaxSeconds = 8;
+  static const int threatPauseMinSeconds = 1;
+  static const int threatPauseMaxSeconds = 6;
   static const int threatDisplayAnimationMs = 800;
 
   // --- Action workflow timings (seconds) ---
-  static const int investigationDelayMinSeconds = 90;
-  static const int investigationDelayMaxSeconds = 120;
-  static const int arrestDelayMinSeconds = 45;
+  static const int investigationDelayMinSeconds = 40;
+  static const int investigationDelayMaxSeconds = 90;
+  static const int arrestDelayMinSeconds = 15;
   static const int arrestDelayMaxSeconds = 60;
 
   // --- Daily action caps ---
@@ -125,7 +125,7 @@ class Consts {
   static const int maxWireTapsPerDay = 7;
 
   // --- Intelligence report modifier ---
-  static const double intelligenceRiskModifier = 15.0;
+  static const double intelligenceRiskModifier = 40.0;
 
   // --- Tick cadence ---
   static const double stateEmitThresholdSeconds = 0.1;
@@ -146,21 +146,21 @@ class Consts {
   static const double highRiskPressurePerResidentPerSecond = 0.05;
 
   // --- CCTV surveillance event ---
-  static const double cctvMinIntervalSeconds = 25.0;
-  static const double cctvMaxIntervalSeconds = 40.0;
+  static const double cctvMinIntervalSeconds = 45.0;
+  static const double cctvMaxIntervalSeconds = 120.0;
 
   /// Delay before the target face turns red after the overlay opens.
   static const double cctvInitialScanSeconds = 0.9;
 
   /// Click window in seconds once a target face turns red.
-  static const double cctvClickWindowSeconds = 2.0;
-  static const int cctvFaceCount = 15;
-  static const double cctvSuccessThreatDelta = 5.0;
-  static const double cctvFailureThreatDelta = 5.0;
+  static const double cctvClickWindowSeconds = 1.1;
+  static const int cctvFaceCount = 24;
+  static const double cctvSuccessThreatDelta = 6.0;
+  static const double cctvFailureThreatDelta = 6.0;
 
   /// Extra scale applied from top to bottom of each CCTV feed.
   /// 0.28 means sprites grow up to 28% by the time they reach the bottom.
-  static const double cctvPerspectiveScaleFactor = 0.28;
+  static const double cctvPerspectiveScaleFactor = 0.38;
 
   // epilogue
   static const briefingDuration = 25;

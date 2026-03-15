@@ -189,11 +189,11 @@ class ResidentDetailsPanel extends StatelessWidget {
   
   String _residentRiskText(double risk) {
   	if (risk >= 0.0 && risk < 25.0) {
-  		return 'low risk';
+  		return 'low';
   	} else if (risk >= 25.0 && risk < 50.0) {
-  		return 'medium risk';
+  		return 'medium';
   	} else if (risk >= 50.0 && risk < 75.0) {
-  		return 'high risk';
+  		return 'high';
   	} else {
   		return 'critical – arrest immediately';
   	}

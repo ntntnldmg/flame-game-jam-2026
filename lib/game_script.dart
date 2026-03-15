@@ -799,18 +799,15 @@ Your mission:
     'artist': [
 			'Mural artists paint mysterious symbols in addition to their signature on the side of the building.',
 			'Artists start taking commissions in cash only.',
-			'An artists only website appears to take the art world byt he storm. Special access only.',
-			'Freelance artists start handing out red-backed cards to customers.',
+			'An artists only website appears to take the art world by storm. Special access only.',
 		],
 		'clerk': [
 			'Clerks organize secret meetings throughout the districts.',
-			'Clerks start to end thei interactions with customers with unusual catch phrases.',
-			'Clerks hiding their personal cellphone screens from coworkers.',
+			'Clerks are hiding their personal cellphone screens from coworkers.',
 			'Computer usage has gone up, despite digital work not being increased.',
 		],
 		'doctor': [
 			'Mysterious flyers are being passed out in the work lounge at the hospital.',
-			'Increased personal phone use noticed in hospital.',
 			'Incidents involving left behind pagers noticeably increasing.',
 			'Doctors are taking more time off than usual this season.',
 		],
@@ -824,24 +821,20 @@ Your mission:
 			'An increase in cash is being exchanged at mechanic shops.',
 			'Mechanics are receiving an increase in packages despite lack of business.',
 			'Gasoline stations near mechanic shops are running out of gas during the end of the day.',
-			'Mechanics seen taking longer than normal breaks for lunch.',
 		],
 		'office worker': [
 			'Office workers from different offices are congregating together in an unknown pattern during lunch.',
 			'Office workers seen with gasoline stains on cuffs despite not working in that sector.',
-			'More office workers are wearing boots instead of loafers and heels.',
 			'Meeting rooms are being booked despite no increase in work projects.',
 		],
 		'student': [
 			'An unidentified group of students has been linked to MUTO.',
 			'MUTO suspects seen going into Mavenport University.',
-			'Students start joke about being MUTO agents.',
-			'New slang emerges on campus.',
+			'Students joke about being MUTO agents.',
 		],
 		'teacher': [
 			'Undercover agents found suspicious documents in the Teacher’s association head office.',
 			'Tenured professors are holding private seminars for students outside of classes.',
-			'Professors are changing their curriculum despite holding the same class for years.',
 			'Teachers seen driving new car in spite of low salary.',
 		],
   };
@@ -850,7 +843,6 @@ Your mission:
   static const Map<String, List<String>> demographicsInstructions = {
     '18-29': [
 			'Agents to investigate new stylized “M” decal, popular amongst young residents.',
-			'Parkour is the new trend for the younger generation.',
 			'Younger generation seen recording important conversation between government officials.',
 			'Maps seen in younger residents hands, GPS popularity on the decline.',
 			'Face masks now trendy amongst younger residents.',
@@ -859,18 +851,15 @@ Your mission:
 			'Suspect of a hit-and-run rumored to be male, in his mid 30’s.',
 			'Private event with hundreds of attendees asks for residents from ages thirty to thirty-nine only.',
 			'Suspicious job advert found requesting residents over thirty to apply for an information specialsit position.',
-			'Trenchcoats making a comeback for those over thirty.',
 		],
 		'40-64': [
 			'Analysis by the statistical department revealed a high correlation between 40-64 year olds and MUTO membership.',
-			'Parents of students at Mavenport University are visiting the university more often then ever.',
 			'Working adults 40 and over are quitting their jobs at unusual rates.',
 			'Adults near retirement are quietly taking out their retirement funds for unknown reasons.',
 		],
 		'65+': [
 			'Seniors have been acting hella sus recently.',
 			'New trend amongst wheelchair seniors, tricking out their rides to be completely silent.',
-			'Seniors homes see an unprecedented rise in visitors.',
 			'Increase in drug deliveries made to the senior center.',
 		],
   };
