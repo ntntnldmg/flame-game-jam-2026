@@ -6,7 +6,8 @@ import 'intelligence_report.dart';
 /// Represents a resident in the game world.
 class Resident extends Equatable {
   final String id;
-  final String name;
+  final String firstName;
+  final String lastName;
   final String sex;
   final int age;
   final String street;
@@ -46,7 +47,8 @@ class Resident extends Equatable {
 
   const Resident({
     required this.id,
-    required this.name,
+    required this.firstName,
+    required this.lastName,
     required this.sex,
     required this.age,
     required this.street,
@@ -65,6 +67,8 @@ class Resident extends Equatable {
     this.hasArrestCompletedMarker = false,
   });
 
+	String get name => '$firstName $lastName';
+
   String get status => isArrested ? 'ARRESTED' : 'FREE';
 
   bool get hasCompletedActionMarker =>
@@ -72,7 +76,8 @@ class Resident extends Equatable {
 
   Resident copyWith({
     String? id,
-    String? name,
+    String? firstName,
+    String? lastName,
     String? sex,
     int? age,
     String? street,
@@ -94,7 +99,8 @@ class Resident extends Equatable {
   }) {
     return Resident(
       id: id ?? this.id,
-      name: name ?? this.name,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
       sex: sex ?? this.sex,
       age: age ?? this.age,
       street: street ?? this.street,
@@ -125,7 +131,8 @@ class Resident extends Equatable {
   @override
   List<Object?> get props => [
     id,
-    name,
+    firstName,
+    lastName,
     sex,
     age,
     street,
