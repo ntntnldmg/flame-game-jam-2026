@@ -9,8 +9,13 @@ import '../models/intelligence_report.dart';
 /// Pauses gameplay and presents the day's intelligence briefing.
 class IntelligenceReportOverlay extends StatefulWidget {
   final IntelligenceReport report;
+  final bool enableTypewriter;
 
-  const IntelligenceReportOverlay({super.key, required this.report});
+  const IntelligenceReportOverlay({
+    super.key,
+    required this.report,
+    this.enableTypewriter = true,
+  });
 
   @override
   State<IntelligenceReportOverlay> createState() =>
@@ -29,7 +34,13 @@ class _IntelligenceReportOverlayState extends State<IntelligenceReportOverlay>
     _controller = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: ms),
-    )..forward();
+    );
+
+    if (widget.enableTypewriter) {
+      _controller.forward();
+    } else {
+      _controller.value = 1;
+    }
   }
 
   @override

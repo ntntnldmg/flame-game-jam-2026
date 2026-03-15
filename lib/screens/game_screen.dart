@@ -179,7 +179,10 @@ class _GameScreenContentState extends State<_GameScreenContent> {
             listenWhen: (previous, current) =>
                 previous.isReportPending && !current.isReportPending,
             listener: (_, _) => Navigator.of(dialogContext).pop(),
-            child: IntelligenceReportOverlay(report: state.currentReport!),
+            child: IntelligenceReportOverlay(
+              report: state.currentReport!,
+              enableTypewriter: !state.isReopenedReport,
+            ),
           ),
         ),
       );
