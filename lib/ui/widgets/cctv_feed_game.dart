@@ -224,7 +224,9 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
     final aspectRatio = resident.sex.toLowerCase() == 'female'
         ? sprites.femaleAspect
         : sprites.maleAspect;
-    size = Vector2(spriteHeight * aspectRatio, spriteHeight) * (resident.sex.toLowerCase() == 'female' ? 1.2 : 1.4);
+    size =
+        Vector2(spriteHeight * aspectRatio, spriteHeight) *
+        (resident.sex.toLowerCase() == 'female' ? 1.2 : 1.4);
     position = Vector2(laneX, -size.y);
     scale = Vector2.all(baseScale);
     sprite = _currentSprite;
@@ -293,11 +295,11 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
   void render(Canvas canvas) {
     super.render(canvas);
 
-    final headBoxHeight = size.y * 0.40;
+    final headBoxHeight = size.y * 0.48;
     final headBoxWidth = headBoxHeight * 0.78;
     final headRect = Rect.fromLTWH(
       (size.x - headBoxWidth) / 2,
-      size.y * 0.03,
+      size.y * 0.05,
       headBoxWidth,
       headBoxHeight,
     );
