@@ -39,19 +39,6 @@ class ResidentDetailsPanel extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        /*
-        gradient: const LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [
-            AppColors.detailsGradientStart,
-            AppColors.detailsGradientSecond,
-            AppColors.detailsGradientThird,
-            AppColors.detailsGradientEnd,
-          ],
-          stops: [0.0, 0.18, 0.55, 1.0],
-        ),
-        */
         border: Border(top: BorderSide(color: AppColors.green, width: 1.5)),
       ),
       child: Column(
@@ -61,9 +48,9 @@ class ResidentDetailsPanel extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: InkWell(
-                onTap: onBack,
-                child: Icon(
+              child: IconButton(
+                onPressed: onBack,
+                icon: Icon(
                   Icons.arrow_back,
                   color: AppColors.green.withAlpha(180),
                   size: 22,
@@ -104,9 +91,9 @@ class ResidentDetailsPanel extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 44),
-                  _DetailLine(label: 'FIRST NAME', value: nameParts.firstName),
+                  _DetailLine(label: 'FIRST NAME', value: resident.firstName),
                   const SizedBox(height: 4),
-                  _DetailLine(label: 'LAST NAME', value: nameParts.lastName),
+                  _DetailLine(label: 'LAST NAME', value: resident.lastName),
                   const SizedBox(height: 4),
                   _DetailLine(label: 'SEX', value: resident.sex.toLowerCase()),
                   const SizedBox(height: 4),

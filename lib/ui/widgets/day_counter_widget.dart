@@ -31,32 +31,53 @@ class DayCounterWidget extends StatelessWidget {
           dayProgress: dayProgress.clamp(0.0, 1.0),
           size: size,
         ),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'DAY',
-                style: AppTypography.mono(
-                  color: AppColors.bluishWhite,
-                  fontSize: size * 0.13,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 3,
-                  height: 1.0,
-                ),
+        child: Stack(
+           children: [
+           	Positioned.fill(
+           		child: Align(
+           			alignment: Alignment.center,
+		         		child: Text(
+		              'DAY      ',
+		              style: AppTypography.mono(
+		                color: AppColors.bluishWhite,
+		                fontSize: size * 0.11,
+		                fontWeight: FontWeight.bold,
+		                height: 1.0,
+		              ),
+		            ),
+		           ),
+           	),
+           	Positioned.fill(
+            	child: Align(
+            	alignment: Alignment.center,
+		          	child: Text(
+		              '0',
+		              style: AppTypography.mono(
+		                color: AppColors.bluishWhite,
+		                fontSize: size * 0.23,
+		                fontWeight: FontWeight.bold,
+		                letterSpacing: 1,
+		                height: 1.1,
+		              ),
+		            ),
               ),
-              Text(
-                '$day',
-                style: AppTypography.mono(
-                  color: AppColors.bluishWhite,
-                  fontSize: size * 0.23,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                  height: 1.1,
-                ),
+            ),
+            Positioned.fill(
+            	child: Align(
+            		alignment: Alignment.center,
+		          	child: Text(
+		              '  $day',
+		              style: AppTypography.mono(
+		                color: AppColors.bluishWhite,
+		                fontSize: size * 0.23,
+		                fontWeight: FontWeight.bold,
+		                letterSpacing: 1,
+		                height: 1.1,
+		              ),
+		            ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

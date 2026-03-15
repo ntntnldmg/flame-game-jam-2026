@@ -52,6 +52,7 @@ class ResidentGenerator {
         ),
       );
     }
+    residents.sort((a,b) => a.lastName.compareTo(b.lastName));
     return residents;
   }
 }

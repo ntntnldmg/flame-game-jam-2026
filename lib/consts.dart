@@ -88,15 +88,15 @@ class Consts {
   /// Threat starts at 15% and must reach 100% in exactly 2 days of passive play.
   ///
   /// That is 85% over 2 × [dayDuration] seconds.
-  static const double threatRatePerSecond = 85.0 / (dayDuration * 2);
+  static const double threatRatePerSecond = 8.0 / (dayDuration * 2); //85
 
   /// The initial terrorist threat value when the game starts.
   static const double initialThreatLevel = 15.0;
 
   // --- Resident generation ---
   static const int residentsPerDay = 80;
-  static const int residentIdBase = 10000;
-  static const int residentIdRange = 90000;
+  static const int residentIdBase = 100000;
+  static const int residentIdRange = 900000;
   static const double generatedHighRiskChance = 0.15;
   static const double generatedHighRiskMin = 70.0;
   static const double generatedHighRiskRange = 30.0;

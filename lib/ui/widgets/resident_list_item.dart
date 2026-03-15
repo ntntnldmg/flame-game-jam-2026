@@ -54,7 +54,6 @@ class _ResidentListItemState extends State<ResidentListItem> {
                             ? AppColors.green.withAlpha(60)
                             : AppColors.green.withAlpha(150),
                         fontSize: 24,
-                        letterSpacing: 3,
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -75,7 +74,7 @@ class _ResidentListItemState extends State<ResidentListItem> {
                                 ),
                               Expanded(
                                 child: Text(
-                                  resident.name.toUpperCase(),
+                                  '${resident.lastName.toUpperCase()}, ${resident.firstName}',
                                   style: AppTypography.mono(
                                     color: dimmed
                                         ? AppColors.bluishWhite.withAlpha(50)

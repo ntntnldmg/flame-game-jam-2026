@@ -18,7 +18,7 @@ class CctvWall extends StatefulWidget {
 class _CctvWallState extends State<CctvWall> {
   static final Random _random = Random();
 
-  static const double _spacing = 2;
+  static const double _spacing = 0;
   static const double _tileAspectRatio = 16 / 9;
   static const _baseDate = (year: 2064, month: 4, day: 18);
   static const _feeds = [
