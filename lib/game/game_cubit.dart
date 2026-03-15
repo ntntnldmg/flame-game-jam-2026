@@ -35,6 +35,7 @@ class GameCubit extends Cubit<GameState> {
     return GameState.initial().copyWith(
       hasStartedGame: true,
       isGameOver: false,
+      isTrueEnding: false,
       todayResidents: ResidentGenerator.generateDailyResidents(
         Consts.residentsPerDay,
       ),
@@ -107,6 +108,7 @@ class GameCubit extends Cubit<GameState> {
         isReportPending: false,
         isCctvEventPending: false,
         isEpiloguePending: false,
+        isTrueEnding: false,
       ),
     );
   }
@@ -208,6 +210,7 @@ class GameCubit extends Cubit<GameState> {
         state.copyWith(
           hasStartedGame: true,
           isGameOver: true,
+          isTrueEnding: false,
           remainingTimeInDay: newTime,
           investigationCount:
               state.investigationCount + completedInvestigations,
@@ -259,6 +262,7 @@ class GameCubit extends Cubit<GameState> {
         isReportPending: false,
         isCctvEventPending: false,
         isEpiloguePending: true,
+        isTrueEnding: false,
       ),
     );
   }
@@ -440,6 +444,7 @@ class GameCubit extends Cubit<GameState> {
         state.copyWith(
           hasStartedGame: true,
           isGameOver: true,
+          isTrueEnding: false,
           isCctvEventPending: false,
           isNewsReportPending: false,
           isReportPending: false,
@@ -471,6 +476,7 @@ class GameCubit extends Cubit<GameState> {
         hasStartedGame: true,
         isEpiloguePending: false,
         isGameOver: false,
+        isTrueEnding: false,
       ),
     );
     Future.microtask(() {
@@ -480,6 +486,7 @@ class GameCubit extends Cubit<GameState> {
           hasStartedGame: true,
           isEpiloguePending: false,
           isGameOver: true,
+          isTrueEnding: true,
         ),
       );
     });

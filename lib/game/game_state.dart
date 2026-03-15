@@ -36,6 +36,9 @@ class GameState extends Equatable {
   /// True while the endgame epilogue sequence is being shown.
   final bool isEpiloguePending;
 
+  /// True when game-over is reached via successful day-5 epilogue ending.
+  final bool isTrueEnding;
+
   const GameState({
     this.hasStartedGame = false,
     this.isGameOver = false,
@@ -54,6 +57,7 @@ class GameState extends Equatable {
     this.isReportPending = false,
     this.isCctvEventPending = false,
     this.isEpiloguePending = false,
+    this.isTrueEnding = false,
   });
 
   /// Factory for the initial game state.
@@ -90,6 +94,7 @@ class GameState extends Equatable {
     bool? isReportPending,
     bool? isCctvEventPending,
     bool? isEpiloguePending,
+    bool? isTrueEnding,
   }) {
     return GameState(
       hasStartedGame: hasStartedGame ?? this.hasStartedGame,
@@ -110,6 +115,7 @@ class GameState extends Equatable {
       isReportPending: isReportPending ?? this.isReportPending,
       isCctvEventPending: isCctvEventPending ?? this.isCctvEventPending,
       isEpiloguePending: isEpiloguePending ?? this.isEpiloguePending,
+      isTrueEnding: isTrueEnding ?? this.isTrueEnding,
     );
   }
 
@@ -148,5 +154,6 @@ class GameState extends Equatable {
     isReportPending,
     isCctvEventPending,
     isEpiloguePending,
+    isTrueEnding,
   ];
 }

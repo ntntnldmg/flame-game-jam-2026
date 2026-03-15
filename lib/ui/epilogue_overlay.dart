@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,14 +19,28 @@ class EpilogueOverlay extends StatefulWidget {
 }
 
 class _EpilogueOverlayState extends State<EpilogueOverlay> {
+  static const Duration _briefingDuration = Duration(
+    seconds: Consts.briefingDuration,
+  );
+
   int _stage = 0;
   bool _playedEpilogueMusic = false;
   dynamic _epiloguePlayer;
+  Timer? _briefingTimer;
 
   @override
   void dispose() {
+    _briefingTimer?.cancel();
     _stopEpilogueAudio();
     super.dispose();
+  }
+
+  void _startBriefingCountdown() {
+    _briefingTimer?.cancel();
+    _briefingTimer = Timer(_briefingDuration, () {
+      if (!mounted) return;
+      context.read<GameCubit>().completeEpilogue();
+    });
   }
 
   Future<void> _stopEpilogueAudio() async {
@@ -97,13 +113,11 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
                   ),
                   decoration: BoxDecoration(
                     border: Border(
-                    	top: BorderSide(
-                    		color: AppColors.newspaperInk,
-                    	),
-                    	bottom: BorderSide(
-                    		color: AppColors.newspaperInk,
-                    		width: 2,
-                    	),
+                      top: BorderSide(color: AppColors.newspaperInk),
+                      bottom: BorderSide(
+                        color: AppColors.newspaperInk,
+                        width: 2,
+                      ),
                     ),
                   ),
                   child: Row(
@@ -117,7 +131,7 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                       Text(
+                      Text(
                         '© 2064 The Mavenport Times Company',
                         style: GoogleFonts.noticiaText(
                           color: AppColors.newspaperInk,
@@ -165,22 +179,20 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
                       Expanded(
                         flex: 5,
                         child: Column(
-                        	crossAxisAlignment: CrossAxisAlignment.end,
-                        	children: [
-                        		Image.asset(
-				                    	'assets/images/city.png'
-				                    ),
-				                    Text(
-				                    	'AChenM for the Mavenport Times',
-				                    	style: GoogleFonts.noticiaText(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Image.asset('assets/images/city.png'),
+                            Text(
+                              'AChenM for the Mavenport Times',
+                              style: GoogleFonts.noticiaText(
                                 color: AppColors.newspaperInk,
                                 fontSize: 8,
                                 fontWeight: FontWeight.w700,
                                 height: 1.35,
                               ),
-				                    ),
-				                  ],
-				                ),
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(width: 26),
                       Expanded(
@@ -222,6 +234,7 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
                     onPressed: () {
                       setState(() => _stage = 1);
                       _playEpilogueMusicOnce();
+                      _startBriefingCountdown();
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -296,29 +309,7 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
                     height: 1.65,
                   ),
                 ),
-                const SizedBox(height: 26),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.read<GameCubit>().completeEpilogue();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      child: Text(
-                        'CONTINUE',
-                        style: AppTypography.mono(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.4,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 6),
               ],
             ),
           ),

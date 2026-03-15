@@ -1,7 +1,9 @@
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../app_typography.dart';
+import '../audio/audio_settings.dart';
 import '../consts.dart';
 import '../game/game_cubit.dart';
 import '../game/game_state.dart';
@@ -16,10 +18,13 @@ class GameOverOverlay extends StatefulWidget {
 class _GameOverOverlayState extends State<GameOverOverlay> {
   bool _isVisible = false;
   bool _showStats = false;
+  dynamic _gameOverPlayer;
 
   @override
   void initState() {
     super.initState();
+    _playGameOverAudioOnce();
+
     Future.microtask(() {
       if (!mounted) return;
       setState(() => _isVisible = true);
@@ -28,6 +33,30 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
       if (!mounted) return;
       setState(() => _showStats = true);
     });
+  }
+
+  @override
+  void dispose() {
+    _stopGameOverAudio();
+    super.dispose();
+  }
+
+  Future<void> _playGameOverAudioOnce() async {
+    if (!AudioSettings.isEnabled) return;
+    try {
+      await FlameAudio.bgm.stop();
+      _gameOverPlayer = await FlameAudio.play('gameover.ogg');
+    } catch (error) {
+      debugPrint('Game over audio unavailable: $error');
+      _gameOverPlayer = null;
+    }
+  }
+
+  Future<void> _stopGameOverAudio() async {
+    try {
+      await _gameOverPlayer?.stop();
+    } catch (_) {}
+    _gameOverPlayer = null;
   }
 
   @override
@@ -42,15 +71,17 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
           child: Center(
             child: BlocBuilder<GameCubit, GameState>(
               buildWhen: (previous, current) =>
+                  previous.isTrueEnding != current.isTrueEnding ||
                   previous.currentDay != current.currentDay ||
                   previous.arrestCount != current.arrestCount ||
                   previous.investigationCount != current.investigationCount,
               builder: (context, state) {
+                final isTrueEnding = state.isTrueEnding;
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "CRIME PARADOX",
+                      isTrueEnding ? 'THE END' : 'CRIME PARADOX',
                       style: AppTypography.mono(
                         color: AppColors.red,
                         fontSize: 48,
@@ -59,7 +90,7 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                       ),
                     ),
                     const SizedBox(height: 28),
-                    if (_showStats) ...[
+                    if (!isTrueEnding && _showStats) ...[
                       Text(
                         'Days Survived: ${state.currentDay}',
                         style: AppTypography.mono(
