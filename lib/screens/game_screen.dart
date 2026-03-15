@@ -12,7 +12,6 @@ import 'intro_screen.dart';
 import '../ui/widgets/resident_panel.dart';
 import '../ui/cctv_overlay.dart';
 import '../ui/intelligence_report_overlay.dart';
-import '../ui/news_report_overlay.dart';
 import '../ui/game_over_overlay.dart';
 import '../ui/epilogue_overlay.dart';
 import '../ui/widgets/breaking_news_ticker.dart';
@@ -169,24 +168,6 @@ class _GameScreenContentState extends State<_GameScreenContent> {
       return;
     }
 
-    if (state.isNewsReportPending && state.currentNewsReport != null) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        barrierColor: AppColors.transparent,
-        builder: (dialogContext) => BlocProvider.value(
-          value: context.read<GameCubit>(),
-          child: BlocListener<GameCubit, GameState>(
-            listenWhen: (previous, current) =>
-                previous.isNewsReportPending && !current.isNewsReportPending,
-            listener: (_, _) => Navigator.of(dialogContext).pop(),
-            child: NewsReportOverlay(report: state.currentNewsReport!),
-          ),
-        ),
-      );
-      return;
-    }
-
     if (state.isReportPending && state.currentReport != null) {
       showDialog(
         context: context,
@@ -274,8 +255,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                           buildWhen: (previous, current) =>
                               previous.currentDay != current.currentDay ||
                               (previous.remainingTimeInDay * 10).round() !=
-                                  (current.remainingTimeInDay * 10)
-                                      .round() ||
+                                  (current.remainingTimeInDay * 10).round() ||
                               (previous.terroristThreat * 10).toInt() !=
                                   (current.terroristThreat * 10).toInt() ||
                               previous.todayResidents !=
@@ -288,15 +268,15 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                                   current.remainingWireTapsToday,
                           builder: (context, state) {
                             return Column(
-                            	crossAxisAlignment: CrossAxisAlignment.stretch,
-                          		children: [
-                          			TopStatusHud(state: state),
-                          			const SizedBox(height: 16),
-                            		Expanded(child: CctvWall(state: state)),
-                          		],
-                            );  
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                TopStatusHud(state: state),
+                                const SizedBox(height: 16),
+                                Expanded(child: CctvWall(state: state)),
+                              ],
+                            );
                           },
-                        ),  
+                        ),
                       ),
                     ],
                   ),
@@ -347,8 +327,6 @@ class _GameScreenContentState extends State<_GameScreenContent> {
               listenWhen: (previous, current) =>
                   (!previous.isEpiloguePending && current.isEpiloguePending) ||
                   (!previous.isGameOver && current.isGameOver) ||
-                  (!previous.isNewsReportPending &&
-                      current.isNewsReportPending) ||
                   (!previous.isReportPending && current.isReportPending) ||
                   (!previous.isCctvEventPending && current.isCctvEventPending),
               listener: (_, state) => _presentPendingOverlay(state),

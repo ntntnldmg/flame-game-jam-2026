@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'game_state.dart';
 import '../models/resident.dart';
 import '../systems/resident_generator.dart';
-import '../systems/news_report_generator.dart';
 import '../systems/report_generator.dart';
 import '../consts.dart';
 
@@ -29,7 +28,6 @@ class GameCubit extends Cubit<GameState> {
   double _threatPauseRemaining = 0.0;
 
   GameState _freshSimulationState() {
-    final newsReport = NewsReportGenerator.generate(1);
     final report = ReportGenerator.generate(1);
 
     return GameState.initial().copyWith(
@@ -39,10 +37,9 @@ class GameCubit extends Cubit<GameState> {
       todayResidents: ResidentGenerator.generateDailyResidents(
         Consts.residentsPerDay,
       ),
-      currentNewsReport: newsReport,
-      isNewsReportPending: true,
+      isNewsReportPending: false,
       currentReport: report,
-      isReportPending: false,
+      isReportPending: true,
       isCctvEventPending: false,
       isEpiloguePending: false,
     );
@@ -63,13 +60,11 @@ class GameCubit extends Cubit<GameState> {
 
   void startNewSimulation() {
     _resetInternalTimers();
-    NewsReportGenerator.resetCycle();
     emit(_freshSimulationState());
   }
 
   void restartSimulation() {
     _resetInternalTimers();
-    NewsReportGenerator.resetCycle();
 
     // Two-phase reset prevents overlay route races:
     // 1) clear game-over/pending flags and return to a pristine state
@@ -87,11 +82,7 @@ class GameCubit extends Cubit<GameState> {
     _pendingPassiveThreat = 0.0;
     _threatPauseRemaining = _nextThreatPauseSeconds();
 
-    // Generate both daily reports. Flow is:
-    // 1) show news bulletin
-    // 2) show intelligence briefing
-    // 3) resume gameplay
-    final newsReport = NewsReportGenerator.generate(newDay);
+    // Generate one combined daily report.
     final report = ReportGenerator.generate(newDay);
     emit(
       state.copyWith(
@@ -102,10 +93,9 @@ class GameCubit extends Cubit<GameState> {
         arrestsUsedToday: 0,
         wireTapsUsedToday: 0,
         terroristThreat: currentThreat,
-        currentNewsReport: newsReport,
-        isNewsReportPending: true,
+        isNewsReportPending: false,
         currentReport: report,
-        isReportPending: false,
+        isReportPending: true,
         isCctvEventPending: false,
         isEpiloguePending: false,
         isTrueEnding: false,
@@ -113,12 +103,9 @@ class GameCubit extends Cubit<GameState> {
     );
   }
 
-  /// Advances from the news bulletin to the intelligence briefing.
+  /// Legacy no-op: reports are now combined into one daily briefing.
   void acknowledgeNewsReport() {
-    // Emit in two steps so the news dialog closes before the intelligence
-    // dialog is requested by UI listeners.
-    emit(state.copyWith(isNewsReportPending: false, isReportPending: false));
-    emit(state.copyWith(isNewsReportPending: false, isReportPending: true));
+    acknowledgeReport();
   }
 
   /// Resumes gameplay after the player dismisses the intelligence briefing.
@@ -235,7 +222,7 @@ class GameCubit extends Cubit<GameState> {
         arrestCount: state.arrestCount + completedArrests,
         terroristThreat: newThreat,
         todayResidents: updatedResidents,
-        isNewsReportPending: state.isNewsReportPending,
+        isNewsReportPending: false,
         isReportPending: state.isReportPending,
         isCctvEventPending: state.isCctvEventPending,
         isEpiloguePending: false,
@@ -323,7 +310,12 @@ class GameCubit extends Cubit<GameState> {
 
   int _countHighRiskFreeResidents(List<Resident> residents) {
     return residents
-        .where((c) => !c.isArrested && c.riskScore > Consts.highRiskThreshold)
+        .where(
+          (c) =>
+              !c.isArrested &&
+              c.effectiveRiskScore(state.currentReport) >
+                  Consts.highRiskThreshold,
+        )
         .length;
   }
 

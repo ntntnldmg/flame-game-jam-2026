@@ -24,6 +24,7 @@ class ResidentDetailsPanel extends StatelessWidget {
     final cubit = context.read<GameCubit>();
     final residentStatus = _residentStatusText(resident);
     final nameParts = _splitResidentName(resident.name);
+    final effectiveRisk = resident.effectiveRiskScore(state.currentReport);
 
     final canOrderInvestigation =
         !resident.isInvestigated &&
@@ -134,9 +135,9 @@ class ResidentDetailsPanel extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 6),
                       child: Text(
-                        'ESTIMATED RISK: ${resident.riskScore.toStringAsFixed(1)}%',
+                        'ESTIMATED RISK: ${effectiveRisk.toStringAsFixed(1)}%',
                         style: AppTypography.mono(
-                          color: resident.riskScore > Consts.arrestGoodThreshold
+                          color: effectiveRisk > Consts.arrestGoodThreshold
                               ? AppColors.red
                               : AppColors.bluishWhite,
                           fontSize: 16,

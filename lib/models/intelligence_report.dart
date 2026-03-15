@@ -1,25 +1,28 @@
 import 'package:equatable/equatable.dart';
 
-/// A daily intelligence briefing claiming a demographic has links to terrorism.
-/// Causes a temporary +15 effective risk modifier on matching residents for the day.
+/// A daily combined briefing containing multiple instructions and risk modifiers.
 class IntelligenceReport extends Equatable {
   final int day;
-
-  /// One of: 'ageGroup', 'occupation', 'religion', 'ethnicity'
-  final String focusCategory;
-
-  /// The specific value within that category, e.g. 'Teacher' or 'Muslim'
-  final String focusValue;
-
   final String narrativeText;
+  final List<IntelligenceModifier> modifiers;
 
   const IntelligenceReport({
     required this.day,
-    required this.focusCategory,
-    required this.focusValue,
     required this.narrativeText,
+    required this.modifiers,
   });
 
   @override
-  List<Object?> get props => [day, focusCategory, focusValue, narrativeText];
+  List<Object?> get props => [day, narrativeText, modifiers];
+}
+
+class IntelligenceModifier extends Equatable {
+  /// One of: 'district', 'occupation', 'ageGroup'.
+  final String category;
+  final String value;
+
+  const IntelligenceModifier({required this.category, required this.value});
+
+  @override
+  List<Object?> get props => [category, value];
 }

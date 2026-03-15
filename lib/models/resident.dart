@@ -67,7 +67,7 @@ class Resident extends Equatable {
     this.hasArrestCompletedMarker = false,
   });
 
-	String get name => '$firstName $lastName';
+  String get name => '$firstName $lastName';
 
   String get status => isArrested ? 'ARRESTED' : 'FREE';
 
@@ -155,19 +155,25 @@ class Resident extends Equatable {
   /// The base [riskScore] is never mutated — this is a read-only calculation.
   double effectiveRiskScore(IntelligenceReport? report) {
     if (report == null) return riskScore;
-    final residentValue = switch (report.focusCategory) {
-      'sex' => sex,
-      'age' => age.toString(),
-      'occupation' => occupation,
-      'district' => district,
-      _ => null,
-    };
-    if (residentValue?.toLowerCase() == report.focusValue.toLowerCase()) {
-      return (riskScore + Consts.intelligenceRiskModifier).clamp(
-        Consts.minThreatLevel,
-        Consts.maxThreatLevel,
-      );
+    var effective = riskScore;
+    for (final modifier in report.modifiers) {
+      final residentValue = switch (modifier.category) {
+        'ageGroup' => _ageGroup,
+        'occupation' => occupation,
+        'district' => district,
+        _ => null,
+      };
+      if (residentValue?.toLowerCase() == modifier.value.toLowerCase()) {
+        effective += Consts.intelligenceRiskModifier;
+      }
     }
-    return riskScore;
+    return effective.clamp(Consts.minThreatLevel, Consts.maxThreatLevel);
+  }
+
+  String get _ageGroup {
+    if (age <= 29) return '18-29';
+    if (age <= 39) return '30-39';
+    if (age <= 64) return '40-64';
+    return '65+';
   }
 }
