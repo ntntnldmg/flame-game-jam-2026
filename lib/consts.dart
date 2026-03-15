@@ -81,14 +81,14 @@ class AppColors {
 
 class Consts {
   // --- Core progression ---
-  static const double dayDuration = 100.0; //240.0
+  static const double dayDuration = 100.0; //200.0
   static const double minThreatLevel = 0.0;
   static const double maxThreatLevel = 100.0;
 
   /// Threat starts at 15% and must reach 100% in exactly 2 days of passive play.
   ///
   /// That is 85% over 2 × [dayDuration] seconds.
-  static const double threatRatePerSecond = 8.0 / (dayDuration * 2); //85.0
+  static const double threatRatePerSecond = 85.0 / (dayDuration * 2);
 
   /// The initial terrorist threat value when the game starts.
   static const double initialThreatLevel = 15.0;

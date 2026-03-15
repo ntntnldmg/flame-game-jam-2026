@@ -123,7 +123,7 @@ class _ExpositionScreenState extends State<ExpositionScreen> {
     final page = _pages[_pageIndex];
 
     return Scaffold(
-      backgroundColor: AppColors.expositionBackground,
+      backgroundColor: AppColors.appBackground,
       body: SafeArea(
         child: Stack(
           children: [

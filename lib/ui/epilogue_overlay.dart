@@ -66,7 +66,7 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
     return Material(
       type: MaterialType.transparency,
       child: Container(
-        color: AppColors.black,
+        color: AppColors.appBackground,
         alignment: Alignment.center,
         padding: const EdgeInsets.all(24),
         child: ConstrainedBox(
@@ -76,64 +76,80 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
             padding: const EdgeInsets.fromLTRB(28, 24, 28, 20),
             child: Column(
               children: [
-                Container(height: 22, color: AppColors.newspaperAccent),
+                //Container(height: 22, color: AppColors.newspaperAccent),
                 const SizedBox(height: 14),
                 Text(
-                  GameScript.epilogueNewspaperName.toUpperCase(),
-                  style: GoogleFonts.playfairDisplay(
+                  GameScript.epilogueNewspaperName,
+                  style: GoogleFonts.manufacturingConsent(
                     color: AppColors.newspaperInk,
-                    fontSize: 86,
+                    fontSize: 96,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.5,
                     height: 0.92,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 14),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.newspaperRule),
+                    border: Border(
+                    	top: BorderSide(
+                    		color: AppColors.newspaperInk,
+                    	),
+                    	bottom: BorderSide(
+                    		color: AppColors.newspaperInk,
+                    		width: 2,
+                    	),
+                    ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'www.mavenporttimes.com',
-                        style: AppTypography.mono(
+                        'VOL. LXII ... No. 12,213',
+                        style: GoogleFonts.noticiaText(
                           color: AppColors.newspaperInk,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                       Text(
+                        '© 2064 The Mavenport Times Company',
+                        style: GoogleFonts.noticiaText(
+                          color: AppColors.newspaperInk,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                       Text(
-                        'THE WORLD\'S FAVOURITE NEWSPAPER',
-                        style: AppTypography.mono(
+                        'MAVENPORT, THURSDAY, 18 MARCH 2064',
+                        style: GoogleFonts.noticiaText(
                           color: AppColors.newspaperInk,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                       Text(
-                        '- Since 1879',
-                        style: AppTypography.mono(
+                        '\$6.40',
+                        style: GoogleFonts.noticiaText(
                           color: AppColors.newspaperInk,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 26),
                 Text(
                   headline,
-                  style: AppTypography.mono(
+                  style: GoogleFonts.noticiaText(
                     color: AppColors.newspaperInk,
-                    fontSize: 66,
+                    fontSize: 39,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
                     height: 0.96,
@@ -141,26 +157,30 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 24),
                 Expanded(
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         flex: 5,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.newspaperImageBackground,
-                            border: Border.all(color: AppColors.newspaperInk),
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.account_circle,
-                              color: AppColors.newspaperInk,
-                              size: 300,
-                            ),
-                          ),
-                        ),
+                        child: Column(
+                        	crossAxisAlignment: CrossAxisAlignment.end,
+                        	children: [
+                        		Image.asset(
+				                    	'assets/images/city.png'
+				                    ),
+				                    Text(
+				                    	'AChenM for the Mavenport Times',
+				                    	style: GoogleFonts.noticiaText(
+                                color: AppColors.newspaperInk,
+                                fontSize: 8,
+                                fontWeight: FontWeight.w700,
+                                height: 1.35,
+                              ),
+				                    ),
+				                  ],
+				                ),
                       ),
                       const SizedBox(width: 26),
                       Expanded(
@@ -171,18 +191,18 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
                               children: [
                                 TextSpan(
                                   text: lead,
-                                  style: AppTypography.mono(
-                                    color: AppColors.newspaperAccent,
-                                    fontSize: 34,
+                                  style: GoogleFonts.noticiaText(
+                                    color: AppColors.newspaperInk,
+                                    fontSize: 24,
                                     fontWeight: FontWeight.w700,
                                     height: 1.35,
                                   ),
                                 ),
                                 TextSpan(
                                   text: '\n\n$body',
-                                  style: AppTypography.mono(
+                                  style: GoogleFonts.noticiaText(
                                     color: AppColors.newspaperInk,
-                                    fontSize: 34,
+                                    fontSize: 17,
                                     fontWeight: FontWeight.w400,
                                     height: 1.36,
                                   ),
@@ -231,7 +251,7 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
     return Material(
       type: MaterialType.transparency,
       child: Container(
-        color: AppColors.reportOverlayScrimAlt,
+        color: AppColors.appBackground,
         child: Center(
           child: Container(
             width: 720,
@@ -245,7 +265,7 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'FINAL BRIEFING',
+                  'CLASSIFIED',
                   style: AppTypography.mono(
                     color: AppColors.green,
                     fontSize: 24,
@@ -289,7 +309,7 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
                         vertical: 12,
                       ),
                       child: Text(
-                        'ACCEPT CONSEQUENCES',
+                        'CONTINUE',
                         style: AppTypography.mono(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
