@@ -23,7 +23,10 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
   @override
   void initState() {
     super.initState();
-    _playGameOverAudioOnce();
+    final isTrueEnding = context.read<GameCubit>().state.isTrueEnding;
+    if (!isTrueEnding) {
+      _playGameOverAudioOnce();
+    }
 
     Future.microtask(() {
       if (!mounted) return;

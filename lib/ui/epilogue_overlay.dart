@@ -19,13 +19,11 @@ class EpilogueOverlay extends StatefulWidget {
 }
 
 class _EpilogueOverlayState extends State<EpilogueOverlay> {
-  static const Duration _briefingDuration = Duration(
-    seconds: Consts.briefingDuration,
-  );
+  static const Duration _briefingDuration = Duration(seconds: 25);
 
   int _stage = 0;
   bool _playedEpilogueMusic = false;
-  dynamic _epiloguePlayer;
+  bool _hasEnteredBriefingStage = false;
   Timer? _briefingTimer;
   int _briefingVisibleChars = 0;
   Timer? _briefingTypeTimer;
@@ -34,8 +32,17 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
   void dispose() {
     _briefingTimer?.cancel();
     _briefingTypeTimer?.cancel();
-    _stopEpilogueAudio();
     super.dispose();
+  }
+
+  void _enterBriefingStage() {
+    if (_hasEnteredBriefingStage) return;
+    _hasEnteredBriefingStage = true;
+
+    setState(() => _stage = 1);
+    _playEpilogueMusicOnce();
+    _startBriefingTypewriter();
+    _startBriefingCountdown();
   }
 
   void _startBriefingCountdown() {
@@ -70,23 +77,15 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
     });
   }
 
-  Future<void> _stopEpilogueAudio() async {
-    try {
-      await _epiloguePlayer?.stop();
-    } catch (_) {}
-    _epiloguePlayer = null;
-  }
-
   Future<void> _playEpilogueMusicOnce() async {
     if (_playedEpilogueMusic) return;
     _playedEpilogueMusic = true;
     if (!AudioSettings.isEnabled) return;
     try {
       await FlameAudio.bgm.stop();
-      _epiloguePlayer = await FlameAudio.play('epilogue.ogg');
+      await FlameAudio.play('epilogue.ogg');
     } catch (error) {
       debugPrint('Epilogue audio unavailable: $error');
-      _epiloguePlayer = null;
     }
   }
 
@@ -258,12 +257,7 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: ElevatedButton(
-                    onPressed: () {
-                      setState(() => _stage = 1);
-                      _playEpilogueMusicOnce();
-                      _startBriefingTypewriter();
-                      _startBriefingCountdown();
-                    },
+                    onPressed: _enterBriefingStage,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 22,

@@ -20,7 +20,7 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
   static final Random _random = Random();
 
   late final AnimationController _controller;
-  late final List<String> _gameplayBulletins;
+  late List<String> _gameplayBulletins;
 
   static const double _height = 40;
   int _currentHeadlineIndex = 0;
@@ -49,9 +49,7 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
 
     setState(() {
       _currentHeadlineIndex = 0;
-      _gameplayBulletins
-        ..clear()
-        ..addAll(_buildGameplayBulletinsForDay(widget.day));
+      _gameplayBulletins = _buildGameplayBulletinsForDay(widget.day);
     });
 
     _controller

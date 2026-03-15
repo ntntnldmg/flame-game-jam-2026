@@ -487,28 +487,16 @@ class GameCubit extends Cubit<GameState> {
 
   /// Called when the 2-part epilogue sequence has finished.
   void completeEpilogue() {
-    // Two-step transition avoids dialog route race conditions:
-    // 1) close epilogue overlay
-    // 2) then show game-over overlay
+    // Transition atomically to prevent the game tick from re-triggering
+    // day-5 epilogue in a transient non-gameover frame.
     emit(
       state.copyWith(
         hasStartedGame: true,
         isEpiloguePending: false,
-        isGameOver: false,
-        isTrueEnding: false,
+        isGameOver: true,
+        isTrueEnding: true,
       ),
     );
-    Future.microtask(() {
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          hasStartedGame: true,
-          isEpiloguePending: false,
-          isGameOver: true,
-          isTrueEnding: true,
-        ),
-      );
-    });
   }
 
   /// Action: Order an investigation that completes after a random delay.
