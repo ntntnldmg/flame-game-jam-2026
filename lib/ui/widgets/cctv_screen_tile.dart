@@ -29,7 +29,20 @@ class _CctvScreenTileState extends State<CctvScreenTile> {
   @override
   void initState() {
     super.initState();
-    _feedGame = CctvFeedGame(gameCubit: context.read<GameCubit>());
+    _feedGame = CctvFeedGame(
+      gameCubit: context.read<GameCubit>(),
+      baseScale: _baseScaleForCamera(widget.cameraNumber),
+    );
+  }
+
+  double _baseScaleForCamera(int cameraNumber) {
+    return switch (cameraNumber) {
+      1 => Consts.cctvCam1BaseScale,
+      2 => Consts.cctvCam2BaseScale,
+      3 => Consts.cctvCam3BaseScale,
+      4 => Consts.cctvCam4BaseScale,
+      _ => 1.0,
+    };
   }
 
   @override

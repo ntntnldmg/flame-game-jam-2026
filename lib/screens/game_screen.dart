@@ -114,24 +114,6 @@ class _GameScreenContentState extends State<_GameScreenContent> {
   void _presentPendingOverlay(GameState state) {
     if (!mounted) return;
 
-    if (state.isEpiloguePending) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        barrierColor: AppColors.transparent,
-        builder: (dialogContext) => BlocProvider.value(
-          value: context.read<GameCubit>(),
-          child: BlocListener<GameCubit, GameState>(
-            listenWhen: (previous, current) =>
-                previous.isEpiloguePending && !current.isEpiloguePending,
-            listener: (_, _) => Navigator.of(dialogContext).pop(),
-            child: const EpilogueOverlay(),
-          ),
-        ),
-      );
-      return;
-    }
-
     if (state.isGameOver) {
       showDialog(
         context: context,
@@ -144,6 +126,30 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                 previous.isGameOver && !current.isGameOver,
             listener: (_, _) => Navigator.of(dialogContext).pop(),
             child: const GameOverOverlay(),
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (state.isEpiloguePending && !state.isTrueEnding) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        barrierColor: AppColors.transparent,
+        builder: (dialogContext) => BlocProvider.value(
+          value: context.read<GameCubit>(),
+          child: BlocListener<GameCubit, GameState>(
+            listenWhen: (previous, current) =>
+                previous.isEpiloguePending && !current.isEpiloguePending,
+            listener: (_, current) {
+              Navigator.of(dialogContext).pop();
+              // WidgetsBinding.instance.addPostFrameCallback((_) {
+              //   if (!mounted) return;
+              //   _presentPendingOverlay(context.read<GameCubit>().state);
+              // });
+            },
+            child: const EpilogueOverlay(),
           ),
         ),
       );
@@ -179,7 +185,10 @@ class _GameScreenContentState extends State<_GameScreenContent> {
             listenWhen: (previous, current) =>
                 previous.isReportPending && !current.isReportPending,
             listener: (_, _) => Navigator.of(dialogContext).pop(),
-            child: IntelligenceReportOverlay(report: state.currentReport!),
+            child: IntelligenceReportOverlay(
+              report: state.currentReport!,
+              enableTypewriter: !state.isReopenedReport,
+            ),
           ),
         ),
       );
@@ -324,11 +333,16 @@ class _GameScreenContentState extends State<_GameScreenContent> {
               ),
             ),
 
-            const Positioned(
+            Positioned(
               left: 0,
               right: 0,
               bottom: 40,
-              child: BreakingNewsTicker(),
+              child: BlocSelector<GameCubit, GameState, int>(
+                selector: (state) => state.currentDay,
+                builder: (context, currentDay) {
+                  return BreakingNewsTicker(day: currentDay);
+                },
+              ),
             ),
 
             Positioned(

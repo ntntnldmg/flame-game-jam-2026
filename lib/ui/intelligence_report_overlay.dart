@@ -9,8 +9,13 @@ import '../models/intelligence_report.dart';
 /// Pauses gameplay and presents the day's intelligence briefing.
 class IntelligenceReportOverlay extends StatefulWidget {
   final IntelligenceReport report;
+  final bool enableTypewriter;
 
-  const IntelligenceReportOverlay({super.key, required this.report});
+  const IntelligenceReportOverlay({
+    super.key,
+    required this.report,
+    this.enableTypewriter = true,
+  });
 
   @override
   State<IntelligenceReportOverlay> createState() =>
@@ -20,6 +25,7 @@ class IntelligenceReportOverlay extends StatefulWidget {
 class _IntelligenceReportOverlayState extends State<IntelligenceReportOverlay>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -29,12 +35,28 @@ class _IntelligenceReportOverlayState extends State<IntelligenceReportOverlay>
     _controller = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: ms),
-    )..forward();
+    );
+
+    if (widget.enableTypewriter) {
+      _controller.addListener(_handleTypewriterProgress);
+      _controller.forward();
+    } else {
+      _controller.value = 1;
+    }
+  }
+
+  void _handleTypewriterProgress() {
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_scrollController.hasClients) return;
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -47,13 +69,16 @@ class _IntelligenceReportOverlayState extends State<IntelligenceReportOverlay>
         child: Center(
           child: Container(
             width: 640,
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
+            ),
             padding: const EdgeInsets.all(40),
             decoration: BoxDecoration(
               color: AppColors.black,
               border: Border.all(color: AppColors.green, width: 2),
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header
@@ -108,25 +133,33 @@ class _IntelligenceReportOverlayState extends State<IntelligenceReportOverlay>
                 const SizedBox(height: 24),
 
                 // Narrative
-                AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, _) {
-                    final visibleChars =
-                        (widget.report.narrativeText.length * _controller.value)
-                            .floor();
-                    final visibleText = widget.report.narrativeText.substring(
-                      0,
-                      visibleChars,
-                    );
-                    return Text(
-                      visibleText,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 16,
-                        height: 1.6,
+                Expanded(
+                  child: Scrollbar(
+                    controller: _scrollController,
+                    thumbVisibility: true,
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      child: AnimatedBuilder(
+                        animation: _controller,
+                        builder: (context, _) {
+                          final visibleChars =
+                              (widget.report.narrativeText.length *
+                                      _controller.value)
+                                  .floor();
+                          final visibleText = widget.report.narrativeText
+                              .substring(0, visibleChars);
+                          return Text(
+                            visibleText,
+                            style: const TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 16,
+                              height: 1.6,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 24),
 

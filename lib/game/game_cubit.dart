@@ -40,6 +40,7 @@ class GameCubit extends Cubit<GameState> {
       isNewsReportPending: false,
       currentReport: report,
       isReportPending: true,
+      isReopenedReport: false,
       isCctvEventPending: false,
       isEpiloguePending: false,
     );
@@ -96,6 +97,7 @@ class GameCubit extends Cubit<GameState> {
         isNewsReportPending: false,
         currentReport: report,
         isReportPending: true,
+        isReopenedReport: false,
         isCctvEventPending: false,
         isEpiloguePending: false,
         isTrueEnding: false,
@@ -110,8 +112,14 @@ class GameCubit extends Cubit<GameState> {
 
   /// Resumes gameplay after the player dismisses the intelligence briefing.
   void acknowledgeReport() {
-    emit(state.copyWith(isNewsReportPending: false, isReportPending: false));
-    emit(state.copyWith(isReportPending: false));
+    emit(
+      state.copyWith(
+        isNewsReportPending: false,
+        isReportPending: false,
+        isReopenedReport: false,
+      ),
+    );
+    emit(state.copyWith(isReportPending: false, isReopenedReport: false));
   }
 
   /// Reopens the current day's intelligence report in the middle of gameplay.
@@ -124,7 +132,13 @@ class GameCubit extends Cubit<GameState> {
     }
     if (state.isReportPending) return;
 
-    emit(state.copyWith(isNewsReportPending: false, isReportPending: true));
+    emit(
+      state.copyWith(
+        isNewsReportPending: false,
+        isReportPending: true,
+        isReopenedReport: true,
+      ),
+    );
   }
 
   /// Updates the time and threat based on delta time (dt).
@@ -473,28 +487,16 @@ class GameCubit extends Cubit<GameState> {
 
   /// Called when the 2-part epilogue sequence has finished.
   void completeEpilogue() {
-    // Two-step transition avoids dialog route race conditions:
-    // 1) close epilogue overlay
-    // 2) then show game-over overlay
+    // Transition atomically to prevent the game tick from re-triggering
+    // day-5 epilogue in a transient non-gameover frame.
     emit(
       state.copyWith(
         hasStartedGame: true,
         isEpiloguePending: false,
-        isGameOver: false,
-        isTrueEnding: false,
+        isGameOver: true,
+        isTrueEnding: true,
       ),
     );
-    Future.microtask(() {
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          hasStartedGame: true,
-          isEpiloguePending: false,
-          isGameOver: true,
-          isTrueEnding: true,
-        ),
-      );
-    });
   }
 
   /// Action: Order an investigation that completes after a random delay.
