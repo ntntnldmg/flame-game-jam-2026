@@ -327,11 +327,16 @@ class _GameScreenContentState extends State<_GameScreenContent> {
               ),
             ),
 
-            const Positioned(
+            Positioned(
               left: 0,
               right: 0,
               bottom: 40,
-              child: BreakingNewsTicker(),
+              child: BlocSelector<GameCubit, GameState, int>(
+                selector: (state) => state.currentDay,
+                builder: (context, currentDay) {
+                  return BreakingNewsTicker(day: currentDay);
+                },
+              ),
             ),
 
             Positioned(
