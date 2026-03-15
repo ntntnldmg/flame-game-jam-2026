@@ -126,7 +126,7 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
                         ),
                       ),
                       Text(
-                        'MAVENPORT, THURSDAY, 18 MARCH 2064',
+                        'MAVENPORT, THURSDAY, 22 APRIL 2064',
                         style: GoogleFonts.noticiaText(
                           color: AppColors.newspaperInk,
                           fontSize: 16,

@@ -94,7 +94,7 @@ class Consts {
   static const double initialThreatLevel = 15.0;
 
   // --- Resident generation ---
-  static const int residentsPerDay = 30;
+  static const int residentsPerDay = 80;
   static const int residentIdBase = 10000;
   static const int residentIdRange = 90000;
   static const double generatedHighRiskChance = 0.15;
