@@ -71,10 +71,9 @@ class ResidentDetailsPanel extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-          	height: 700,
+          Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
