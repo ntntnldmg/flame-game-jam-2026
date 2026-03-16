@@ -1,5 +1,5 @@
-import 'package:bigbrother/app_typography.dart';
-import 'package:bigbrother/consts.dart';
+import 'package:terrorist_threat/app_typography.dart';
+import 'package:terrorist_threat/consts.dart';
 import 'package:flutter/material.dart';
 
 import '../../game/game_state.dart';

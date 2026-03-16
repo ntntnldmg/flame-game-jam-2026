@@ -168,16 +168,14 @@ class _WalkerSprites {
 
   static Future<_WalkerSprites> load(Images images) async {
     return _WalkerSprites(
-      maleLeft: Sprite(await images.load('left_step.png')),
-      maleRight: Sprite(await images.load('right_step.png')),
-      maleLeftBlink: Sprite(await images.load('left_step_blink.png')),
-      maleRightBlink: Sprite(await images.load('right_step_blink.png')),
+      maleLeft: Sprite(await images.load('left_step_male.png')),
+      maleRight: Sprite(await images.load('right_step_male.png')),
+      maleLeftBlink: Sprite(await images.load('left_step_male_blink.png')),
+      maleRightBlink: Sprite(await images.load('right_step_male_blink.png')),
       femaleLeft: Sprite(await images.load('left_step_female.png')),
       femaleRight: Sprite(await images.load('right_step_female.png')),
       femaleLeftBlink: Sprite(await images.load('left_step_female_blink.png')),
-      femaleRightBlink: Sprite(
-        await images.load('right_step_female_blink.png'),
-      ),
+      femaleRightBlink: Sprite(await images.load('right_step_female_blink.png')),
     );
   }
 }
@@ -188,8 +186,16 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
 
   static final TextPaint _idPaint = TextPaint(
     style: const TextStyle(
-      fontSize: 9,
+      fontSize: 7,
       color: AppColors.textPrimary,
+      fontWeight: FontWeight.w700,
+    ),
+  );
+  
+  static final TextPaint _unregisteredPaint = TextPaint(
+    style: const TextStyle(
+      fontSize: 5,
+      color: AppColors.red,
       fontWeight: FontWeight.w700,
     ),
   );
@@ -225,8 +231,7 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
         ? sprites.femaleAspect
         : sprites.maleAspect;
     size =
-        Vector2(spriteHeight * aspectRatio, spriteHeight) *
-        (resident.sex.toLowerCase() == 'female' ? 1.2 : 1.4);
+        Vector2(spriteHeight * aspectRatio, spriteHeight);
     position = Vector2(laneX, -size.y);
     scale = Vector2.all(baseScale);
     sprite = _currentSprite;
@@ -296,10 +301,10 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
     super.render(canvas);
 
     final headBoxHeight = size.y * 0.48;
-    final headBoxWidth = headBoxHeight * 0.78;
+    final headBoxWidth = headBoxHeight * 0.9;
     final headRect = Rect.fromLTWH(
       (size.x - headBoxWidth) / 2,
-      size.y * 0.05,
+      size.y * 0.065,
       headBoxWidth,
       headBoxHeight,
     );
@@ -309,9 +314,12 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
       ..color = isUnregistered ? AppColors.red : AppColors.textPrimary;
 
     canvas.drawRect(headRect, boxPaint);
-
-    final label = isUnregistered ? 'unregistered' : resident.id;
-    _idPaint.render(canvas, label, Vector2(0, -10));
+		
+		if (isUnregistered) {
+    	_unregisteredPaint.render(canvas, 'UNREGISTERED', Vector2(1, -10));
+    } else {
+    	_idPaint.render(canvas, resident.id, Vector2(8, -10));
+    }
   }
 
   Sprite get _currentSprite {

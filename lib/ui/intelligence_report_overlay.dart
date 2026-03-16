@@ -169,13 +169,13 @@ class _IntelligenceReportOverlayState extends State<IntelligenceReportOverlay>
                   child: ElevatedButton(
                     onPressed: () =>
                         context.read<GameCubit>().acknowledgeReport(),
-                    child: const Padding(
+                    child: Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 12,
                       ),
                       child: Text(
-                        'CONTINUE MONITORING',
+                        widget.report.day == 1 ? 'BEGIN MONITORING' : 'CONTINUE MONITORING',
                         style: TextStyle(fontSize: 16, letterSpacing: 2),
                       ),
                     ),

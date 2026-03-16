@@ -1,5 +1,5 @@
 // // ─── Barcode painter ─────────────────────────────────────────────────────────
-// import 'package:bigbrother/consts.dart';
+// import 'package:terrorist_threat/consts.dart';
 // import 'package:flutter/material.dart';
 
 // class BarcodePainter extends CustomPainter {
