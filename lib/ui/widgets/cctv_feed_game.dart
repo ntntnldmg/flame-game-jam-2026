@@ -315,10 +315,12 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
 
     canvas.drawRect(headRect, boxPaint);
 		
+		var xAdjustment = resident.sex.toLowerCase() == 'male' ? 8.0 : 0.0;
+		
 		if (isUnregistered) {
-    	_unregisteredPaint.render(canvas, 'UNREGISTERED', Vector2(1, -10));
+    	_unregisteredPaint.render(canvas, 'UNREGISTERED', Vector2(1 + xAdjustment, -10));
     } else {
-    	_idPaint.render(canvas, resident.id, Vector2(8, -10));
+    	_idPaint.render(canvas, resident.id, Vector2(8 + xAdjustment, -10));
     }
   }
 
