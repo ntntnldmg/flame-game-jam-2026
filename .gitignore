@@ -46,6 +46,7 @@ app.*.map.json
 
 # Local development
 /TODO.md
+/FEEDBACK.md
 /resources/
 /linux/
 .vscode/
@@ -53,3 +54,7 @@ app.*.map.json
 # FVM Version Cache
 .fvm/
 .fvmrc
+
+# Folder thumbnail
+.Thumbnail.png
+

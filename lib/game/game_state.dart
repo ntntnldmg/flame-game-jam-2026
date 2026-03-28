@@ -1,4 +1,4 @@
-import 'package:bigbrother/consts.dart';
+import 'package:terrorist_threat/consts.dart';
 import 'package:equatable/equatable.dart';
 import '../models/resident.dart';
 import '../models/intelligence_report.dart';

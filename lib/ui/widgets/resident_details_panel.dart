@@ -123,7 +123,7 @@ class ResidentDetailsPanel extends StatelessWidget {
                       child: Text(
                         'ESTIMATED RISK: ${_residentRiskText(effectiveRisk)}',
                         style: AppTypography.mono(
-                          color: effectiveRisk > Consts.arrestGoodThreshold
+                          color: effectiveRisk >= 50.0
                               ? AppColors.red
                               : AppColors.bluishWhite,
                           fontSize: 16,

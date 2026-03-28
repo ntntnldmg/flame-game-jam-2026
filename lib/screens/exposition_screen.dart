@@ -127,20 +127,6 @@ class _ExpositionScreenState extends State<ExpositionScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            /*Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      AppColors.expositionGradientTop,
-                      AppColors.expositionGradientBottom,
-                    ],
-                  ),
-                ),
-              ),
-            ),*/
             Positioned.fill(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(28, 20, 28, 100),
@@ -155,31 +141,10 @@ class _ExpositionScreenState extends State<ExpositionScreen> {
                           color: AppColors.green.withAlpha(180),
                           width: 2,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.breakingNewsBackground,
-                            blurRadius: 20,
-                            spreadRadius: 1,
-                          ),
-                        ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          /*
-                          Text(
-                            'CLASSIFIED BRIEFING // ${GameScript.cityName.toUpperCase()}',
-                            style: AppTypography.mono(
-                              color: AppColors.green,
-                              fontSize: 20,
-                              letterSpacing: 2.2,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Container(height: 2, color: AppColors.green),
-                          const SizedBox(height: 26),
-                          */
                           Expanded(
                             child: SingleChildScrollView(
                               child: Column(

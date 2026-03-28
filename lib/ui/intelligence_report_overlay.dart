@@ -31,7 +31,7 @@ class _IntelligenceReportOverlayState extends State<IntelligenceReportOverlay>
   void initState() {
     super.initState();
     final textLength = widget.report.narrativeText.length;
-    final ms = (textLength * 18).clamp(1400, 11000).toInt();
+    final ms = ((textLength * 18).clamp(1400, 11000) * 1 / Consts.typewriterEffectSpeed).toInt();
     _controller = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: ms),
@@ -169,13 +169,13 @@ class _IntelligenceReportOverlayState extends State<IntelligenceReportOverlay>
                   child: ElevatedButton(
                     onPressed: () =>
                         context.read<GameCubit>().acknowledgeReport(),
-                    child: const Padding(
+                    child: Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 12,
                       ),
                       child: Text(
-                        'CONTINUE MONITORING',
+                        widget.report.day == 1 ? 'BEGIN MONITORING' : 'CONTINUE MONITORING',
                         style: TextStyle(fontSize: 16, letterSpacing: 2),
                       ),
                     ),

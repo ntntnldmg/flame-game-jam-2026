@@ -9,8 +9,8 @@ Source code for [Terrorist Threat](https://ntntnldmg.itch.io/terrorist-threat), 
 ## Usage
 
 ```cmd
-git clone https://github.com/ntntnldmg/flame-game-jam-2026
-cd flame-game-jam-2026
+git clone https://github.com/ntntnldmg/flame-game-jam-2026 terrorist_threat
+cd terrorist_threat
 flutter run
 ```
 

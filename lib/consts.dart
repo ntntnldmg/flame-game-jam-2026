@@ -81,20 +81,20 @@ class AppColors {
 
 class Consts {
   // --- Core progression ---
-  static const double dayDuration = 150.0;
+  static const double dayDuration = 180.0;
   static const double minThreatLevel = 0.0;
   static const double maxThreatLevel = 100.0;
 
   /// Threat starts at 15% and must reach 100% in exactly 2 days of passive play.
   ///
   /// That is 85% over 2 × [dayDuration] seconds.
-  static const double threatRatePerSecond = 5.0 / (dayDuration * 2); //85
+  static const double threatRatePerSecond = 25.0 / (dayDuration * 2); //85
 
   /// The initial terrorist threat value when the game starts.
   static const double initialThreatLevel = 33.0;
 
   // --- Resident generation ---
-  static const int residentsPerDay = 80;
+  static const int residentsPerDay = 64;
   static const int residentIdBase = 100000;
   static const int residentIdRange = 900000;
   static const double generatedHighRiskChance = 0.15;
@@ -150,23 +150,27 @@ class Consts {
   static const double cctvMaxIntervalSeconds = 120.0;
 
   /// Delay before the target face turns red after the overlay opens.
-  static const double cctvInitialScanSeconds = 0.9;
+  static const double cctvInitialScanSeconds = 0.6;
 
   /// Click window in seconds once a target face turns red.
-  static const double cctvClickWindowSeconds = 1.1;
-  static const int cctvFaceCount = 24;
-  static const double cctvSuccessThreatDelta = 6.0;
+  static const double cctvClickWindowSeconds = 1.05;
+  static const int cctvFaceCount = 40;
+  static const double cctvSuccessThreatDelta = 2.0;
   static const double cctvFailureThreatDelta = 6.0;
 
   /// Extra scale applied from top to bottom of each CCTV feed.
   /// 0.28 means sprites grow up to 28% by the time they reach the bottom.
-  static const double cctvPerspectiveScaleFactor = 0;
+  static const double cctvPerspectiveScaleFactor = 0.19;
 
   /// Per-camera starting scales for feed sprites.
-  static const double cctvCam1BaseScale = 1.7;
-  static const double cctvCam2BaseScale = 2.1;
-  static const double cctvCam3BaseScale = 1.2;
-  static const double cctvCam4BaseScale = 2.5;
-  // epilogue
+  static const double cctvCam1BaseScale = 1.6;
+  static const double cctvCam2BaseScale = 2.0;
+  static const double cctvCam3BaseScale = 1.0;
+  static const double cctvCam4BaseScale = 2.2;
+  
+  // Epilogue
   static const briefingDuration = 25;
+  
+  // Typewrite effect
+  static const typewriterEffectSpeed = 0.65;
 }

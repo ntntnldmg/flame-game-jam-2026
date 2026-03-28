@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,8 +85,11 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      isTrueEnding ? 'THE END' : 'CRIME PARADOX',
+                  	isTrueEnding ? Image.asset(
+                  		'assets/images/logo.png',
+                  		width: min(800, MediaQuery.of(context).size.width * 0.8),
+                  	) : Text(
+                      'CRIME PARADOX',
                       style: AppTypography.mono(
                         color: AppColors.red,
                         fontSize: 48,
@@ -95,7 +100,7 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                     const SizedBox(height: 28),
                     if (!isTrueEnding && _showStats) ...[
                       Text(
-                        'Days Survived: ${state.currentDay}',
+                        'Days survived: ${state.currentDay-1}',
                         style: AppTypography.mono(
                           color: AppColors.textPrimary,
                           fontSize: 22,
@@ -103,7 +108,7 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Total Arrests: ${state.arrestCount}',
+                        'Total arrests: ${state.arrestCount}',
                         style: AppTypography.mono(
                           color: AppColors.textPrimary,
                           fontSize: 22,
@@ -111,7 +116,15 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Investigations Performed: ${state.investigationCount}',
+                        'Total investigations: ${state.investigationCount}',
+                        style: AppTypography.mono(
+                          color: AppColors.textPrimary,
+                          fontSize: 22,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Total residents registered: ${state.todayResidents.length - Consts.residentsPerDay}',//
                         style: AppTypography.mono(
                           color: AppColors.textPrimary,
                           fontSize: 22,

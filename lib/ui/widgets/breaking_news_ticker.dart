@@ -20,7 +20,7 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
   static final Random _random = Random();
 
   late final AnimationController _controller;
-  late List<String> _gameplayBulletins;
+  late String _gameplayBulletins;
 
   static const double _height = 40;
   int _currentHeadlineIndex = 0;
@@ -31,7 +31,7 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
     _gameplayBulletins = _buildGameplayBulletinsForDay(widget.day);
 
     _controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 24))
+        AnimationController(vsync: this, duration: const Duration(seconds: 240))
           ..addStatusListener((status) {
             if (status != AnimationStatus.completed || !mounted) return;
             setState(() {
@@ -65,7 +65,7 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
 
   @override
   Widget build(BuildContext context) {
-    final tickerText = _gameplayBulletins[_currentHeadlineIndex].toUpperCase();
+    final tickerText = _gameplayBulletins.toUpperCase();
 
     return Container(
       height: _height,
@@ -102,8 +102,7 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
                   letterSpacing: 0.2,
                   height: 1.0,
                 );
-                final textWidth = _measureWidth(tickerText, style);
-                final loopWidth = textWidth + 120;
+                final loopWidth = 20000;
 
                 return ClipRect(
                   child: AnimatedBuilder(
@@ -147,20 +146,29 @@ class _BreakingNewsTickerState extends State<BreakingNewsTicker>
     return painter.width;
   }
 
-  List<String> _buildGameplayBulletinsForDay(int day) {
+  String _buildGameplayBulletinsForDay(int day) {
     final dayBulletins = List<String>.from(GameScript.newsBulletins[day] ?? []);
 
     if (dayBulletins.isEmpty) {
-      return const ['No news available at this time.'];
+      return 'No news available at this time.';
     }
 
-    final count = 5 + _random.nextInt(2); // 5..6
+    final count = 8;
     final selected = List<String>.from(dayBulletins)..shuffle(_random);
-
-    return selected
+		
+		var tickerList = selected
         .take(min(count, selected.length))
         .map(_resolvePlaceholders)
         .toList(growable: false);
+    
+    var tickerString = '';
+    for (var tickerMessage in tickerList) {
+    	tickerString += tickerMessage;
+    	tickerString += '        ';
+    }
+		
+		// Returns a very long string, fixing the "gap between bulletins"–bug on the itch.io build
+    return tickerString * 20;
   }
 
   String _resolvePlaceholders(String text) {

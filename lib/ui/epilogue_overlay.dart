@@ -59,7 +59,7 @@ class _EpilogueOverlayState extends State<EpilogueOverlay> {
     _briefingTypeTimer?.cancel();
     _briefingVisibleChars = 0;
     final fullText = GameScript.epilogueBriefingText.trim();
-    _briefingTypeTimer = Timer.periodic(const Duration(milliseconds: 18), (
+    _briefingTypeTimer = Timer.periodic(const Duration(milliseconds: 130), (
       timer,
     ) {
       if (!mounted) {

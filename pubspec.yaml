@@ -1,4 +1,4 @@
-name: bigbrother
+name: terrorist_threat
 description: 'A dystopian surveillance simulator. Submission for the 5th official Flame Game Jam.'
 publish_to: 'none'
 version: 1.0.0
@@ -10,7 +10,6 @@ dependencies:
   equatable: ^2.0.8
   flame: ^1.36.0
   flame_audio: ^2.11.14
-  # flame_bloc: ^1.12.21
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1

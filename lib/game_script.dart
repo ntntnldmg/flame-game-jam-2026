@@ -763,7 +763,7 @@ Little is known about the organization identified as the root cause of Mavenport
 
   // --- Intel reports ---
   static const String intelBriefing = '''
-This is your briefing for the SMSAIAAASS – the "System for Monitoring Suspicious Activity and Initiating Appropriate Action Against Suitable Suspects."
+This is your briefing for the SMSAIAAASS – the System for Monitoring Suspicious Activity and Initiating Appropriate Action Against Suitable Suspects.
 
 Your mission: 
 
@@ -879,7 +879,7 @@ Your mission:
     'Hotline has reported an increase in foreigners to the area.',
     'Mystery QR code flyers have been posted onto the bulletin boards at city hall.',
     'Suspect of a recent cat burglary, must be petite, can fit through a side window.',
-    'Suspects of a recent robbery in [DISTRICT], thought to be from a different district due to unfamiliarity when leaving the store.',
+    'Suspects of a recent robbery in [DISTRICT] thought to be from a different district.',
   ];
 
   // --- News bulletins ---
@@ -887,7 +887,7 @@ Your mission:
   static const Map<int, List<String>> newsBulletins = {
     1: [
       'Local officials state that crime is on the rise. Residents should act with caution within their neighborhood and report suspicious activity.',
-      'Electricity bills soar during this season. MUTO to blame?',
+      'Electricity bills soar this season. MUTO to blame?',
       'Community leader [FIRST NAME] [LAST NAME] wins award from neighborhood association.',
       'Bill passed to increase fines on desecrating public property. Graffiti artists beware!',
       'More surveillance cameras installed in [DISTRICT]. Authorities say this will reduce speeding in busy intersections.',
@@ -897,7 +897,7 @@ Your mission:
       'Loitering to be banned in [DISTRICT].',
       'Mavenport farmer’s market continues for the 15th year despite decrease in attendance.',
       'Noise ordinance laws go into effect on Monday. More information on the city website.',
-      'Brimmed hats, and waistcoats are now in vogue! "Everybody\'s buying them! I\'ve never seen anything like it", says owner of a local fashion outlet.',
+      'Brimmed hats and waistcoats are now in vogue! "Everybody\'s buying them! I\'ve never seen anything like it", says owner of a local fashion outlet.',
     ],
     2: [
       'University student [FIRST NAME] [LAST NAME] loses scholarship over MUTO accusation: “I’m an eco-terrorist, not a terrorist-terrorist!”',
@@ -982,9 +982,9 @@ Your mission:
   static const String epilogueNewspaperArticle = '''
 Mavenport residents were shocked when they found out Mavenport officials had embezzled government funds to create an unauthorized watch-force in the city.
 
-This watch-force, known to many as the MCTA, was founded under mysterious circumstances after an unfortunate crime wave. After one incident, the letters MUTO were found above a victim’s corpse. Afterwards, rumors began circulating that a violent criminal organization - the Mavenport Underground Thug Outfit was growing within Mavenport’s borders.
+The watch-force, known to many as the MCTA, was founded under mysterious circumstances following a crime wave in the Barracks. After one incident, the letters MUTO were found at the crime scene. Afterwards, rumors began circulating that a violent criminal organization, the Mavenport Underground Thug Outfit, was growing within Mavenport’s borders.
 
-However, recent investigations revealed that the level of crime remained at a stable level and that MUTO was in fact entirely fabricated by the MCTA. Internal documents leaked by MCTA employees revealed that MUTO was in reality devised as "Made-Up Terrorist Organisation" and used to create a panick among the Mavenport population. This panick served as justification for developing the SMSAIAAASS, a sophisticated surveillance system surveilling Mavenport residents without their knowledge. Hundreds of innocent residents were detained for questioning over the last 12 months alone.
+However, recent investigations revealed that the level of crime remained at a stable level and that MUTO was in fact entirely fabricated by the MCTA. Internal documents leaked by MCTA employees revealed that MUTO was in reality devised as "Made-Up Terrorist Organisation" and used to create a panick among the Mavenport population. This panick served as justification for developing the SMSAIAAASS, a sophisticated surveillance system secretly monitoring Mavenport residents without their consent. More than 600 innocent residents were detained for questioning over the last 12 months alone.
 
 Thankfully, an enterprising group of electricians and other blue collar workers reported irregularities with Mavenport’s electric grid. Authorities traced the issue to the MCTA, and the Senate has voted unanimously to defund the agency and to destroy the SMSAIAAASS. All innocent individuals were released and were offered psychological counsel for their experiences.
 	''';

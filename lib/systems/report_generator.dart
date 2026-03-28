@@ -25,9 +25,13 @@ class ReportGenerator {
         ? '''
 ${GameScript.intelBriefing.trim()}
 
-=====================================
-FIRST INTEL REPORT INCOMING
-=====================================
+
+-------------------------------------
+
+> FIRST INTEL REPORT INCOMING ...
+
+-------------------------------------
+
 
 $instructionsText
 '''
