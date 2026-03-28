@@ -897,7 +897,7 @@ Your mission:
       'Loitering to be banned in [DISTRICT].',
       'Mavenport farmer’s market continues for the 15th year despite decrease in attendance.',
       'Noise ordinance laws go into effect on Monday. More information on the city website.',
-      'Brimmed hats, and waistcoats are now in vogue! "Everybody\'s buying them! I\'ve never seen anything like it", says owner of a local fashion outlet.',
+      'Brimmed hats and waistcoats are now in vogue! "Everybody\'s buying them! I\'ve never seen anything like it", says owner of a local fashion outlet.',
     ],
     2: [
       'University student [FIRST NAME] [LAST NAME] loses scholarship over MUTO accusation: “I’m an eco-terrorist, not a terrorist-terrorist!”',

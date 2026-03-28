@@ -46,6 +46,7 @@ app.*.map.json
 
 # Local development
 /TODO.md
+/FEEDBACK.md
 /resources/
 /linux/
 .vscode/
