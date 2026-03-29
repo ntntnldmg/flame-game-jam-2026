@@ -175,7 +175,9 @@ class _WalkerSprites {
       femaleLeft: Sprite(await images.load('left_step_female.png')),
       femaleRight: Sprite(await images.load('right_step_female.png')),
       femaleLeftBlink: Sprite(await images.load('left_step_female_blink.png')),
-      femaleRightBlink: Sprite(await images.load('right_step_female_blink.png')),
+      femaleRightBlink: Sprite(
+        await images.load('right_step_female_blink.png'),
+      ),
     );
   }
 }
@@ -191,7 +193,7 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
       fontWeight: FontWeight.w700,
     ),
   );
-  
+
   static final TextPaint _unregisteredPaint = TextPaint(
     style: const TextStyle(
       fontSize: 5,
@@ -221,7 +223,7 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
   bool _isLeftStep = true;
 
   double _blinkAccumulator = 0;
-  double _nextBlinkAt = 1.6 + _random.nextDouble() * 3.2;
+  double _nextBlinkAt = (1.6 + _random.nextDouble() * 3.2) / 1.75;
   bool _isBlinking = false;
 
   @override
@@ -230,8 +232,7 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
     final aspectRatio = resident.sex.toLowerCase() == 'female'
         ? sprites.femaleAspect
         : sprites.maleAspect;
-    size =
-        Vector2(spriteHeight * aspectRatio, spriteHeight);
+    size = Vector2(spriteHeight * aspectRatio, spriteHeight);
     position = Vector2(laneX, -size.y);
     scale = Vector2.all(baseScale);
     sprite = _currentSprite;
@@ -264,7 +265,7 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
       if (_blinkAccumulator >= 0.18) {
         _isBlinking = false;
         _blinkAccumulator = 0;
-        _nextBlinkAt = 1.6 + _random.nextDouble() * 3.2;
+        _nextBlinkAt = (1.6 + _random.nextDouble() * 3.2) / 1.75;
       }
     } else if (_blinkAccumulator >= _nextBlinkAt) {
       _isBlinking = true;
@@ -314,13 +315,17 @@ class _Walker extends SpriteComponent with HasGameReference<CctvFeedGame> {
       ..color = isUnregistered ? AppColors.red : AppColors.textPrimary;
 
     canvas.drawRect(headRect, boxPaint);
-		
-		var xAdjustment = resident.sex.toLowerCase() == 'male' ? 8.0 : 0.0;
-		
-		if (isUnregistered) {
-    	_unregisteredPaint.render(canvas, 'UNREGISTERED', Vector2(1 + xAdjustment, -10));
+
+    var xAdjustment = resident.sex.toLowerCase() == 'male' ? 8.0 : 0.0;
+
+    if (isUnregistered) {
+      _unregisteredPaint.render(
+        canvas,
+        'UNREGISTERED',
+        Vector2(1 + xAdjustment, -10),
+      );
     } else {
-    	_idPaint.render(canvas, resident.id, Vector2(8 + xAdjustment, -10));
+      _idPaint.render(canvas, resident.id, Vector2(8 + xAdjustment, -10));
     }
   }
 
