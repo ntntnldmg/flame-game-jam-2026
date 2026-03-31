@@ -317,8 +317,8 @@ class _IntroScreenState extends State<IntroScreen> {
                   duration: _logoFadeDuration,
                   curve: Curves.easeOut,
                   child: Image.asset(
-                    'assets/images/logo.png',
-                    width: min(800, MediaQuery.of(context).size.width * 0.8),
+                    'assets/images/logotype.png',
+                    width: min(700, MediaQuery.of(context).size.width * 0.75),
                     errorBuilder: (_, _, _) => const SizedBox.shrink(),
                   ),
                 ),
