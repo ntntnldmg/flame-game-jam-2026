@@ -20,7 +20,7 @@ class ReportGenerator {
       ...risklessSelections,
     ]..shuffle(_random);
 
-    final instructionsText = lines.map((line) => '- $line').join('\n\n');
+    final instructionsText = lines.map((line) => '> $line').join('\n\n');
     final narrativeText = day == 1
         ? '''
 ${GameScript.intelBriefing.trim()}

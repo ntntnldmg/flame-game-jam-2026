@@ -41,9 +41,9 @@ class BigBrotherApp extends StatelessWidget {
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               shape: const BeveledRectangleBorder(), // Sharp corners
-              side: const BorderSide(color: AppColors.green),
-              backgroundColor: AppColors.black,
-              foregroundColor: AppColors.green,
+              side: const BorderSide(color: AppColors.weakGreen),
+              backgroundColor: AppColors.appBackground,
+              foregroundColor: AppColors.bluishWhite,
               textStyle: AppTypography.mono(
                 fontWeight: FontWeight.bold,
                 letterSpacing: 2,
@@ -53,14 +53,14 @@ class BigBrotherApp extends StatelessWidget {
           dialogTheme: const DialogThemeData(
             backgroundColor: AppColors.surface,
             shape: BeveledRectangleBorder(
-              side: BorderSide(color: AppColors.green, width: 2),
+              side: BorderSide(color: AppColors.green),
             ),
             titleTextStyle: TextStyle(
-              color: AppColors.green,
+              color: AppColors.bluishWhite,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
-            contentTextStyle: TextStyle(color: AppColors.green, fontSize: 16),
+            contentTextStyle: TextStyle(color: AppColors.bluishWhite, fontSize: 16),
           ),
         ),
         home: const IntroScreen(),

@@ -6,6 +6,7 @@ class AppColors {
 
   /// Primary teal/cyan used for UI chrome, rings, and labels.
   static const Color green = Color(0xff6eb5bb);
+  static const Color weakGreen = Color(0x906eb5bb);
 
   /// Bright blueish-white used for highlights and progress arcs.
   static const Color bluishWhite = Color(0xffceecf8);

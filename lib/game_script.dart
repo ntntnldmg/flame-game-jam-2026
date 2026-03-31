@@ -767,13 +767,15 @@ This is your briefing for the SMSAIAAASS – the System for Monitoring Suspiciou
 
 Your mission: 
 
--Read all intel carefully for patterns and clues on MUTO affiliation.
+> Read all intel carefully for patterns and clues on MUTO affiliation.
 
--Identify unregistered residents on the camera screens and flag them.
+> Order investigations of Mavenport residents to receive an individual risk estimate.
 
--Monitor the threat level and keep it below dangerous levels.
+> Issue arrest warrants against residents with likely MUTO affiliation.
 
--Initiate appropriate action against Mavenport residents to maintain order and security.
+> Flag unregistered residents on the camera screens to introduce them into the database.
+
+> Monitor the threat level and keep it below 100% by all means necessary!
 	''';
 
   // These will raise the risk of residents within a certain district.
@@ -813,7 +815,7 @@ Your mission:
 		],
 		'lawyer': [
 			'Lawyers with popular firms are making suspicious amounts of money.',
-			'An increase in harrassment allegations are coming from residents being prepresented by certain firms.',
+			'An increase in harrassment allegations is coming from residents being represented by certain law firms.',
 			'Lawyers are taking less cases despite not being seen in court.',
 			'Lawyers are carrying around papers instead of saving files digitally.',
 		],

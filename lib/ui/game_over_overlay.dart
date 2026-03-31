@@ -86,8 +86,8 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                   	isTrueEnding ? Image.asset(
-                  		'assets/images/logo.png',
-                  		width: min(800, MediaQuery.of(context).size.width * 0.8),
+                  		'assets/images/logotype.png',
+                  		width: min(700, MediaQuery.of(context).size.width * 0.75),
                   	) : Text(
                       'CRIME PARADOX',
                       style: AppTypography.mono(
