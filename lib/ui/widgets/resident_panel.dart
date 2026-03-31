@@ -18,9 +18,31 @@ class ResidentPanel extends StatefulWidget {
 
 class _ResidentPanelState extends State<ResidentPanel> {
   String? _selectedResidentId;
+  late final ScrollController _residentListController;
+  double _residentListOffset = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _residentListController = ScrollController()
+      ..addListener(() {
+        if (_residentListController.hasClients) {
+          _residentListOffset = _residentListController.offset;
+        }
+      });
+  }
+
+  @override
+  void dispose() {
+    _residentListController.dispose();
+    super.dispose();
+  }
 
   void _selectResident(BuildContext context, String residentId) {
     if (context.read<GameCubit>().state.isCctvEventPending) return;
+    if (_residentListController.hasClients) {
+      _residentListOffset = _residentListController.offset;
+    }
     context.read<GameCubit>().clearResidentCompletionMarkers(residentId);
     setState(() => _selectedResidentId = residentId);
   }
@@ -28,6 +50,12 @@ class _ResidentPanelState extends State<ResidentPanel> {
   void _closeDetails() {
     if (!mounted) return;
     setState(() => _selectedResidentId = null);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_residentListController.hasClients) return;
+      final maxScroll = _residentListController.position.maxScrollExtent;
+      final target = _residentListOffset.clamp(0.0, maxScroll);
+      _residentListController.jumpTo(target);
+    });
   }
 
   @override
@@ -63,6 +91,8 @@ class _ResidentPanelState extends State<ResidentPanel> {
                         onBack: _closeDetails,
                       )
                     : ListView.builder(
+                        controller: _residentListController,
+                        key: const PageStorageKey('resident-list'),
                         itemCount: state.todayResidents.length,
                         itemBuilder: (context, index) => ResidentListItem(
                           resident: state.todayResidents[index],

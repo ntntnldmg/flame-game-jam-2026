@@ -26,9 +26,11 @@ enum _IntroPhase { soundPrompt, emptyLeadIn, credits, titleOnly, menu }
 
 class _IntroScreenState extends State<IntroScreen> {
   static int _openingMusicRequestId = 0;
+  static const Duration _logoFadeDuration = Duration(milliseconds: 1600);
 
   _IntroPhase _phase = _IntroPhase.soundPrompt;
   bool _soundEnabled = false;
+  double _logoOpacity = 0;
 
   int _creditIndex = 0;
   double _creditOpacity = 0;
@@ -51,6 +53,7 @@ class _IntroScreenState extends State<IntroScreen> {
     if (AudioSettings.hasPreference) {
       _soundEnabled = AudioSettings.isEnabled;
       _phase = _IntroPhase.menu;
+      _logoOpacity = 1;
       if (_soundEnabled) {
         _startOpeningMusic();
       }
@@ -168,7 +171,19 @@ class _IntroScreenState extends State<IntroScreen> {
 
   void _setPhase(_IntroPhase value) {
     if (!mounted) return;
-    setState(() => _phase = value);
+    setState(() {
+      _phase = value;
+      if (value == _IntroPhase.credits || value == _IntroPhase.emptyLeadIn) {
+        _logoOpacity = 0;
+      }
+    });
+
+    if (value == _IntroPhase.titleOnly || value == _IntroPhase.menu) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        setState(() => _logoOpacity = 1);
+      });
+    }
   }
 
   Future<void> _openSettings() async {
@@ -297,10 +312,15 @@ class _IntroScreenState extends State<IntroScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Image.asset(
-                  'assets/images/logotype.png',
-                  width: min(700, MediaQuery.of(context).size.width * 0.75),
-                  errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                AnimatedOpacity(
+                  opacity: _logoOpacity,
+                  duration: _logoFadeDuration,
+                  curve: Curves.easeOut,
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    width: min(800, MediaQuery.of(context).size.width * 0.8),
+                    errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                  ),
                 ),
 
                 SizedBox(
