@@ -204,7 +204,7 @@ class _IntroScreenState extends State<IntroScreen> {
                     onChanged: (value) {
                       setDialogState(() => tempSoundEnabled = value);
                     },
-                    activeThumbColor: AppColors.green,
+                    activeThumbColor: AppColors.bluishWhite,
                   ),
                 ],
               ),
@@ -232,7 +232,7 @@ class _IntroScreenState extends State<IntroScreen> {
     AudioSettings.setEnabled(tempSoundEnabled);
 
     if (_soundEnabled) {
-      await _startOpeningMusic();
+      await _startOpeningMusic(forceShortTrack: true);
     } else {
       await _stopOpeningMusic();
     }
@@ -381,10 +381,6 @@ class _SoundPrompt extends StatelessWidget {
     return Center(
       child: Container(
         padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: AppColors.black,
-          border: Border.all(color: AppColors.green, width: 2),
-        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -397,7 +393,7 @@ class _SoundPrompt extends StatelessWidget {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 32),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
