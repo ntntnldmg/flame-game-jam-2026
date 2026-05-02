@@ -315,7 +315,7 @@ class _IntroScreenState extends State<IntroScreen> {
                 AnimatedOpacity(
                   opacity: _logoOpacity,
                   duration: _logoFadeDuration,
-                  curve: Curves.easeOut,
+                  curve: Curves.linear,
                   child: Image.asset(
                     'assets/images/logotype.png',
                     width: min(700, MediaQuery.of(context).size.width * 0.75),
